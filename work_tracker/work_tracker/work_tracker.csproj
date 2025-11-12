@@ -1,0 +1,289 @@
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8F22EB09-C362-4001-A640-65563EF99281}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>work_tracker</RootNamespace>
+    <AssemblyName>work_tracker</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevExpress.BonusSkins.v21.2" />
+    <Reference Include="DevExpress.Data.Desktop.v21.2" />
+    <Reference Include="DevExpress.Data.v21.2" />
+    <Reference Include="DevExpress.Utils.v21.2" />
+    <Reference Include="DevExpress.Sparkline.v21.2.Core" />
+    <Reference Include="DevExpress.XtraEditors.v21.2" />
+    <Reference Include="DevExpress.XtraBars.v21.2" />
+    <Reference Include="DevExpress.XtraGrid.v21.2" />
+    <Reference Include="DevExpress.XtraLayout.v21.2" />
+    <Reference Include="DevExpress.XtraRichEdit.v21.2" />
+    <Reference Include="DevExpress.RichEdit.v21.2.Core" />
+    <Reference Include="DevExpress.Office.v21.2.Core" />
+    <Reference Include="DevExpress.Printing.v21.2.Core" />
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\Entities\KanbanColumnSetting.cs" />
+    <Compile Include="Data\Entities\Meeting.cs" />
+    <Compile Include="Data\Entities\Project.cs" />
+    <Compile Include="Data\Entities\ProjectModule.cs" />
+    <Compile Include="Data\Entities\Sprint.cs" />
+    <Compile Include="Data\Entities\WorkItem.cs" />
+    <Compile Include="Data\Entities\WorkItemActivity.cs" />
+    <Compile Include="Data\Entities\WorkItemAttachment.cs" />
+    <Compile Include="Data\WorkTrackerDbContext.cs" />
+    <Compile Include="Helpers\FileStorageHelper.cs" />
+    <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Migrations\202511111409311_initial.cs" />
+    <Compile Include="Migrations\202511111409311_initial.Designer.cs">
+      <DependentUpon>202511111409311_initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511120616180_AddSprint.cs" />
+    <Compile Include="Migrations\202511120616180_AddSprint.Designer.cs">
+      <DependentUpon>202511120616180_AddSprint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511120802038_AddWorkItemActivity.cs" />
+    <Compile Include="Migrations\202511120802038_AddWorkItemActivity.Designer.cs">
+      <DependentUpon>202511120802038_AddWorkItemActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjectManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjectManagementForm.Designer.cs">
+      <DependentUpon>ProjectManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjectEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjectEditForm.Designer.cs">
+      <DependentUpon>ProjectEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ModuleManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ModuleManagementForm.Designer.cs">
+      <DependentUpon>ModuleManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ModuleEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ModuleEditForm.Designer.cs">
+      <DependentUpon>ModuleEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SprintManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SprintManagementForm.Designer.cs">
+      <DependentUpon>SprintManagementForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\SprintEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\SprintEditForm.Designer.cs">
+      <DependentUpon>SprintEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\InboxForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\InboxForm.Designer.cs">
+      <DependentUpon>InboxForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkItemEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkItemEditForm.Designer.cs">
+      <DependentUpon>WorkItemEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TriageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TriageForm.Designer.cs">
+      <DependentUpon>TriageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\KanbanBoardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\KanbanBoardForm.Designer.cs">
+      <DependentUpon>KanbanBoardForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ScrumBoardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ScrumBoardForm.Designer.cs">
+      <DependentUpon>ScrumBoardForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ReportsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ReportsForm.Designer.cs">
+      <DependentUpon>ReportsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MeetingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MeetingForm.Designer.cs">
+      <DependentUpon>MeetingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MeetingEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MeetingEditForm.Designer.cs">
+      <DependentUpon>MeetingEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\HelpForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\HelpForm.Designer.cs">
+      <DependentUpon>HelpForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MeetingDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MeetingDetailForm.Designer.cs">
+      <DependentUpon>MeetingDetailForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkItemDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkItemDetailForm.Designer.cs">
+      <DependentUpon>WorkItemDetailForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjectManagementForm.resx">
+      <DependentUpon>ProjectManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjectEditForm.resx">
+      <DependentUpon>ProjectEditForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ModuleManagementForm.resx">
+      <DependentUpon>ModuleManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ModuleEditForm.resx">
+      <DependentUpon>ModuleEditForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\InboxForm.resx">
+      <DependentUpon>InboxForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WorkItemEditForm.resx">
+      <DependentUpon>WorkItemEditForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TriageForm.resx">
+      <DependentUpon>TriageForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KanbanBoardForm.resx">
+      <DependentUpon>KanbanBoardForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MeetingForm.resx">
+      <DependentUpon>MeetingForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MeetingEditForm.resx">
+      <DependentUpon>MeetingEditForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\HelpForm.resx">
+      <DependentUpon>HelpForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MeetingDetailForm.resx">
+      <DependentUpon>MeetingDetailForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511111409311_initial.resx">
+      <DependentUpon>202511111409311_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511120616180_AddSprint.resx">
+      <DependentUpon>202511120616180_AddSprint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511120802038_AddWorkItemActivity.resx">
+      <DependentUpon>202511120802038_AddWorkItemActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

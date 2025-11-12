@@ -1,0 +1,144 @@
+Proje Tanımlama Dökümanı: Dinamik İş Akışı Yönetim Aracı (Kaos Kontrol)
+Tarih: 11 Kasım 2025 Proje Sahibi: [Ekip Lideri / Product Owner] Versiyon: 1.1 (Toplantı Modülü Eklendi)
+
+1. GİRİŞ VE PROJE AMACI
+1.1. Tanımlanan Sorun (Problem)
+Mevcut iş takip süreçleri, planlı geliştirme döngüleri (Sprint) ile anlık, acil müdahale gerektiren talepler (Acil Arge, Destek) arasında bir çatışma yaşamaktadır. Gelen notlardan anlaşıldığı üzere:
+
+Sprint başladıktan hemen sonra gelen "acil arge" işleri, planlı sprint'in başarısız olmasına yol açmaktadır.
+
+"Sprint bitmiyor ve işler kalıyor" durumu, ekip üzerinde yüksek strese neden olmaktadır.
+
+İş talepleri birden fazla kanaldan (mail, telefon, toplantı) gelmekte, bu da takibi zorlaştırmaktadır.
+
+Birden fazla proje ve modülün (SQL, Ekran vb.) aynı anda yönetilmesi gerekmektedir.
+
+1.2. Önerilen Çözüm (Amaç)
+Bu proje, "planlı" ve "plansız" iş akışlarını birbirinden ayıran, hibrit (Scrumban) bir metodolojiyi destekleyen bir yazılım aracı geliştirmeyi amaçlar. Bu araç, tüm iş kaynaklarını (toplantılar dahil) dijitalleştirecek, planlı işlerin (Sprint) korunmasını sağlarken acil işlerin (Kanban) de kontrollü bir şekilde yönetilmesine olanak tanıyacaktır.
+
+2. TEMEL KAVRAMLAR VE METODOLOJİ
+Bu yazılım iki temel çalışma prensibini destekleyecektir:
+
+Scrum (Planlı İşler): Önceden planlanmış, belirli bir zaman diliminde (Sprint) tamamlanması hedeflenen, kapsamı net işler.
+
+Kanban (Plansız/Acil İşler): Anlık gelen, hızlı müdahale gerektiren, öngörülemeyen işler (Acil Arge, Bug). Bu, bir "hızlı şerit" (fast lane) görevi görecektir.
+
+3. KULLANICI ROLLERİ
+Ekip Üyesi (Developer/Analist): Kendisine atanan işleri panolar üzerinden takip eden ve durumunu güncelleyen kişi.
+
+Product Owner (PO) / Kapıcı (Gatekeeper): Tüm gelen talepleri karşılayan, "Triage" (sınıflandırma) yapan ve işin hangi panoya (Scrum veya Kanban) gideceğine karar veren kişi.
+
+Paydaş (Stakeholder): Talep açan, toplantı notlarını giren, işin durumunu sorgulayan kişi.
+
+4. SİSTEM MODÜLLERİ VE TEMEL ÖZELLİKLER (Features)
+Yazılım, aşağıdaki ana modüllerden oluşacaktır:
+
+Modül 1: Merkezi Talep Gelen Kutusu (Inbox)
+Tüm iş taleplerinin (toplantı, mail, telefon notları) standart bir form üzerinden sisteme girildiği yer.
+
+Özellik 1.1: Talep Oluşturma Formu
+
+Alanlar: Başlık, Açıklama (detaylı), Talep Eden, Talep Tarihi, İlgili Proje (Seçmeli).
+
+(Güncellendi) Alanlar: İlişkili Toplantı Kaydı (Opsiyonel, Modül 7'den otomatik gelebilir).
+
+İşlev: "Telefondan iş istemeyi" bitirip her talebi kayıt altına almak.
+
+Modül 2: Triage (Sınıflandırma) Ekranı
+"Gelen Kutusu"na düşen taleplerin PO tarafından değerlendirildiği ve zenginleştirildiği ara ekran.
+
+Özellik 2.1: Talep Detaylandırma
+
+Alanlar: İş Tipi (Acil Arge, Bug, Yeni Özellik vb.), Aciliyet (Kritik, Yüksek, Normal), Proje, Modül (SQL, Ekran vb.), Tahmini Efor.
+
+Özellik 2.2: Yönlendirme
+
+PO, bu ekranda işi "Planlı İşler Backlog"una (Scrum) veya "Acil İşler Panosu"na (Kanban) atar.
+
+Modül 3: Planlı İşler Panosu (Scrum Board)
+Sprint tabanlı, korumalı çalışma alanı.
+
+Özellik 3.1: Sprint Yönetimi
+
+Sprint oluşturma, başlatma ve bitirme (Tarih bazlı).
+
+Özellik 3.2: Scrum Panosu Sütunları
+
+Sprint Backlog -> Geliştirmede -> Testte -> Tamamlandı.
+
+(Güncellendi) Özellik 3.3: İzlenebilirlik
+
+İş kartlarının üzerinde, o işin bir toplantıdan (Modül 7) gelip gelmediğini gösteren küçük bir "toplantı ikonu" bulunmalıdır.
+
+Modül 4: Acil İşler Panosu (Kanban Board)
+Akış tabanlı, anlık müdahale alanı ("Hızlı Şerit").
+
+Özellik 4.1: Akış Panosu
+
+Bu panonun bir "sprint"i veya "bitiş tarihi" yoktur. İşler geldikçe akar.
+
+Özellik 4.2: Kanban Panosu Sütunları
+
+Gelen Acil İşler -> Sırada (Öncelikli) -> Müdahale Ediliyor (Arge/Çözüm) -> Doğrulama Bekliyor -> Çözüldü.
+
+(Güncellendi) Özellik 4.3: İzlenebilirlik
+
+İş kartlarının üzerinde, o işin bir toplantıdan (Modül 7) gelip gelmediğini gösteren küçük bir "toplantı ikonu" bulunmalıdır.
+
+Özellik 4.4: WIP (Work In Progress) Limiti
+
+"Müdahale Ediliyor" sütunundaki iş sayısı limitlenebilmelidir (Stresi önlemek için).
+
+Modül 5: Proje ve Modül Yönetimi (Ayarlar)
+Sistemin dinamik yapısını (birden fazla proje ve modül) yönetmek için ayar ekranı.
+
+Özellik 5.1: Proje Tanımlama (Proje A, Proje B vb.)
+
+Özellik 5.2: Modül Tanımlama (SQL, Ekran, API vb.)
+
+Modül 6: Raporlama ve Analitik (MVP sonrası)
+Kapasite planlaması yapmak ve stresi yönetmek için kritik modül.
+
+Özellik 6.1: Kapasite Dağılım Raporu
+
+Harcanan eforun Planlı (Scrum) vs. Plansız (Kanban) dağılımı.
+
+Özellik 6.2: İş Dağılım Raporu
+
+Proje ve Modül bazında ne kadar iş yapıldığı (En çok hangi alanda yorulduğunuzu gösterir).
+
+(Yeni Eklendi) Modül 7: Toplantı Kaydı ve Aksiyon İzleme Modülü
+Gerçekleşen toplantıların notlarının tutulduğu ve bu notlardan "iş talepleri" (aksiyonlar) üretildiği yer.
+
+Özellik 7.1: Toplantı Kaydı Oluşturma
+
+Alanlar: Toplantı Konusu, Toplantı Tarihi, Katılımcılar, Toplantı Notları (Zengin metin editörü).
+
+Özellik 7.2: Aksiyona Dönüştürme
+
+Kullanıcı, "Toplantı Notları" içindeki bir metni seçip "İş Talebine Dönüştür" butonunu kullanabilmelidir.
+
+İşlev: Bu buton, Modül 1 (Gelen Kutusu) için bir form açar ve Başlık, Açıklama alanlarını otomatik doldurur.
+
+İşlev: Üretilen iş talebi, kaynak toplantı kaydı ile otomatik olarak ilişkilendirilir.
+
+Özellik 7.3: Toplantı Odaklı İzleme
+
+Bir toplantı kaydına bakarken, o toplantıdan üretilmiş tüm iş taleplerinin listesi ve güncel durumları (Sırada, Tamamlandı vb.) görünmelidir.
+
+5. YOL HARİTASI (MVP - Minimum Viable Product)
+Yapay zeka ile kodlamaya başlarken, ilk olarak en büyük acıyı (acil işlerin kaosu ve dağınık talepler) çözecek şu modüllere odaklanılmalıdır:
+
+MVP (Çekirdek Ürün):
+
+Modül 1 (Gelen Kutusu) + Modül 7 (Toplantı Modülü): Talepleri tek bir yere topla ve toplantı gibi ana kaynaklarını kaydet.
+
+Modül 2 (Triage Ekranı): Gelen talepleri sınıflandır ve yönlendir.
+
+Modül 4 (Kanban Panosu): Acil/Plansız işleri yönetilebilir bir akışa sok.
+
+Modül 5 (Ayarlar): Proje ve Modül etiketlerini (SQL, Ekran vb.) tanımlayabilme.
+
+MVP sonrasında, kaos kontrol altına alındıktan sonra, Modül 3 (Scrum Panosu) ve Modül 6 (Raporlama) eklenerek sistem tamamlanır.
+
+Bu döküman, projenizi kodlamaya başlamak için çok sağlam bir temel oluşturacaktır.
