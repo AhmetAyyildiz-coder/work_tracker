@@ -39,7 +39,7 @@ namespace work_tracker.Forms
             cmbStatusFilter.Properties.Items.Clear();
             cmbStatusFilter.Properties.Items.Add("Tümü");
             var statuses = _context.WorkItems
-                .Where(w => !string.IsNullOrEmpty(w.Status))
+                .Where(w => !w.IsArchived && !string.IsNullOrEmpty(w.Status))
                 .Select(w => w.Status)
                 .Distinct()
                 .OrderBy(s => s)
@@ -51,7 +51,7 @@ namespace work_tracker.Forms
             cmbTypeFilter.Properties.Items.Clear();
             cmbTypeFilter.Properties.Items.Add("Tümü");
             var types = _context.WorkItems
-                .Where(w => !string.IsNullOrEmpty(w.Type))
+                .Where(w => !w.IsArchived && !string.IsNullOrEmpty(w.Type))
                 .Select(w => w.Type)
                 .Distinct()
                 .OrderBy(t => t)
@@ -63,7 +63,7 @@ namespace work_tracker.Forms
             cmbUrgencyFilter.Properties.Items.Clear();
             cmbUrgencyFilter.Properties.Items.Add("Tümü");
             var urgencies = _context.WorkItems
-                .Where(w => !string.IsNullOrEmpty(w.Urgency))
+                .Where(w => !w.IsArchived && !string.IsNullOrEmpty(w.Urgency))
                 .Select(w => w.Urgency)
                 .Distinct()
                 .OrderBy(u => u)
@@ -79,6 +79,7 @@ namespace work_tracker.Forms
                 .Include(w => w.Module)
                 .Include(w => w.SourceMeeting)
                 .Include(w => w.Sprint)
+                .Where(w => !w.IsArchived) // Arşivlenmişleri gösterme
                 .AsQueryable();
 
             // Filtreleri uygula
@@ -239,7 +240,8 @@ namespace work_tracker.Forms
                     view.Columns["CreatedAt"].Width = 130;
                 }
 
-                // Çift tıklama ile detay aç
+                // Çift tıklama ile detay aç (event handler'ı tekrar eklenmesini önlemek için önce kaldır)
+                view.DoubleClick -= GridView1_DoubleClick;
                 view.DoubleClick += GridView1_DoubleClick;
             }
 
@@ -311,6 +313,90 @@ namespace work_tracker.Forms
         private void btnSearch_Click(object sender, EventArgs e)
         {
             LoadWorkItems();
+        }
+
+        private void btnDeleteWorkItem_Click(object sender, EventArgs e)
+        {
+            var view = gridControl1.MainView as GridView;
+            if (view != null && view.FocusedRowHandle >= 0)
+            {
+                var workItemId = (int)view.GetRowCellValue(view.FocusedRowHandle, "Id");
+                var title = view.GetRowCellValue(view.FocusedRowHandle, "Title")?.ToString();
+
+                var result = XtraMessageBox.Show(
+                    $"'{title}' iş talebini kalıcı olarak silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!",
+                    "İş Talebi Sil",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        var workItem = _context.WorkItems.Find(workItemId);
+                        if (workItem != null)
+                        {
+                            _context.WorkItems.Remove(workItem);
+                            _context.SaveChanges();
+                            LoadWorkItems();
+                            XtraMessageBox.Show("İş talebi başarıyla silindi.", "Bilgi", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        XtraMessageBox.Show($"İş talebi silinirken hata oluştu:\n\n{ex.Message}", 
+                            "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else
+            {
+                XtraMessageBox.Show("Lütfen silmek istediğiniz iş talebini seçin.", "Uyarı", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnArchiveWorkItem_Click(object sender, EventArgs e)
+        {
+            var view = gridControl1.MainView as GridView;
+            if (view != null && view.FocusedRowHandle >= 0)
+            {
+                var workItemId = (int)view.GetRowCellValue(view.FocusedRowHandle, "Id");
+                var title = view.GetRowCellValue(view.FocusedRowHandle, "Title")?.ToString();
+
+                var result = XtraMessageBox.Show(
+                    $"'{title}' iş talebini arşivlemek istediğinize emin misiniz?\n\nArşivlenen iş talepleri normal listede görünmez ancak silinmez.",
+                    "İş Talebi Arşivle",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    try
+                    {
+                        var workItem = _context.WorkItems.Find(workItemId);
+                        if (workItem != null)
+                        {
+                            workItem.IsArchived = true;
+                            _context.SaveChanges();
+                            LoadWorkItems();
+                            XtraMessageBox.Show("İş talebi başarıyla arşivlendi.", "Bilgi", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        XtraMessageBox.Show($"İş talebi arşivlenirken hata oluştu:\n\n{ex.Message}", 
+                            "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            else
+            {
+                XtraMessageBox.Show("Lütfen arşivlemek istediğiniz iş talebini seçin.", "Uyarı", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         protected override void Dispose(bool disposing)

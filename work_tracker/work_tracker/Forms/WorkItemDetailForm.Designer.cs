@@ -280,26 +280,26 @@ namespace work_tracker.Forms
             this.txtDescription.TabIndex = 3;
             
             // Talep Eden
-            this.lblRequestedBy.Location = new System.Drawing.Point(leftX, startY + rowHeight * 2 + 80 + 5);
+            this.lblRequestedBy.Location = new System.Drawing.Point(leftX, (startY + (rowHeight * 2) + 80 + 5));
             this.lblRequestedBy.Name = "lblRequestedBy";
             this.lblRequestedBy.Size = new System.Drawing.Size(labelWidth, 13);
             this.lblRequestedBy.TabIndex = 4;
             this.lblRequestedBy.Text = "Talep Eden:";
             
-            this.txtRequestedBy.Location = new System.Drawing.Point(leftX + labelWidth + 10, startY + rowHeight * 2 + 80);
+            this.txtRequestedBy.Location = new System.Drawing.Point(leftX + labelWidth + 10, (startY + (rowHeight * 2) + 80));
             this.txtRequestedBy.Name = "txtRequestedBy";
             this.txtRequestedBy.Properties.ReadOnly = true;
             this.txtRequestedBy.Size = new System.Drawing.Size(controlWidth, 20);
             this.txtRequestedBy.TabIndex = 5;
             
             // Talep Tarihi
-            this.lblRequestedAt.Location = new System.Drawing.Point(leftX, startY + rowHeight * 3 + 80 + 5);
+            this.lblRequestedAt.Location = new System.Drawing.Point(leftX, (startY + (rowHeight * 3) + 80 + 5));
             this.lblRequestedAt.Name = "lblRequestedAt";
             this.lblRequestedAt.Size = new System.Drawing.Size(labelWidth, 13);
             this.lblRequestedAt.TabIndex = 6;
             this.lblRequestedAt.Text = "Talep Tarihi:";
             
-            this.dtRequestedAt.Location = new System.Drawing.Point(leftX + labelWidth + 10, startY + rowHeight * 3 + 80);
+            this.dtRequestedAt.Location = new System.Drawing.Point(leftX + labelWidth + 10, (startY + (rowHeight * 3) + 80));
             this.dtRequestedAt.Name = "dtRequestedAt";
             this.dtRequestedAt.Properties.DisplayFormat.FormatString = "dd.MM.yyyy HH:mm";
             this.dtRequestedAt.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
@@ -308,26 +308,26 @@ namespace work_tracker.Forms
             this.dtRequestedAt.TabIndex = 7;
             
             // Proje
-            this.lblProject.Location = new System.Drawing.Point(leftX, startY + rowHeight * 4 + 80 + 5);
+            this.lblProject.Location = new System.Drawing.Point(leftX, (startY + (rowHeight * 4) + 80 + 5));
             this.lblProject.Name = "lblProject";
             this.lblProject.Size = new System.Drawing.Size(labelWidth, 13);
             this.lblProject.TabIndex = 8;
             this.lblProject.Text = "Proje:";
             
-            this.txtProject.Location = new System.Drawing.Point(leftX + labelWidth + 10, startY + rowHeight * 4 + 80);
+            this.txtProject.Location = new System.Drawing.Point(leftX + labelWidth + 10, (startY + (rowHeight * 4) + 80));
             this.txtProject.Name = "txtProject";
             this.txtProject.Properties.ReadOnly = true;
             this.txtProject.Size = new System.Drawing.Size(controlWidth, 20);
             this.txtProject.TabIndex = 9;
             
             // Modül
-            this.lblModule.Location = new System.Drawing.Point(leftX, startY + rowHeight * 5 + 80 + 5);
+            this.lblModule.Location = new System.Drawing.Point(leftX, (startY + (rowHeight * 5) + 80 + 5));
             this.lblModule.Name = "lblModule";
             this.lblModule.Size = new System.Drawing.Size(labelWidth, 13);
             this.lblModule.TabIndex = 10;
             this.lblModule.Text = "Modül:";
             
-            this.txtModule.Location = new System.Drawing.Point(leftX + labelWidth + 10, startY + rowHeight * 5 + 80);
+            this.txtModule.Location = new System.Drawing.Point(leftX + labelWidth + 10, (startY + (rowHeight * 5) + 80));
             this.txtModule.Name = "txtModule";
             this.txtModule.Properties.ReadOnly = true;
             this.txtModule.Size = new System.Drawing.Size(controlWidth, 20);
@@ -381,13 +381,13 @@ namespace work_tracker.Forms
             this.cmbType.TabIndex = 15;
             
             // Aciliyet
-            this.lblUrgency.Location = new System.Drawing.Point(rightX, startY + rowHeight * 2 + 5);
+            this.lblUrgency.Location = new System.Drawing.Point(rightX, (startY + (rowHeight * 2) + 5));
             this.lblUrgency.Name = "lblUrgency";
             this.lblUrgency.Size = new System.Drawing.Size(labelWidth, 13);
             this.lblUrgency.TabIndex = 16;
             this.lblUrgency.Text = "Aciliyet:";
             
-            this.cmbUrgency.Location = new System.Drawing.Point(rightX + labelWidth + 10, startY + rowHeight * 2);
+            this.cmbUrgency.Location = new System.Drawing.Point(rightX + labelWidth + 10, (startY + (rowHeight * 2)));
             this.cmbUrgency.Name = "cmbUrgency";
             this.cmbUrgency.Properties.Items.AddRange(new object[] {
                 "Kritik",
@@ -400,39 +400,39 @@ namespace work_tracker.Forms
             this.cmbUrgency.TabIndex = 17;
             
             // Sprint
-            this.lblSprint.Location = new System.Drawing.Point(rightX, startY + rowHeight * 3 + 5);
+            this.lblSprint.Location = new System.Drawing.Point(rightX, (startY + (rowHeight * 3) + 5));
             this.lblSprint.Name = "lblSprint";
             this.lblSprint.Size = new System.Drawing.Size(labelWidth, 13);
             this.lblSprint.TabIndex = 18;
             this.lblSprint.Text = "Sprint:";
             
-            this.txtSprint.Location = new System.Drawing.Point(rightX + labelWidth + 10, startY + rowHeight * 3);
+            this.txtSprint.Location = new System.Drawing.Point(rightX + labelWidth + 10, (startY + (rowHeight * 3)));
             this.txtSprint.Name = "txtSprint";
             this.txtSprint.Properties.ReadOnly = true;
             this.txtSprint.Size = new System.Drawing.Size(controlWidth, 20);
             this.txtSprint.TabIndex = 19;
             
             // Pano
-            this.lblBoard.Location = new System.Drawing.Point(rightX, startY + rowHeight * 4 + 5);
+            this.lblBoard.Location = new System.Drawing.Point(rightX, (startY + (rowHeight * 4) + 5));
             this.lblBoard.Name = "lblBoard";
             this.lblBoard.Size = new System.Drawing.Size(labelWidth, 13);
             this.lblBoard.TabIndex = 20;
             this.lblBoard.Text = "Pano:";
             
-            this.txtBoard.Location = new System.Drawing.Point(rightX + labelWidth + 10, startY + rowHeight * 4);
+            this.txtBoard.Location = new System.Drawing.Point(rightX + labelWidth + 10, (startY + (rowHeight * 4)));
             this.txtBoard.Name = "txtBoard";
             this.txtBoard.Properties.ReadOnly = true;
             this.txtBoard.Size = new System.Drawing.Size(controlWidth, 20);
             this.txtBoard.TabIndex = 21;
             
             // Efor
-            this.lblEffort.Location = new System.Drawing.Point(rightX, startY + rowHeight * 5 + 5);
+            this.lblEffort.Location = new System.Drawing.Point(rightX, (startY + (rowHeight * 5) + 5));
             this.lblEffort.Name = "lblEffort";
             this.lblEffort.Size = new System.Drawing.Size(labelWidth, 13);
             this.lblEffort.TabIndex = 22;
             this.lblEffort.Text = "Efor (gün):";
             
-            this.txtEffort.Location = new System.Drawing.Point(rightX + labelWidth + 10, startY + rowHeight * 5);
+            this.txtEffort.Location = new System.Drawing.Point(rightX + labelWidth + 10, (startY + (rowHeight * 5)));
             this.txtEffort.Name = "txtEffort";
             this.txtEffort.Properties.ReadOnly = true;
             this.txtEffort.Size = new System.Drawing.Size(controlWidth, 20);

@@ -88,6 +88,14 @@
     <Compile Include="Migrations\202511120802038_AddWorkItemActivity.Designer.cs">
       <DependentUpon>202511120802038_AddWorkItemActivity.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511170535585_AddIsArchivedToWorkItem.cs" />
+    <Compile Include="Migrations\202511170535585_AddIsArchivedToWorkItem.Designer.cs">
+      <DependentUpon>202511170535585_AddIsArchivedToWorkItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511170805523_AddStartedAtToWorkItem.cs" />
+    <Compile Include="Migrations\202511170805523_AddStartedAtToWorkItem.Designer.cs">
+      <DependentUpon>202511170805523_AddStartedAtToWorkItem.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -261,6 +269,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511120802038_AddWorkItemActivity.resx">
       <DependentUpon>202511120802038_AddWorkItemActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511170535585_AddIsArchivedToWorkItem.resx">
+      <DependentUpon>202511170535585_AddIsArchivedToWorkItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511170805523_AddStartedAtToWorkItem.resx">
+      <DependentUpon>202511170805523_AddStartedAtToWorkItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

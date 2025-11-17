@@ -489,6 +489,21 @@ namespace work_tracker.Forms
                         dbWorkItem.OrderIndex = maxOrder + 1;
                     }
                     
+                    // Geliştirmede durumuna geçildiğinde başlangıç zamanını kaydet
+                    if (targetColumn == "Gelistirmede" && oldStatus != "Gelistirmede")
+                    {
+                        if (!dbWorkItem.StartedAt.HasValue)
+                        {
+                            dbWorkItem.StartedAt = DateTime.Now;
+                        }
+                    }
+                    else if (oldStatus == "Gelistirmede" && targetColumn != "Gelistirmede")
+                    {
+                        // Geliştirmede durumundan çıkıldığında StartedAt'i sıfırlama (geçmiş verileri koru)
+                        // Eğer geri dönülürse tekrar set edilmesin diye kontrol ediyoruz
+                    }
+
+                    // Tamamlandı durumuna geçildiğinde tamamlanma zamanını kaydet
                     if (targetColumn == "Tamamlandi")
                     {
                         dbWorkItem.CompletedAt = DateTime.Now;

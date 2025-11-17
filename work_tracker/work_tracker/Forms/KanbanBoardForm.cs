@@ -163,6 +163,7 @@ namespace work_tracker.Forms
             scroll.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             scroll.Tag = columnSetting.ColumnName;
             scroll.BackColor = SystemColors.Control;
+            scroll.AllowDrop = true;
             panel.Controls.Add(scroll);
 
             int yPos = 5;
@@ -188,10 +189,14 @@ namespace work_tracker.Forms
                 }
             };
 
-            // Drag & Drop olayları
+            // Drag & Drop olayları - hem scroll hem de ana panel için
             scroll.DragEnter += Panel_DragEnter;
             scroll.DragOver += Panel_DragOver;
             scroll.DragDrop += Panel_DragDrop;
+            
+            panel.DragEnter += Panel_DragEnter;
+            panel.DragOver += Panel_DragOver;
+            panel.DragDrop += Panel_DragDrop;
 
             return panel;
         }
@@ -345,6 +350,7 @@ namespace work_tracker.Forms
             // Drag & Click olayları
             card.MouseDown += Card_MouseDown;
             card.MouseMove += Card_MouseMove;
+            card.MouseUp += Card_MouseUp;
             card.Click += (s, e) => { if (!isDragging) OpenWorkItemDetail(workItem.Id); };
 
             // Child kontrollere de click ekle
@@ -353,6 +359,7 @@ namespace work_tracker.Forms
                 ctrl.Cursor = Cursors.Hand;
                 ctrl.MouseDown += Card_MouseDown;
                 ctrl.MouseMove += Card_MouseMove;
+                ctrl.MouseUp += Card_MouseUp;
                 ctrl.Click += (s, e) => { if (!isDragging) OpenWorkItemDetail(workItem.Id); };
             }
 
@@ -414,6 +421,7 @@ namespace work_tracker.Forms
 
         private PanelControl draggedCard = null;
         private bool isDragging = false;
+        private bool isMouseDown = false;
         private Point mouseDownPoint;
 
         private void Card_MouseDown(object sender, MouseEventArgs e)
@@ -424,23 +432,39 @@ namespace work_tracker.Forms
                 if (card != null)
                 {
                     draggedCard = card;
-                    mouseDownPoint = e.Location;
+                    mouseDownPoint = Control.MousePosition;
                     isDragging = false;
+                    isMouseDown = true;
                 }
             }
         }
 
         private void Card_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && draggedCard != null && !isDragging)
+            if (isMouseDown && draggedCard != null && !isDragging)
             {
-                // Sürükleme eşiği
+                // Sürükleme eşiği - ekran koordinatlarında kontrol et
+                var currentPosition = Control.MousePosition;
                 var dragSize = SystemInformation.DragSize;
-                if (Math.Abs(e.X - mouseDownPoint.X) >= dragSize.Width / 2 ||
-                    Math.Abs(e.Y - mouseDownPoint.Y) >= dragSize.Height / 2)
+                
+                if (Math.Abs(currentPosition.X - mouseDownPoint.X) >= dragSize.Width / 2 ||
+                    Math.Abs(currentPosition.Y - mouseDownPoint.Y) >= dragSize.Height / 2)
                 {
                     isDragging = true;
                     draggedCard.DoDragDrop(draggedCard, DragDropEffects.Move);
+                    isMouseDown = false;
+                }
+            }
+        }
+
+        private void Card_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isMouseDown = false;
+                if (!isDragging)
+                {
+                    draggedCard = null;
                 }
             }
         }
@@ -520,6 +544,21 @@ namespace work_tracker.Forms
                         dbWorkItem.OrderIndex = maxOrder + 1;
                     }
                     
+                    // Müdahele Ediliyor durumuna geçildiğinde başlangıç zamanını kaydet
+                    if (targetColumn == "MudahaleEdiliyor" && oldStatus != "MudahaleEdiliyor")
+                    {
+                        if (!dbWorkItem.StartedAt.HasValue)
+                        {
+                            dbWorkItem.StartedAt = DateTime.Now;
+                        }
+                    }
+                    else if (oldStatus == "MudahaleEdiliyor" && targetColumn != "MudahaleEdiliyor")
+                    {
+                        // Müdahele Ediliyor durumundan çıkıldığında StartedAt'i sıfırlama (geçmiş verileri koru)
+                        // Eğer geri dönülürse tekrar set edilmesin diye kontrol ediyoruz
+                    }
+
+                    // Çözüldü durumuna geçildiğinde tamamlanma zamanını kaydet
                     if (targetColumn == "Cozuldu")
                     {
                         dbWorkItem.CompletedAt = DateTime.Now;
@@ -541,6 +580,7 @@ namespace work_tracker.Forms
             {
                 draggedCard = null;
                 isDragging = false;
+                isMouseDown = false;
             }
         }
 

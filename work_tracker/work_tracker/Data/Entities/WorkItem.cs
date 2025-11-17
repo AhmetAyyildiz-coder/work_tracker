@@ -55,7 +55,11 @@ namespace work_tracker.Data.Entities
 
         public DateTime CreatedAt { get; set; }
 
+        public DateTime? StartedAt { get; set; } // Müdahele Ediliyor/Geliştirmede durumuna geçildiğinde set edilir
+
         public DateTime? CompletedAt { get; set; }
+
+        public bool IsArchived { get; set; }
 
         // Navigation Properties
         [ForeignKey("ProjectId")]
@@ -80,6 +84,7 @@ namespace work_tracker.Data.Entities
             Board = "Inbox";
             Status = "Bekliyor";
             OrderIndex = 0;
+            IsArchived = false;
             Activities = new HashSet<WorkItemActivity>();
             Attachments = new HashSet<WorkItemAttachment>();
         }
