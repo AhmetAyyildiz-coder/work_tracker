@@ -21,6 +21,7 @@ namespace work_tracker
         private BarButtonItem btnSprints;
         private BarButtonItem btnReports;
         private BarButtonItem btnHelp;
+        private BarButtonItem btnAllWorkItems;
 
         protected override void Dispose(bool disposing)
         {
@@ -44,6 +45,7 @@ namespace work_tracker
             this.btnSprints = new DevExpress.XtraBars.BarButtonItem();
             this.btnReports = new DevExpress.XtraBars.BarButtonItem();
             this.btnHelp = new DevExpress.XtraBars.BarButtonItem();
+            this.btnAllWorkItems = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPageHome = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroupWorkflow = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupSettings = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -65,9 +67,10 @@ namespace work_tracker
             this.btnModules,
             this.btnSprints,
             this.btnReports,
-            this.btnHelp});
+            this.btnHelp,
+            this.btnAllWorkItems});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 11;
+            this.ribbonControl1.MaxItemId = 12;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPageHome});
@@ -143,6 +146,13 @@ namespace work_tracker
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnHelp_ItemClick);
             // 
+            // btnAllWorkItems
+            // 
+            this.btnAllWorkItems.Caption = "Tüm İşler";
+            this.btnAllWorkItems.Id = 11;
+            this.btnAllWorkItems.Name = "btnAllWorkItems";
+            this.btnAllWorkItems.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnAllWorkItems_ItemClick);
+            // 
             // ribbonPageHome
             // 
             this.ribbonPageHome.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
@@ -159,6 +169,7 @@ namespace work_tracker
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnKanban);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnScrum);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnMeetings);
+            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnAllWorkItems);
             this.ribbonPageGroupWorkflow.Name = "ribbonPageGroupWorkflow";
             this.ribbonPageGroupWorkflow.Text = "İş Akışı";
             // 

@@ -340,21 +340,58 @@ namespace work_tracker.Forms
                 var meetingId = (int)view.GetRowCellValue(view.FocusedRowHandle, "Id");
                 var subject = view.GetRowCellValue(view.FocusedRowHandle, "Subject")?.ToString();
 
+                // Bu toplantıya bağlı iş taleplerini kontrol et
+                var relatedWorkItemsCount = _context.WorkItems.Count(w => w.SourceMeetingId == meetingId);
+                string message = $"'{subject}' toplantısını silmek istediğinize emin misiniz?";
+                
+                if (relatedWorkItemsCount > 0)
+                {
+                    message += $"\n\nUyarı: Bu toplantıya bağlı {relatedWorkItemsCount} iş talebi bulunmaktadır. " +
+                               "Toplantı silindiğinde bu iş taleplerinin toplantı bağlantısı kaldırılacaktır.";
+                }
+
                 var result = XtraMessageBox.Show(
-                    $"'{subject}' toplantısını silmek istediğinize emin misiniz?",
+                    message,
                     "Onay",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
                 {
-                    var meeting = _context.Meetings.Find(meetingId);
-                    if (meeting != null)
+                    try
                     {
-                        _context.Meetings.Remove(meeting);
-                        _context.SaveChanges();
-                        LoadMeetings();
-                        ClearMeetingDetails();
+                        var meeting = _context.Meetings.Find(meetingId);
+                        if (meeting != null)
+                        {
+                            // Önce ilgili WorkItem'ların SourceMeetingId'sini null yap
+                            var relatedWorkItems = _context.WorkItems
+                                .Where(w => w.SourceMeetingId == meetingId)
+                                .ToList();
+                            
+                            foreach (var workItem in relatedWorkItems)
+                            {
+                                workItem.SourceMeetingId = null;
+                            }
+
+                            _context.Meetings.Remove(meeting);
+                            _context.SaveChanges();
+                            LoadMeetings();
+                            ClearMeetingDetails();
+                            
+                            XtraMessageBox.Show(
+                                "Toplantı başarıyla silindi.",
+                                "Bilgi",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        XtraMessageBox.Show(
+                            $"Toplantı silinirken hata oluştu:\n\n{ex.Message}",
+                            "Hata",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
                 }
             }

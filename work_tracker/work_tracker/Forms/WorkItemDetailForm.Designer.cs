@@ -38,9 +38,10 @@ namespace work_tracker.Forms
         private TextEdit txtBoard;
         private TextEdit txtEffort;
         
-        // Tab Control - Aktiviteler ve Dosyalar
+        // Tab Control - Aktiviteler, Yorumlar ve Dosyalar
         private DevExpress.XtraTab.XtraTabControl tabControl;
         private DevExpress.XtraTab.XtraTabPage tabPageActivities;
+        private DevExpress.XtraTab.XtraTabPage tabPageComments;
         private DevExpress.XtraTab.XtraTabPage tabPageAttachments;
         
         // Aktivite Timeline
@@ -51,6 +52,14 @@ namespace work_tracker.Forms
         private ColumnHeader colDescription;
         private ColumnHeader colCreatedBy;
         private LabelControl lblActivityCount;
+        
+        // Yorumlar
+        private GroupControl groupComments;
+        private ListView lstComments;
+        private ColumnHeader colCommentDate;
+        private ColumnHeader colCommentAuthor;
+        private ColumnHeader colCommentText;
+        private LabelControl lblCommentCount;
         
         // Dosya Yönetimi
         private GroupControl groupAttachments;
@@ -125,6 +134,7 @@ namespace work_tracker.Forms
             
             this.tabControl = new DevExpress.XtraTab.XtraTabControl();
             this.tabPageActivities = new DevExpress.XtraTab.XtraTabPage();
+            this.tabPageComments = new DevExpress.XtraTab.XtraTabPage();
             this.tabPageAttachments = new DevExpress.XtraTab.XtraTabPage();
             
             this.groupActivities = new DevExpress.XtraEditors.GroupControl();
@@ -134,6 +144,13 @@ namespace work_tracker.Forms
             this.colDescription = new System.Windows.Forms.ColumnHeader();
             this.colCreatedBy = new System.Windows.Forms.ColumnHeader();
             this.lblActivityCount = new DevExpress.XtraEditors.LabelControl();
+            
+            this.groupComments = new DevExpress.XtraEditors.GroupControl();
+            this.lstComments = new System.Windows.Forms.ListView();
+            this.colCommentDate = new System.Windows.Forms.ColumnHeader();
+            this.colCommentAuthor = new System.Windows.Forms.ColumnHeader();
+            this.colCommentText = new System.Windows.Forms.ColumnHeader();
+            this.lblCommentCount = new DevExpress.XtraEditors.LabelControl();
             
             this.groupAttachments = new DevExpress.XtraEditors.GroupControl();
             this.lstAttachments = new System.Windows.Forms.ListView();
@@ -177,9 +194,12 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.tabControl)).BeginInit();
             this.tabControl.SuspendLayout();
             this.tabPageActivities.SuspendLayout();
+            this.tabPageComments.SuspendLayout();
             this.tabPageAttachments.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupActivities)).BeginInit();
             this.groupActivities.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.groupComments)).BeginInit();
+            this.groupComments.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupAttachments)).BeginInit();
             this.groupAttachments.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupAddComment)).BeginInit();
@@ -442,6 +462,7 @@ namespace work_tracker.Forms
             this.tabControl.TabIndex = 1;
             this.tabControl.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
                 this.tabPageActivities,
+                this.tabPageComments,
                 this.tabPageAttachments});
             
             // 
@@ -451,6 +472,14 @@ namespace work_tracker.Forms
             this.tabPageActivities.Name = "tabPageActivities";
             this.tabPageActivities.Size = new System.Drawing.Size(1198, 274);
             this.tabPageActivities.Text = "📋 Aktivite Geçmişi";
+            
+            // 
+            // tabPageComments
+            // 
+            this.tabPageComments.Controls.Add(this.groupComments);
+            this.tabPageComments.Name = "tabPageComments";
+            this.tabPageComments.Size = new System.Drawing.Size(1198, 274);
+            this.tabPageComments.Text = "💬 Yorumlar";
             
             // 
             // tabPageAttachments
@@ -525,6 +554,65 @@ namespace work_tracker.Forms
             this.lblActivityCount.Size = new System.Drawing.Size(100, 13);
             this.lblActivityCount.TabIndex = 1;
             this.lblActivityCount.Text = "Toplam 0 aktivite";
+            
+            // 
+            // groupComments
+            // 
+            this.groupComments.Controls.Add(this.lblCommentCount);
+            this.groupComments.Controls.Add(this.lstComments);
+            this.groupComments.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupComments.Location = new System.Drawing.Point(0, 0);
+            this.groupComments.Name = "groupComments";
+            this.groupComments.Size = new System.Drawing.Size(1198, 274);
+            this.groupComments.TabIndex = 0;
+            this.groupComments.Text = "Yorumlar";
+            
+            // 
+            // lstComments
+            // 
+            this.lstComments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstComments.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+                this.colCommentDate,
+                this.colCommentAuthor,
+                this.colCommentText});
+            this.lstComments.FullRowSelect = true;
+            this.lstComments.GridLines = true;
+            this.lstComments.HideSelection = false;
+            this.lstComments.Location = new System.Drawing.Point(15, 55);
+            this.lstComments.Name = "lstComments";
+            this.lstComments.Size = new System.Drawing.Size(1170, 215);
+            this.lstComments.TabIndex = 0;
+            this.lstComments.UseCompatibleStateImageBehavior = false;
+            this.lstComments.View = System.Windows.Forms.View.Details;
+            
+            // 
+            // colCommentDate
+            // 
+            this.colCommentDate.Text = "Tarih/Saat";
+            this.colCommentDate.Width = 150;
+            
+            // 
+            // colCommentAuthor
+            // 
+            this.colCommentAuthor.Text = "Yazar";
+            this.colCommentAuthor.Width = 200;
+            
+            // 
+            // colCommentText
+            // 
+            this.colCommentText.Text = "Yorum";
+            this.colCommentText.Width = 800;
+            
+            // 
+            // lblCommentCount
+            // 
+            this.lblCommentCount.Location = new System.Drawing.Point(15, 30);
+            this.lblCommentCount.Name = "lblCommentCount";
+            this.lblCommentCount.Size = new System.Drawing.Size(100, 13);
+            this.lblCommentCount.TabIndex = 1;
+            this.lblCommentCount.Text = "Toplam 0 yorum";
             
             // 
             // groupAttachments
@@ -789,10 +877,14 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.tabControl)).EndInit();
             this.tabControl.ResumeLayout(false);
             this.tabPageActivities.ResumeLayout(false);
+            this.tabPageComments.ResumeLayout(false);
             this.tabPageAttachments.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.groupActivities)).EndInit();
             this.groupActivities.ResumeLayout(false);
             this.groupActivities.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.groupComments)).EndInit();
+            this.groupComments.ResumeLayout(false);
+            this.groupComments.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupAttachments)).EndInit();
             this.groupAttachments.ResumeLayout(false);
             this.groupAttachments.PerformLayout();

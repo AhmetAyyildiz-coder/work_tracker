@@ -22,6 +22,7 @@ namespace work_tracker
         private SprintManagementForm sprintForm;
         private ReportsForm reportsForm;
         private HelpForm helpForm;
+        private AllWorkItemsForm allWorkItemsForm;
 
         public MainForm()
         {
@@ -82,6 +83,11 @@ namespace work_tracker
         private void btnHelp_ItemClick(object sender, ItemClickEventArgs e)
         {
             helpForm = OpenOrActivateForm(helpForm, () => new HelpForm(), f => helpForm = f, isDialog: true);
+        }
+
+        private void btnAllWorkItems_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            allWorkItemsForm = OpenOrActivateForm(allWorkItemsForm, () => new AllWorkItemsForm(), f => allWorkItemsForm = f);
         }
 
         /// <summary>

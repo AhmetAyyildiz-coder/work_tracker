@@ -33,6 +33,7 @@ namespace work_tracker.Forms
         {
             LoadWorkItemDetails();
             LoadActivities();
+            LoadComments();
             LoadAttachments();
         }
 
@@ -210,6 +211,36 @@ namespace work_tracker.Forms
             _context.SaveChanges();
             
             LoadActivities();
+            LoadComments();
+        }
+
+        private void LoadComments()
+        {
+            var comments = _context.WorkItemActivities
+                .Where(a => a.WorkItemId == _workItemId && a.ActivityType == ActivityTypes.Comment)
+                .OrderByDescending(a => a.CreatedAt)
+                .Select(a => new
+                {
+                    a.Id,
+                    a.Description,
+                    a.CreatedBy,
+                    a.CreatedAt
+                })
+                .ToList();
+
+            // Yorum listesini göster
+            lstComments.Items.Clear();
+            foreach (var comment in comments)
+            {
+                var item = new ListViewItem(comment.CreatedAt.ToString("dd.MM.yyyy HH:mm"));
+                item.SubItems.Add(comment.CreatedBy);
+                item.SubItems.Add(comment.Description ?? "");
+                item.Tag = comment.Id;
+                
+                lstComments.Items.Add(item);
+            }
+
+            lblCommentCount.Text = $"Toplam {comments.Count} yorum";
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -221,6 +252,7 @@ namespace work_tracker.Forms
         {
             LoadWorkItemDetails();
             LoadActivities();
+            LoadComments();
             LoadAttachments();
         }
 
