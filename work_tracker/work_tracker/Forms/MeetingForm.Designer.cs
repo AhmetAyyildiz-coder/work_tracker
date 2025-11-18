@@ -12,6 +12,7 @@ namespace work_tracker.Forms
         private PanelControl panelRight;
         private PanelControl panelTop;
         private SplitterControl splitterLeftRight;
+        private SplitContainerControl splitContainerRight;
         private GridControl gridControl1;
         private GridView gridView1;
         private GridControl gridControl2;
@@ -41,6 +42,11 @@ namespace work_tracker.Forms
         // Yeni: Sağ panelde notlar ve iş listesi arasında daha iyi düzen için
         private PanelControl panelNotes;
         private SplitterControl splitterNotesGrid;
+        private PanelControl panelNotesToolbar;
+        private SimpleButton btnNoteBold;
+        private SimpleButton btnNoteItalic;
+        private SimpleButton btnNoteBulletList;
+        private SimpleButton btnNoteNumberedList;
 
         protected override void Dispose(bool disposing)
         {
@@ -89,6 +95,11 @@ namespace work_tracker.Forms
             this.splitterLeftRight = new DevExpress.XtraEditors.SplitterControl();
             this.panelNotes = new DevExpress.XtraEditors.PanelControl();
             this.splitterNotesGrid = new DevExpress.XtraEditors.SplitterControl();
+            this.panelNotesToolbar = new DevExpress.XtraEditors.PanelControl();
+            this.btnNoteBold = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteItalic = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteBulletList = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteNumberedList = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.panelTop)).BeginInit();
             this.panelTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelLeft)).BeginInit();
@@ -105,6 +116,8 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelNotes)).BeginInit();
             this.panelNotes.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.panelNotesToolbar)).BeginInit();
+            this.panelNotesToolbar.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelTop
@@ -226,19 +239,10 @@ namespace work_tracker.Forms
             // 
             // panelRight
             // 
-            this.panelRight.Controls.Add(this.gridControl2);
-            this.panelRight.Controls.Add(this.labelControl5);
-            this.panelRight.Controls.Add(this.splitterNotesGrid);
-            this.panelRight.Controls.Add(this.panelNotes);
+            this.panelRight.Controls.Add(this.splitContainerRight);
             this.panelRight.Controls.Add(this.btnInlineEdit);
             this.panelRight.Controls.Add(this.btnInlineSave);
             this.panelRight.Controls.Add(this.btnInlineCancel);
-            this.panelRight.Controls.Add(this.txtParticipants);
-            this.panelRight.Controls.Add(this.labelControl3);
-            this.panelRight.Controls.Add(this.dtMeetingDate);
-            this.panelRight.Controls.Add(this.labelControl2);
-            this.panelRight.Controls.Add(this.txtSubject);
-            this.panelRight.Controls.Add(this.labelControl1);
             this.panelRight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRight.Location = new System.Drawing.Point(503, 50);
             this.panelRight.Name = "panelRight";
@@ -247,7 +251,6 @@ namespace work_tracker.Forms
             // 
             // Right panel controls
             this.labelControl1.Location = new System.Drawing.Point(15, 15);
-            this.labelControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.labelControl1.Name = "labelControl1";
             this.labelControl1.Size = new System.Drawing.Size(78, 13);
             this.labelControl1.TabIndex = 0;
@@ -255,8 +258,6 @@ namespace work_tracker.Forms
             
             this.txtSubject.Enabled = false;
             this.txtSubject.Location = new System.Drawing.Point(15, 35);
-            this.txtSubject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSubject.Name = "txtSubject";
             this.txtSubject.Size = new System.Drawing.Size(870, 20);
             this.txtSubject.TabIndex = 1;
@@ -303,8 +304,6 @@ namespace work_tracker.Forms
             this.dtMeetingDate.EditValue = null;
             this.dtMeetingDate.Enabled = false;
             this.dtMeetingDate.Location = new System.Drawing.Point(15, 85);
-            this.dtMeetingDate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.dtMeetingDate.Name = "dtMeetingDate";
             this.dtMeetingDate.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
@@ -322,15 +321,13 @@ namespace work_tracker.Forms
             
             this.txtParticipants.Enabled = false;
             this.txtParticipants.Location = new System.Drawing.Point(15, 135);
-            this.txtParticipants.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtParticipants.Name = "txtParticipants";
             this.txtParticipants.Size = new System.Drawing.Size(870, 20);
             this.txtParticipants.TabIndex = 5;
 
             // panelNotes (Toplantı Notları alanı)
-            this.panelNotes.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelNotes.Location = new System.Drawing.Point(2, 160);
+            this.panelNotes.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelNotes.Location = new System.Drawing.Point(0, 0);
             this.panelNotes.Name = "panelNotes";
             this.panelNotes.Size = new System.Drawing.Size(896, 300);
             this.panelNotes.TabIndex = 200;
@@ -342,9 +339,58 @@ namespace work_tracker.Forms
             this.labelControl4.Size = new System.Drawing.Size(97, 23);
             this.labelControl4.TabIndex = 6;
             this.labelControl4.Text = "Toplantı Notları";
+            // panelNotesToolbar
+            // 
+            this.panelNotesToolbar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelNotesToolbar.Location = new System.Drawing.Point(2, 25);
+            this.panelNotesToolbar.Name = "panelNotesToolbar";
+            this.panelNotesToolbar.Size = new System.Drawing.Size(892, 30);
+            this.panelNotesToolbar.TabIndex = 205;
+            // 
+            // btnNoteBold
+            // 
+            this.btnNoteBold.Location = new System.Drawing.Point(8, 5);
+            this.btnNoteBold.Name = "btnNoteBold";
+            this.btnNoteBold.Size = new System.Drawing.Size(30, 20);
+            this.btnNoteBold.TabIndex = 0;
+            this.btnNoteBold.Text = "B";
+            this.btnNoteBold.ToolTip = "Kalın (Ctrl+B)";
+            this.btnNoteBold.Click += new System.EventHandler(this.btnNoteBold_Click);
+            // 
+            // btnNoteItalic
+            // 
+            this.btnNoteItalic.Location = new System.Drawing.Point(44, 5);
+            this.btnNoteItalic.Name = "btnNoteItalic";
+            this.btnNoteItalic.Size = new System.Drawing.Size(30, 20);
+            this.btnNoteItalic.TabIndex = 1;
+            this.btnNoteItalic.Text = "I";
+            this.btnNoteItalic.ToolTip = "İtalik (Ctrl+I)";
+            this.btnNoteItalic.Click += new System.EventHandler(this.btnNoteItalic_Click);
+            // 
+            // btnNoteBulletList
+            // 
+            this.btnNoteBulletList.Location = new System.Drawing.Point(80, 5);
+            this.btnNoteBulletList.Name = "btnNoteBulletList";
+            this.btnNoteBulletList.Size = new System.Drawing.Size(40, 20);
+            this.btnNoteBulletList.TabIndex = 2;
+            this.btnNoteBulletList.Text = "• List";
+            this.btnNoteBulletList.ToolTip = "Madde işaretli liste";
+            this.btnNoteBulletList.Click += new System.EventHandler(this.btnNoteBulletList_Click);
+            // 
+            // btnNoteNumberedList
+            // 
+            this.btnNoteNumberedList.Location = new System.Drawing.Point(126, 5);
+            this.btnNoteNumberedList.Name = "btnNoteNumberedList";
+            this.btnNoteNumberedList.Size = new System.Drawing.Size(40, 20);
+            this.btnNoteNumberedList.TabIndex = 3;
+            this.btnNoteNumberedList.Text = "1. List";
+            this.btnNoteNumberedList.ToolTip = "Numaralı liste";
+            this.btnNoteNumberedList.Click += new System.EventHandler(this.btnNoteNumberedList_Click);
+            // 
             // btnCreateWorkItem
+            // 
             this.btnCreateWorkItem.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnCreateWorkItem.Location = new System.Drawing.Point(2, 25);
+            this.btnCreateWorkItem.Location = new System.Drawing.Point(2, 55);
             this.btnCreateWorkItem.Name = "btnCreateWorkItem";
             this.btnCreateWorkItem.Size = new System.Drawing.Size(892, 30);
             this.btnCreateWorkItem.TabIndex = 8;
@@ -352,7 +398,7 @@ namespace work_tracker.Forms
             this.btnCreateWorkItem.Click += new System.EventHandler(this.btnCreateWorkItem_Click);
             // richEditControl1
             this.richEditControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richEditControl1.Location = new System.Drawing.Point(2, 55);
+            this.richEditControl1.Location = new System.Drawing.Point(2, 85);
             this.richEditControl1.Name = "richEditControl1";
             this.richEditControl1.ReadOnly = true;
             this.richEditControl1.Options.DocumentCapabilities.CharacterFormatting = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
@@ -367,17 +413,23 @@ namespace work_tracker.Forms
             // panelNotes children
             this.panelNotes.Controls.Add(this.richEditControl1);
             this.panelNotes.Controls.Add(this.btnCreateWorkItem);
+            this.panelNotes.Controls.Add(this.panelNotesToolbar);
             this.panelNotes.Controls.Add(this.labelControl4);
+            // panelNotesToolbar children
+            this.panelNotesToolbar.Controls.Add(this.btnNoteNumberedList);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteBulletList);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteItalic);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteBold);
 
             // splitterNotesGrid (Notlar ve Grid arasında)
             this.splitterNotesGrid.Dock = System.Windows.Forms.DockStyle.Top;
-            this.splitterNotesGrid.Location = new System.Drawing.Point(2, 460);
+            this.splitterNotesGrid.Location = new System.Drawing.Point(0, 0);
             this.splitterNotesGrid.Name = "splitterNotesGrid";
-            this.splitterNotesGrid.Size = new System.Drawing.Size(896, 5);
+            this.splitterNotesGrid.Size = new System.Drawing.Size(0, 0);
             this.splitterNotesGrid.TabIndex = 201;
             
             this.labelControl5.Dock = System.Windows.Forms.DockStyle.Top;
-            this.labelControl5.Location = new System.Drawing.Point(2, 465);
+            this.labelControl5.Location = new System.Drawing.Point(2, 2);
             this.labelControl5.Name = "labelControl5";
             this.labelControl5.Padding = new System.Windows.Forms.Padding(13, 5, 0, 5);
             this.labelControl5.Size = new System.Drawing.Size(170, 23);
@@ -385,7 +437,7 @@ namespace work_tracker.Forms
             this.labelControl5.Text = "Bu Toplantıdan Gelen İş Talepleri:";
             
             this.gridControl2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridControl2.Location = new System.Drawing.Point(2, 488);
+            this.gridControl2.Location = new System.Drawing.Point(2, 25);
             this.gridControl2.MainView = this.gridView2;
             this.gridControl2.Name = "gridControl2";
             this.gridControl2.Size = new System.Drawing.Size(896, 160);
@@ -396,6 +448,30 @@ namespace work_tracker.Forms
             this.gridView2.GridControl = this.gridControl2;
             this.gridView2.Name = "gridView2";
             this.gridView2.OptionsBehavior.Editable = false;
+
+            // splitContainerRight
+            // 
+            this.splitContainerRight = new DevExpress.XtraEditors.SplitContainerControl();
+            this.splitContainerRight.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainerRight.Horizontal = true;
+            this.splitContainerRight.Location = new System.Drawing.Point(2, 40);
+            this.splitContainerRight.Name = "splitContainerRight";
+            // Panel1: Toplantı bilgileri + notlar
+            this.splitContainerRight.Panel1.Controls.Add(this.panelNotes);
+            this.splitContainerRight.Panel1.Controls.Add(this.txtParticipants);
+            this.splitContainerRight.Panel1.Controls.Add(this.labelControl3);
+            this.splitContainerRight.Panel1.Controls.Add(this.dtMeetingDate);
+            this.splitContainerRight.Panel1.Controls.Add(this.labelControl2);
+            this.splitContainerRight.Panel1.Controls.Add(this.txtSubject);
+            this.splitContainerRight.Panel1.Controls.Add(this.labelControl1);
+            this.splitContainerRight.Panel1.Text = "Panel1";
+            // Panel2: İlgili işler
+            this.splitContainerRight.Panel2.Controls.Add(this.gridControl2);
+            this.splitContainerRight.Panel2.Controls.Add(this.labelControl5);
+            this.splitContainerRight.Panel2.Text = "Panel2";
+            this.splitContainerRight.Size = new System.Drawing.Size(896, 608);
+            this.splitContainerRight.SplitterPosition = 380;
+            this.splitContainerRight.TabIndex = 300;
 
             // splitterLeftRight (Sol/sağ arası)
             this.splitterLeftRight.Dock = System.Windows.Forms.DockStyle.Left;
@@ -434,6 +510,8 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.panelNotes)).EndInit();
             this.panelNotes.ResumeLayout(false);
             this.panelNotes.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.panelNotesToolbar)).EndInit();
+            this.panelNotesToolbar.ResumeLayout(false);
             this.ResumeLayout(false);
         }
     }

@@ -1,6 +1,8 @@
 using System;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
+using DevExpress.XtraRichEdit;
+using DevExpress.XtraRichEdit.API.Native;
 using work_tracker.Data;
 using work_tracker.Data.Entities;
 
@@ -20,6 +22,12 @@ namespace work_tracker.Forms
 
         private void MeetingEditForm_Load(object sender, EventArgs e)
         {
+            if (richEditControl1 != null)
+            {
+                richEditControl1.ActiveViewType = RichEditViewType.PrintLayout;
+                richEditControl1.ActiveView.ZoomFactor = 1.1f;
+            }
+
             if (_meetingId.HasValue)
             {
                 LoadMeeting(_meetingId.Value);
@@ -92,6 +100,51 @@ namespace work_tracker.Forms
             DialogResult = DialogResult.Cancel;
             Close();
         }
+
+        #region RichEdit quick formatting
+
+        private void btnNoteBold_Click(object sender, EventArgs e)
+        {
+            ToggleSelectionFormatting(p => p.Bold = !p.Bold);
+        }
+
+        private void btnNoteItalic_Click(object sender, EventArgs e)
+        {
+            ToggleSelectionFormatting(p => p.Italic = !p.Italic);
+        }
+
+        private void btnNoteBulletList_Click(object sender, EventArgs e)
+        {
+            XtraMessageBox.Show("Bu sürümde madde işaretli liste butonu yerleşik değil. RichEdit içinde Ctrl+Shift+L gibi kısayolları kullanabilirsiniz.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnNoteNumberedList_Click(object sender, EventArgs e)
+        {
+            XtraMessageBox.Show("Bu sürümde numaralı liste butonu yerleşik değil. RichEdit içindeki yerleşik kısayolları kullanabilirsiniz.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ToggleSelectionFormatting(Action<CharacterProperties> action)
+        {
+            if (richEditControl1 == null)
+                return;
+
+            var doc = richEditControl1.Document;
+            var range = doc.Selection;
+            if (range.Length == 0)
+                return;
+
+            var props = doc.BeginUpdateCharacters(range);
+            try
+            {
+                action(props);
+            }
+            finally
+            {
+                doc.EndUpdateCharacters(props);
+            }
+        }
+
+        #endregion
     }
 }
 

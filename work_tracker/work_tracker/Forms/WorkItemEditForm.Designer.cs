@@ -67,7 +67,7 @@ namespace work_tracker.Forms
             // 
             this.labelControl1.Location = new System.Drawing.Point(20, 20);
             this.labelControl1.Name = "labelControl1";
-            this.labelControl1.Size = new System.Drawing.Size(31, 13);
+            this.labelControl1.Size = new System.Drawing.Size(30, 13);
             this.labelControl1.TabIndex = 0;
             this.labelControl1.Text = "Başlık:";
             // 
@@ -75,7 +75,7 @@ namespace work_tracker.Forms
             // 
             this.labelControl2.Location = new System.Drawing.Point(20, 70);
             this.labelControl2.Name = "labelControl2";
-            this.labelControl2.Size = new System.Drawing.Size(47, 13);
+            this.labelControl2.Size = new System.Drawing.Size(45, 13);
             this.labelControl2.TabIndex = 1;
             this.labelControl2.Text = "Açıklama:";
             // 
@@ -83,7 +83,7 @@ namespace work_tracker.Forms
             // 
             this.labelControl3.Location = new System.Drawing.Point(20, 180);
             this.labelControl3.Name = "labelControl3";
-            this.labelControl3.Size = new System.Drawing.Size(61, 13);
+            this.labelControl3.Size = new System.Drawing.Size(57, 13);
             this.labelControl3.TabIndex = 2;
             this.labelControl3.Text = "Talep Eden:";
             // 
@@ -91,7 +91,7 @@ namespace work_tracker.Forms
             // 
             this.labelControl4.Location = new System.Drawing.Point(400, 180);
             this.labelControl4.Name = "labelControl4";
-            this.labelControl4.Size = new System.Drawing.Size(64, 13);
+            this.labelControl4.Size = new System.Drawing.Size(59, 13);
             this.labelControl4.TabIndex = 3;
             this.labelControl4.Text = "Talep Tarihi:";
             // 
@@ -99,7 +99,7 @@ namespace work_tracker.Forms
             // 
             this.labelControl5.Location = new System.Drawing.Point(20, 230);
             this.labelControl5.Name = "labelControl5";
-            this.labelControl5.Size = new System.Drawing.Size(28, 13);
+            this.labelControl5.Size = new System.Drawing.Size(29, 13);
             this.labelControl5.TabIndex = 4;
             this.labelControl5.Text = "Proje:";
             // 
@@ -115,7 +115,7 @@ namespace work_tracker.Forms
             // 
             this.labelControl7.Location = new System.Drawing.Point(20, 280);
             this.labelControl7.Name = "labelControl7";
-            this.labelControl7.Size = new System.Drawing.Size(87, 13);
+            this.labelControl7.Size = new System.Drawing.Size(127, 13);
             this.labelControl7.TabIndex = 6;
             this.labelControl7.Text = "İlişkili Toplantı (Opsiyonel):";
             // 
@@ -239,6 +239,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
     }
 }

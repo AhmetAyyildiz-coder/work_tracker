@@ -16,6 +16,11 @@ namespace work_tracker.Forms
         private RichEditControl richEditControl1;
         private SimpleButton btnSave;
         private SimpleButton btnCancel;
+        private PanelControl panelNotesToolbar;
+        private SimpleButton btnNoteNumberedList;
+        private SimpleButton btnNoteBulletList;
+        private SimpleButton btnNoteItalic;
+        private SimpleButton btnNoteBold;
 
         protected override void Dispose(bool disposing)
         {
@@ -32,6 +37,7 @@ namespace work_tracker.Forms
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
             this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
             this.labelControl3 = new DevExpress.XtraEditors.LabelControl();
@@ -42,10 +48,17 @@ namespace work_tracker.Forms
             this.richEditControl1 = new DevExpress.XtraRichEdit.RichEditControl();
             this.btnSave = new DevExpress.XtraEditors.SimpleButton();
             this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
+            this.panelNotesToolbar = new DevExpress.XtraEditors.PanelControl();
+            this.btnNoteNumberedList = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteBulletList = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteItalic = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteBold = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtMeetingDate.Properties.CalendarTimeProperties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtMeetingDate.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtParticipants.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.panelNotesToolbar)).BeginInit();
+            this.panelNotesToolbar.SuspendLayout();
             this.SuspendLayout();
             // 
             // labelControl1
@@ -58,7 +71,7 @@ namespace work_tracker.Forms
             // 
             // labelControl2
             // 
-            this.labelControl2.Location = new System.Drawing.Point(20, 70);
+            this.labelControl2.Location = new System.Drawing.Point(430, 20);
             this.labelControl2.Name = "labelControl2";
             this.labelControl2.Size = new System.Drawing.Size(76, 13);
             this.labelControl2.TabIndex = 1;
@@ -66,7 +79,7 @@ namespace work_tracker.Forms
             // 
             // labelControl3
             // 
-            this.labelControl3.Location = new System.Drawing.Point(20, 120);
+            this.labelControl3.Location = new System.Drawing.Point(770, 20);
             this.labelControl3.Name = "labelControl3";
             this.labelControl3.Size = new System.Drawing.Size(55, 13);
             this.labelControl3.TabIndex = 2;
@@ -74,7 +87,7 @@ namespace work_tracker.Forms
             // 
             // labelControl4
             // 
-            this.labelControl4.Location = new System.Drawing.Point(20, 170);
+            this.labelControl4.Location = new System.Drawing.Point(20, 70);
             this.labelControl4.Name = "labelControl4";
             this.labelControl4.Size = new System.Drawing.Size(78, 13);
             this.labelControl4.TabIndex = 3;
@@ -84,31 +97,34 @@ namespace work_tracker.Forms
             // 
             this.txtSubject.Location = new System.Drawing.Point(20, 40);
             this.txtSubject.Name = "txtSubject";
-            this.txtSubject.Size = new System.Drawing.Size(860, 20);
+            this.txtSubject.Size = new System.Drawing.Size(400, 20);
             this.txtSubject.TabIndex = 4;
             // 
             // dtMeetingDate
             // 
             this.dtMeetingDate.EditValue = null;
-            this.dtMeetingDate.Location = new System.Drawing.Point(20, 90);
+            this.dtMeetingDate.Location = new System.Drawing.Point(430, 40);
             this.dtMeetingDate.Name = "dtMeetingDate";
             this.dtMeetingDate.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.dtMeetingDate.Properties.CalendarTimeProperties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.dtMeetingDate.Size = new System.Drawing.Size(860, 20);
+            this.dtMeetingDate.Size = new System.Drawing.Size(330, 20);
             this.dtMeetingDate.TabIndex = 5;
             // 
             // txtParticipants
             // 
-            this.txtParticipants.Location = new System.Drawing.Point(20, 140);
+            this.txtParticipants.Location = new System.Drawing.Point(770, 40);
             this.txtParticipants.Name = "txtParticipants";
-            this.txtParticipants.Size = new System.Drawing.Size(860, 20);
+            this.txtParticipants.Size = new System.Drawing.Size(580, 20);
             this.txtParticipants.TabIndex = 6;
             // 
             // richEditControl1
             // 
-            this.richEditControl1.Location = new System.Drawing.Point(20, 190);
+            this.richEditControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richEditControl1.Location = new System.Drawing.Point(20, 165);
             this.richEditControl1.Name = "richEditControl1";
             this.richEditControl1.Options.DocumentCapabilities.CharacterFormatting = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
             this.richEditControl1.Options.DocumentCapabilities.CharacterStyle = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
@@ -120,32 +136,94 @@ namespace work_tracker.Forms
             this.richEditControl1.Options.DocumentCapabilities.Bookmarks = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
             this.richEditControl1.Options.DocumentCapabilities.Numbering.Bulleted = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
             this.richEditControl1.Options.DocumentCapabilities.Numbering.Simple = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
-            this.richEditControl1.Size = new System.Drawing.Size(860, 350);
+            this.richEditControl1.Options.DocumentCapabilities.Numbering.MultiLevel = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.HeadersFooters = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.Tables = DevExpress.XtraRichEdit.DocumentCapability.Enabled; 
+            this.richEditControl1.Size = new System.Drawing.Size(1330, 540);
             this.richEditControl1.TabIndex = 7;
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(700, 560);
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnSave.Appearance.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.btnSave.Appearance.Options.UseBackColor = true;
+            this.btnSave.Appearance.Options.UseFont = true;
+            this.btnSave.Location = new System.Drawing.Point(1150, 720);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(90, 30);
+            this.btnSave.Size = new System.Drawing.Size(100, 35);
             this.btnSave.TabIndex = 8;
-            this.btnSave.Text = "Kaydet";
+            this.btnSave.Text = "💾 Kaydet";
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(790, 560);
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.Appearance.Font = new System.Drawing.Font("Tahoma", 10F);
+            this.btnCancel.Appearance.Options.UseFont = true;
+            this.btnCancel.Location = new System.Drawing.Point(1260, 720);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(90, 30);
+            this.btnCancel.Size = new System.Drawing.Size(100, 35);
             this.btnCancel.TabIndex = 9;
-            this.btnCancel.Text = "İptal";
+            this.btnCancel.Text = "❌ İptal";
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // panelNotesToolbar
+            // 
+            this.panelNotesToolbar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelNotesToolbar.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            this.panelNotesToolbar.Controls.Add(this.btnNoteNumberedList);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteBulletList);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteItalic);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteBold);
+            this.panelNotesToolbar.Location = new System.Drawing.Point(20, 125);
+            this.panelNotesToolbar.Name = "panelNotesToolbar";
+            this.panelNotesToolbar.Size = new System.Drawing.Size(1330, 30);
+            this.panelNotesToolbar.TabIndex = 10;
+            // 
+            // btnNoteNumberedList
+            // 
+            this.btnNoteNumberedList.Location = new System.Drawing.Point(150, 3);
+            this.btnNoteNumberedList.Name = "btnNoteNumberedList";
+            this.btnNoteNumberedList.Size = new System.Drawing.Size(50, 24);
+            this.btnNoteNumberedList.TabIndex = 3;
+            this.btnNoteNumberedList.Text = "1. List";
+            this.btnNoteNumberedList.Click += new System.EventHandler(this.btnNoteNumberedList_Click);
+            // 
+            // btnNoteBulletList
+            // 
+            this.btnNoteBulletList.Location = new System.Drawing.Point(100, 3);
+            this.btnNoteBulletList.Name = "btnNoteBulletList";
+            this.btnNoteBulletList.Size = new System.Drawing.Size(44, 24);
+            this.btnNoteBulletList.TabIndex = 2;
+            this.btnNoteBulletList.Text = "• List";
+            this.btnNoteBulletList.Click += new System.EventHandler(this.btnNoteBulletList_Click);
+            // 
+            // btnNoteItalic
+            // 
+            this.btnNoteItalic.Location = new System.Drawing.Point(54, 3);
+            this.btnNoteItalic.Name = "btnNoteItalic";
+            this.btnNoteItalic.Size = new System.Drawing.Size(40, 24);
+            this.btnNoteItalic.TabIndex = 1;
+            this.btnNoteItalic.Text = "I";
+            this.btnNoteItalic.Click += new System.EventHandler(this.btnNoteItalic_Click);
+            // 
+            // btnNoteBold
+            // 
+            this.btnNoteBold.Location = new System.Drawing.Point(8, 3);
+            this.btnNoteBold.Name = "btnNoteBold";
+            this.btnNoteBold.Size = new System.Drawing.Size(40, 24);
+            this.btnNoteBold.TabIndex = 0;
+            this.btnNoteBold.Text = "B";
+            this.btnNoteBold.Click += new System.EventHandler(this.btnNoteBold_Click);
             // 
             // MeetingEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(900, 610);
+            this.ClientSize = new System.Drawing.Size(1370, 775);
+            this.Controls.Add(this.panelNotesToolbar);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.richEditControl1);
@@ -156,17 +234,18 @@ namespace work_tracker.Forms
             this.Controls.Add(this.labelControl3);
             this.Controls.Add(this.labelControl2);
             this.Controls.Add(this.labelControl1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(1200, 700);
             this.Name = "MeetingEditForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Toplantı Düzenle";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MeetingEditForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtMeetingDate.Properties.CalendarTimeProperties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtMeetingDate.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtParticipants.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.panelNotesToolbar)).EndInit();
+            this.panelNotesToolbar.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }

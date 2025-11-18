@@ -32,6 +32,18 @@ namespace work_tracker.Data.Entities
 
         public int? SprintId { get; set; }
 
+        /// <summary>
+        /// İşin ilk kez planlandığı sprint.
+        /// Sprint değiştirildiğinde güncellenmez, sadece ilk atamada set edilir.
+        /// </summary>
+        public int? InitialSprintId { get; set; }
+
+        /// <summary>
+        /// İşin tamamlandığı sprint.
+        /// Kart tamamlandı sütunundan çıkarsa bu alan isteğe göre temizlenebilir.
+        /// </summary>
+        public int? CompletedInSprintId { get; set; }
+
         [MaxLength(100)]
         public string Type { get; set; } // AcilArge, Bug, YeniOzellik, vb.
 
@@ -73,6 +85,12 @@ namespace work_tracker.Data.Entities
 
         [ForeignKey("SprintId")]
         public virtual Sprint Sprint { get; set; }
+
+        [ForeignKey("InitialSprintId")]
+        public virtual Sprint InitialSprint { get; set; }
+
+        [ForeignKey("CompletedInSprintId")]
+        public virtual Sprint CompletedInSprint { get; set; }
 
         public virtual ICollection<WorkItemActivity> Activities { get; set; }
         public virtual ICollection<WorkItemAttachment> Attachments { get; set; }

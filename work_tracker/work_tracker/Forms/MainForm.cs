@@ -23,6 +23,7 @@ namespace work_tracker
         private ReportsForm reportsForm;
         private HelpForm helpForm;
         private AllWorkItemsForm allWorkItemsForm;
+        private WikiForm wikiForm;
 
         public MainForm()
         {
@@ -88,6 +89,11 @@ namespace work_tracker
         private void btnAllWorkItems_ItemClick(object sender, ItemClickEventArgs e)
         {
             allWorkItemsForm = OpenOrActivateForm(allWorkItemsForm, () => new AllWorkItemsForm(), f => allWorkItemsForm = f);
+        }
+
+        private void btnWiki_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            wikiForm = OpenOrActivateForm(wikiForm, () => new WikiForm(), f => wikiForm = f);
         }
 
         /// <summary>

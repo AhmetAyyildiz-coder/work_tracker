@@ -6,6 +6,7 @@ using DevExpress.XtraEditors;
 using DevExpress.XtraGrid;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraRichEdit;
+using DevExpress.XtraRichEdit.Commands;
 using work_tracker.Data;
 using work_tracker.Data.Entities;
 
@@ -35,7 +36,81 @@ namespace work_tracker.Forms
             {
                 view.OptionsFind.AlwaysVisible = true;
             }
+
+            // Not editörü için daha okunaklı bir varsayılan görünüm
+            if (richEditControl1 != null)
+            {
+                richEditControl1.ActiveViewType = RichEditViewType.PrintLayout;
+                richEditControl1.ActiveView.ZoomFactor = 1.1f;
+                richEditControl1.Options.HorizontalRuler.Visibility = DevExpress.XtraRichEdit.RichEditRulerVisibility.Hidden;
+            }
         }
+
+        #region Not düzenleme kısayol butonları
+
+        private void btnNoteBold_Click(object sender, EventArgs e)
+        {
+            if (richEditControl1 == null || richEditControl1.ReadOnly)
+                return;
+
+            var doc = richEditControl1.Document;
+            var range = doc.Selection;
+            if (range.Length == 0)
+                return;
+
+            var cp = doc.BeginUpdateCharacters(range);
+            try
+            {
+                cp.Bold = !cp.Bold;
+            }
+            finally
+            {
+                doc.EndUpdateCharacters(cp);
+            }
+        }
+
+        private void btnNoteItalic_Click(object sender, EventArgs e)
+        {
+            if (richEditControl1 == null || richEditControl1.ReadOnly)
+                return;
+
+            var doc = richEditControl1.Document;
+            var range = doc.Selection;
+            if (range.Length == 0)
+                return;
+
+            var cp = doc.BeginUpdateCharacters(range);
+            try
+            {
+                cp.Italic = !cp.Italic;
+            }
+            finally
+            {
+                doc.EndUpdateCharacters(cp);
+            }
+        }
+
+        private void btnNoteBulletList_Click(object sender, EventArgs e)
+        {
+            XtraMessageBox.Show(
+                "Bu sürümde hızlı butonla listeleme desteği eklemedim.\n" +
+                "Yine de RichEdit’in yerleşik kısayollarını (Ctrl+Shift+L vb.) kullanarak madde işaretli liste oluşturabilirsin.",
+                "Bilgi",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
+        private void btnNoteNumberedList_Click(object sender, EventArgs e)
+        {
+            XtraMessageBox.Show(
+                "Bu sürümde hızlı butonla numaralı liste desteği eklemedim.\n" +
+                "Yine de RichEdit’in yerleşik kısayollarını kullanarak numaralı liste oluşturabilirsin.",
+                "Bilgi",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
+        #endregion
 
         private void LoadMeetings()
         {

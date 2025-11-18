@@ -31,10 +31,32 @@ namespace work_tracker.Forms
 
         private void WorkItemDetailForm_Load(object sender, EventArgs e)
         {
+            LoadSprints();
             LoadWorkItemDetails();
             LoadActivities();
             LoadComments();
             LoadAttachments();
+        }
+
+        private void LoadSprints()
+        {
+            var sprints = _context.Sprints
+                .OrderByDescending(s => s.StartDate)
+                .ToList();
+
+            cmbSprint.Properties.DataSource = sprints;
+            cmbSprint.Properties.DisplayMember = "Name";
+            cmbSprint.Properties.ValueMember = "Id";
+            cmbSprint.Properties.NullText = "(Sprint seçilmedi)";
+
+            // LookUpEdit kolonları
+            cmbSprint.Properties.Columns.Clear();
+            cmbSprint.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Sprint Adı"));
+            cmbSprint.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StartDate", "Başlangıç") 
+            { 
+                Width = 80,
+                FormatString = "dd.MM.yyyy"
+            });
         }
 
         private void LoadWorkItemDetails()
@@ -43,6 +65,8 @@ namespace work_tracker.Forms
                 .Include(w => w.Project)
                 .Include(w => w.Module)
                 .Include(w => w.Sprint)
+                .Include(w => w.InitialSprint)
+                .Include(w => w.CompletedInSprint)
                 .Include(w => w.SourceMeeting)
                 .FirstOrDefault(w => w.Id == _workItemId);
 
@@ -62,8 +86,19 @@ namespace work_tracker.Forms
                 
                 txtProject.Text = _workItem.Project?.Name ?? "-";
                 txtModule.Text = _workItem.Module?.Name ?? "-";
-                txtSprint.Text = _workItem.Sprint?.Name ?? "-";
+                
+                // Sprint bilgileri
+                cmbSprint.EditValue = _workItem.SprintId;
                 txtBoard.Text = _workItem.Board ?? "-";
+                
+                // Sprint geçmişi
+                lblInitialSprint.Text = _workItem.InitialSprint != null 
+                    ? $"İlk Sprint: {_workItem.InitialSprint.Name}" 
+                    : "İlk Sprint: -";
+                
+                lblCompletedInSprint.Text = _workItem.CompletedInSprint != null 
+                    ? $"Tamamlanan Sprint: {_workItem.CompletedInSprint.Name}" 
+                    : "Tamamlanan Sprint: -";
                 
                 if (_workItem.EffortEstimate.HasValue)
                     txtEffort.Text = _workItem.EffortEstimate.Value.ToString("0.0");
@@ -256,6 +291,82 @@ namespace work_tracker.Forms
             LoadAttachments();
         }
 
+        private void btnChangeSprint_Click(object sender, EventArgs e)
+        {
+            if (_workItem == null) return;
+
+            var newSprintId = cmbSprint.EditValue as int?;
+            var oldSprintId = _workItem.SprintId;
+
+            // Değişiklik yoksa çık
+            if (newSprintId == oldSprintId)
+            {
+                XtraMessageBox.Show("Sprint değişikliği yapılmadı.", "Bilgi", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var result = XtraMessageBox.Show(
+                $"İşin sprint'i değiştirilecek.\n\n" +
+                $"Eski Sprint: {_workItem.Sprint?.Name ?? "(Yok)"}\n" +
+                $"Yeni Sprint: {(newSprintId.HasValue ? cmbSprint.Text : "(Yok)")}\n\n" +
+                $"Devam etmek istiyor musunuz?",
+                "Sprint Değiştir",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            try
+            {
+                var dbWorkItem = _context.WorkItems.Find(_workItemId);
+                if (dbWorkItem != null)
+                {
+                    var oldSprintName = dbWorkItem.Sprint?.Name ?? "(Yok)";
+                    
+                    // Sprint değiştir
+                    dbWorkItem.SprintId = newSprintId;
+
+                    // İlk kez sprint'e alınıyorsa InitialSprintId'yi set et
+                    if (!dbWorkItem.InitialSprintId.HasValue && newSprintId.HasValue)
+                    {
+                        dbWorkItem.InitialSprintId = newSprintId;
+                    }
+
+                    // Board'u da güncelle (sprint varsa Scrum, yoksa Inbox)
+                    if (newSprintId.HasValue)
+                    {
+                        dbWorkItem.Board = "Scrum";
+                        dbWorkItem.Status = "SprintBacklog";
+                    }
+
+                    _context.SaveChanges();
+
+                    // Aktivite kaydı
+                    var newSprintName = newSprintId.HasValue 
+                        ? _context.Sprints.Find(newSprintId.Value)?.Name ?? "(Bilinmeyen)" 
+                        : "(Yok)";
+                    
+                    AddActivity(
+                        ActivityTypes.FieldUpdate,
+                        $"Sprint değiştirildi: {oldSprintName} → {newSprintName}",
+                        oldSprintName,
+                        newSprintName);
+
+                    XtraMessageBox.Show("Sprint başarıyla değiştirildi.", "Başarılı", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    LoadWorkItemDetails();
+                }
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Sprint değiştirme sırasında hata oluştu: {ex.Message}", 
+                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Error("Sprint değiştirme hatası", ex);
+            }
+        }
+
         #region Dosya Yönetimi
 
         private void LoadAttachments()
@@ -419,6 +530,99 @@ namespace work_tracker.Forms
                 XtraMessageBox.Show($"Dosya açılamadı:\n\n{ex.Message}", "Hata", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnPreviewFile_Click(object sender, EventArgs e)
+        {
+            if (lstAttachments.SelectedItems.Count == 0)
+            {
+                XtraMessageBox.Show("Lütfen önizlemek istediğiniz dosyayı seçin.", "Uyarı", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var attachment = lstAttachments.SelectedItems[0].Tag as WorkItemAttachment;
+            if (attachment == null) return;
+
+            // Sadece metin tabanlı dosyalar için önizleme
+            if (!IsTextPreviewSupported(attachment.FileExtension, attachment.MimeType))
+            {
+                XtraMessageBox.Show(
+                    "Bu dosya türü için uygulama içi önizleme desteklenmiyor.\n\n" +
+                    "'Aç' butonu ile dosyayı varsayılan uygulamada açabilirsiniz.", 
+                    "Önizleme Desteklenmiyor", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            try
+            {
+                var fullPath = FileStorageHelper.GetFullPath(attachment.FilePath);
+                if (!File.Exists(fullPath))
+                {
+                    XtraMessageBox.Show("Dosya bulunamadı. Silinmiş veya taşınmış olabilir.", "Hata", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                var content = File.ReadAllText(fullPath);
+                
+                // Önizleme dialogu aç
+                using (var previewForm = new XtraForm())
+                {
+                    previewForm.Text = $"Dosya Önizleme: {attachment.OriginalFileName}";
+                    previewForm.Size = new Size(1000, 700);
+                    previewForm.StartPosition = FormStartPosition.CenterParent;
+                    
+                    var memoEdit = new MemoEdit
+                    {
+                        Dock = DockStyle.Fill,
+                        Text = content,
+                        Properties = { ReadOnly = true, ScrollBars = ScrollBars.Both }
+                    };
+                    
+                    var btnClose = new SimpleButton
+                    {
+                        Text = "Kapat",
+                        DialogResult = DialogResult.OK,
+                        Dock = DockStyle.Bottom,
+                        Height = 40
+                    };
+                    
+                    previewForm.Controls.Add(memoEdit);
+                    previewForm.Controls.Add(btnClose);
+                    previewForm.AcceptButton = btnClose;
+                    
+                    previewForm.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Önizleme sırasında hata oluştu:\n\n{ex.Message}", "Hata", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private bool IsTextPreviewSupported(string extension, string mimeType)
+        {
+            extension = (extension ?? "").ToLowerInvariant();
+            mimeType = (mimeType ?? "").ToLowerInvariant();
+
+            // Yaygın metin tabanlı uzantılar
+            string[] textExtensions =
+            {
+                ".txt", ".sql", ".log", ".cs", ".config", ".json", ".xml", ".yml", ".yaml", ".ini", ".cmd",
+                ".bat"
+            };
+
+            if (textExtensions.Contains(extension))
+                return true;
+
+            if (mimeType.StartsWith("text/"))
+                return true;
+
+            return false;
         }
 
         private void btnDeleteFile_Click(object sender, EventArgs e)

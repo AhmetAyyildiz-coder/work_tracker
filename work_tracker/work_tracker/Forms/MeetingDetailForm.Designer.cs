@@ -59,11 +59,11 @@ namespace work_tracker.Forms
             this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.lblWorkItemCount = new DevExpress.XtraEditors.LabelControl();
             this.panelBottom = new DevExpress.XtraEditors.PanelControl();
+            this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
+            this.btnSave = new DevExpress.XtraEditors.SimpleButton();
+            this.btnEdit = new DevExpress.XtraEditors.SimpleButton();
             this.btnClose = new DevExpress.XtraEditors.SimpleButton();
             this.splitContainerMain = new DevExpress.XtraEditors.SplitContainerControl();
-            this.btnEdit = new DevExpress.XtraEditors.SimpleButton();
-            this.btnSave = new DevExpress.XtraEditors.SimpleButton();
-            this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.groupMeetingInfo)).BeginInit();
             this.groupMeetingInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtParticipants.Properties)).BeginInit();
@@ -79,6 +79,10 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.panelBottom)).BeginInit();
             this.panelBottom.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel1)).BeginInit();
+            this.splitContainerMain.Panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel2)).BeginInit();
+            this.splitContainerMain.Panel2.SuspendLayout();
             this.splitContainerMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -93,33 +97,25 @@ namespace work_tracker.Forms
             this.groupMeetingInfo.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupMeetingInfo.Location = new System.Drawing.Point(0, 0);
             this.groupMeetingInfo.Name = "groupMeetingInfo";
-            this.groupMeetingInfo.Size = new System.Drawing.Size(600, 120);
+            this.groupMeetingInfo.Size = new System.Drawing.Size(550, 120);
             this.groupMeetingInfo.TabIndex = 0;
             this.groupMeetingInfo.Text = "Toplantı Bilgileri";
             // 
-            // labelControl1
+            // txtParticipants
             // 
-            this.labelControl1.Location = new System.Drawing.Point(15, 35);
-            this.labelControl1.Name = "labelControl1";
-            this.labelControl1.Size = new System.Drawing.Size(78, 13);
-            this.labelControl1.TabIndex = 0;
-            this.labelControl1.Text = "Toplantı Konusu:";
+            this.txtParticipants.Enabled = false;
+            this.txtParticipants.Location = new System.Drawing.Point(400, 62);
+            this.txtParticipants.Name = "txtParticipants";
+            this.txtParticipants.Size = new System.Drawing.Size(180, 20);
+            this.txtParticipants.TabIndex = 5;
             // 
-            // txtSubject
+            // labelControl3
             // 
-            this.txtSubject.Enabled = false;
-            this.txtSubject.Location = new System.Drawing.Point(120, 32);
-            this.txtSubject.Name = "txtSubject";
-            this.txtSubject.Size = new System.Drawing.Size(460, 20);
-            this.txtSubject.TabIndex = 1;
-            // 
-            // labelControl2
-            // 
-            this.labelControl2.Location = new System.Drawing.Point(15, 65);
-            this.labelControl2.Name = "labelControl2";
-            this.labelControl2.Size = new System.Drawing.Size(76, 13);
-            this.labelControl2.TabIndex = 2;
-            this.labelControl2.Text = "Toplantı Tarihi:";
+            this.labelControl3.Location = new System.Drawing.Point(330, 65);
+            this.labelControl3.Name = "labelControl3";
+            this.labelControl3.Size = new System.Drawing.Size(53, 13);
+            this.labelControl3.TabIndex = 4;
+            this.labelControl3.Text = "Katılımcılar:";
             // 
             // dtMeetingDate
             // 
@@ -134,21 +130,29 @@ namespace work_tracker.Forms
             this.dtMeetingDate.Size = new System.Drawing.Size(200, 20);
             this.dtMeetingDate.TabIndex = 3;
             // 
-            // labelControl3
+            // labelControl2
             // 
-            this.labelControl3.Location = new System.Drawing.Point(330, 65);
-            this.labelControl3.Name = "labelControl3";
-            this.labelControl3.Size = new System.Drawing.Size(55, 13);
-            this.labelControl3.TabIndex = 4;
-            this.labelControl3.Text = "Katılımcılar:";
+            this.labelControl2.Location = new System.Drawing.Point(15, 65);
+            this.labelControl2.Name = "labelControl2";
+            this.labelControl2.Size = new System.Drawing.Size(71, 13);
+            this.labelControl2.TabIndex = 2;
+            this.labelControl2.Text = "Toplantı Tarihi:";
             // 
-            // txtParticipants
+            // txtSubject
             // 
-            this.txtParticipants.Enabled = false;
-            this.txtParticipants.Location = new System.Drawing.Point(400, 62);
-            this.txtParticipants.Name = "txtParticipants";
-            this.txtParticipants.Size = new System.Drawing.Size(180, 20);
-            this.txtParticipants.TabIndex = 5;
+            this.txtSubject.Enabled = false;
+            this.txtSubject.Location = new System.Drawing.Point(120, 32);
+            this.txtSubject.Name = "txtSubject";
+            this.txtSubject.Size = new System.Drawing.Size(460, 20);
+            this.txtSubject.TabIndex = 1;
+            // 
+            // labelControl1
+            // 
+            this.labelControl1.Location = new System.Drawing.Point(15, 35);
+            this.labelControl1.Name = "labelControl1";
+            this.labelControl1.Size = new System.Drawing.Size(80, 13);
+            this.labelControl1.TabIndex = 0;
+            this.labelControl1.Text = "Toplantı Konusu:";
             // 
             // groupNotes
             // 
@@ -157,35 +161,35 @@ namespace work_tracker.Forms
             this.groupNotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupNotes.Location = new System.Drawing.Point(0, 0);
             this.groupNotes.Name = "groupNotes";
-            this.groupNotes.Size = new System.Drawing.Size(800, 720);
+            this.groupNotes.Size = new System.Drawing.Size(840, 720);
             this.groupNotes.TabIndex = 1;
             this.groupNotes.Text = "Toplantı Notları";
-            // 
-            // richEditControl1
-            // 
-            this.richEditControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richEditControl1.Location = new System.Drawing.Point(2, 23);
-            this.richEditControl1.Name = "richEditControl1";
-            this.richEditControl1.ReadOnly = true;
-            this.richEditControl1.Options.DocumentCapabilities.CharacterFormatting = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
-            this.richEditControl1.Options.DocumentCapabilities.CharacterStyle = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
-            this.richEditControl1.Options.DocumentCapabilities.InlinePictures = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
-            this.richEditControl1.Options.DocumentCapabilities.Hyperlinks = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
-            this.richEditControl1.Options.DocumentCapabilities.Tables = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
-            this.richEditControl1.Options.DocumentCapabilities.Paragraphs = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
-            this.richEditControl1.Options.DocumentCapabilities.ParagraphFormatting = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
-            this.richEditControl1.Size = new System.Drawing.Size(796, 645);
-            this.richEditControl1.TabIndex = 0;
             // 
             // btnCreateWorkItem
             // 
             this.btnCreateWorkItem.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.btnCreateWorkItem.Location = new System.Drawing.Point(2, 668);
             this.btnCreateWorkItem.Name = "btnCreateWorkItem";
-            this.btnCreateWorkItem.Size = new System.Drawing.Size(796, 50);
+            this.btnCreateWorkItem.Size = new System.Drawing.Size(836, 50);
             this.btnCreateWorkItem.TabIndex = 1;
             this.btnCreateWorkItem.Text = "📋 Seçili Metni İş Talebine Dönüştür (Not: Önce metin seçin)";
             this.btnCreateWorkItem.Click += new System.EventHandler(this.btnCreateWorkItem_Click);
+            // 
+            // richEditControl1
+            // 
+            this.richEditControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richEditControl1.Location = new System.Drawing.Point(2, 23);
+            this.richEditControl1.Name = "richEditControl1";
+            this.richEditControl1.Options.DocumentCapabilities.CharacterFormatting = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.CharacterStyle = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.Hyperlinks = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.InlinePictures = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.ParagraphFormatting = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.Paragraphs = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.Tables = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.ReadOnly = true;
+            this.richEditControl1.Size = new System.Drawing.Size(836, 695);
+            this.richEditControl1.TabIndex = 0;
             // 
             // groupWorkItems
             // 
@@ -194,21 +198,9 @@ namespace work_tracker.Forms
             this.groupWorkItems.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupWorkItems.Location = new System.Drawing.Point(0, 120);
             this.groupWorkItems.Name = "groupWorkItems";
-            this.groupWorkItems.Size = new System.Drawing.Size(600, 600);
+            this.groupWorkItems.Size = new System.Drawing.Size(550, 600);
             this.groupWorkItems.TabIndex = 2;
             this.groupWorkItems.Text = "Bu Toplantıdan Oluşturulan İş Talepleri";
-            // 
-            // lblWorkItemCount
-            // 
-            this.lblWorkItemCount.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.lblWorkItemCount.Appearance.Options.UseFont = true;
-            this.lblWorkItemCount.Dock = System.Windows.Forms.DockStyle.Top;
-            this.lblWorkItemCount.Location = new System.Drawing.Point(2, 23);
-            this.lblWorkItemCount.Name = "lblWorkItemCount";
-            this.lblWorkItemCount.Padding = new System.Windows.Forms.Padding(10, 5, 0, 5);
-            this.lblWorkItemCount.Size = new System.Drawing.Size(195, 24);
-            this.lblWorkItemCount.TabIndex = 0;
-            this.lblWorkItemCount.Text = "Bu toplantıdan 0 iş talebi oluşturuldu";
             // 
             // gridControl1
             // 
@@ -216,7 +208,7 @@ namespace work_tracker.Forms
             this.gridControl1.Location = new System.Drawing.Point(2, 47);
             this.gridControl1.MainView = this.gridView1;
             this.gridControl1.Name = "gridControl1";
-            this.gridControl1.Size = new System.Drawing.Size(596, 551);
+            this.gridControl1.Size = new System.Drawing.Size(546, 551);
             this.gridControl1.TabIndex = 1;
             this.gridControl1.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridView1});
@@ -227,6 +219,18 @@ namespace work_tracker.Forms
             this.gridView1.Name = "gridView1";
             this.gridView1.OptionsBehavior.Editable = false;
             this.gridView1.OptionsView.ShowAutoFilterRow = true;
+            // 
+            // lblWorkItemCount
+            // 
+            this.lblWorkItemCount.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.lblWorkItemCount.Appearance.Options.UseFont = true;
+            this.lblWorkItemCount.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblWorkItemCount.Location = new System.Drawing.Point(2, 23);
+            this.lblWorkItemCount.Name = "lblWorkItemCount";
+            this.lblWorkItemCount.Padding = new System.Windows.Forms.Padding(10, 5, 0, 5);
+            this.lblWorkItemCount.Size = new System.Drawing.Size(240, 24);
+            this.lblWorkItemCount.TabIndex = 0;
+            this.lblWorkItemCount.Text = "Bu toplantıdan 0 iş talebi oluşturuldu";
             // 
             // panelBottom
             // 
@@ -239,6 +243,35 @@ namespace work_tracker.Forms
             this.panelBottom.Name = "panelBottom";
             this.panelBottom.Size = new System.Drawing.Size(1400, 50);
             this.panelBottom.TabIndex = 3;
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.Enabled = false;
+            this.btnCancel.Location = new System.Drawing.Point(204, 10);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(90, 30);
+            this.btnCancel.TabIndex = 3;
+            this.btnCancel.Text = "İptal";
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // btnSave
+            // 
+            this.btnSave.Enabled = false;
+            this.btnSave.Location = new System.Drawing.Point(108, 10);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(90, 30);
+            this.btnSave.TabIndex = 2;
+            this.btnSave.Text = "Kaydet";
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // btnEdit
+            // 
+            this.btnEdit.Location = new System.Drawing.Point(12, 10);
+            this.btnEdit.Name = "btnEdit";
+            this.btnEdit.Size = new System.Drawing.Size(90, 30);
+            this.btnEdit.TabIndex = 1;
+            this.btnEdit.Text = "Düzenle";
+            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
             // btnClose
             // 
@@ -253,52 +286,22 @@ namespace work_tracker.Forms
             // splitContainerMain
             // 
             this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainerMain.Horizontal = false;
             this.splitContainerMain.Location = new System.Drawing.Point(0, 0);
             this.splitContainerMain.Name = "splitContainerMain";
             // 
             // splitContainerMain.Panel1
             // 
-            this.splitContainerMain.Panel1.Controls.Add(this.groupNotes);
+            this.splitContainerMain.Panel1.Controls.Add(this.groupWorkItems);
+            this.splitContainerMain.Panel1.Controls.Add(this.groupMeetingInfo);
             this.splitContainerMain.Panel1.Text = "Panel1";
             // 
             // splitContainerMain.Panel2
             // 
-            this.splitContainerMain.Panel2.Controls.Add(this.groupWorkItems);
-            this.splitContainerMain.Panel2.Controls.Add(this.groupMeetingInfo);
+            this.splitContainerMain.Panel2.Controls.Add(this.groupNotes);
             this.splitContainerMain.Panel2.Text = "Panel2";
             this.splitContainerMain.Size = new System.Drawing.Size(1400, 720);
-            this.splitContainerMain.SplitterPosition = 800;
+            this.splitContainerMain.SplitterPosition = 550;
             this.splitContainerMain.TabIndex = 4;
-            // 
-            // btnEdit
-            // 
-            this.btnEdit.Location = new System.Drawing.Point(12, 10);
-            this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Size = new System.Drawing.Size(90, 30);
-            this.btnEdit.TabIndex = 1;
-            this.btnEdit.Text = "Düzenle";
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
-            // 
-            // btnSave
-            // 
-            this.btnSave.Enabled = false;
-            this.btnSave.Location = new System.Drawing.Point(108, 10);
-            this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(90, 30);
-            this.btnSave.TabIndex = 2;
-            this.btnSave.Text = "Kaydet";
-            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // btnCancel
-            // 
-            this.btnCancel.Enabled = false;
-            this.btnCancel.Location = new System.Drawing.Point(204, 10);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(90, 30);
-            this.btnCancel.TabIndex = 3;
-            this.btnCancel.Text = "İptal";
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
             // MeetingDetailForm
             // 
@@ -326,9 +329,14 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelBottom)).EndInit();
             this.panelBottom.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel1)).EndInit();
+            this.splitContainerMain.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel2)).EndInit();
+            this.splitContainerMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
             this.splitContainerMain.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
     }
 }

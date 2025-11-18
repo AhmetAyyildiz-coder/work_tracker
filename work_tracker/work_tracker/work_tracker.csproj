@@ -71,10 +71,17 @@
     <Compile Include="Data\Entities\Project.cs" />
     <Compile Include="Data\Entities\ProjectModule.cs" />
     <Compile Include="Data\Entities\Sprint.cs" />
+    <Compile Include="Data\Entities\WikiPage.cs" />
     <Compile Include="Data\Entities\WorkItem.cs" />
     <Compile Include="Data\Entities\WorkItemActivity.cs" />
     <Compile Include="Data\Entities\WorkItemAttachment.cs" />
     <Compile Include="Data\WorkTrackerDbContext.cs" />
+    <Compile Include="Forms\WikiForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WikiForm.Designer.cs">
+      <DependentUpon>WikiForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\FileStorageHelper.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Migrations\202511111409311_initial.cs" />
@@ -96,6 +103,18 @@
     <Compile Include="Migrations\202511170805523_AddStartedAtToWorkItem.cs" />
     <Compile Include="Migrations\202511170805523_AddStartedAtToWorkItem.Designer.cs">
       <DependentUpon>202511170805523_AddStartedAtToWorkItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511180955475_coklu_sprint_takibi.cs" />
+    <Compile Include="Migrations\202511180955475_coklu_sprint_takibi.Designer.cs">
+      <DependentUpon>202511180955475_coklu_sprint_takibi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511181228350_added_wiki_entity.cs" />
+    <Compile Include="Migrations\202511181228350_added_wiki_entity.Designer.cs">
+      <DependentUpon>202511181228350_added_wiki_entity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511181248004_added_wiki_entity_fix.cs" />
+    <Compile Include="Migrations\202511181248004_added_wiki_entity_fix.Designer.cs">
+      <DependentUpon>202511181248004_added_wiki_entity_fix.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -238,6 +257,9 @@
     <EmbeddedResource Include="Forms\InboxForm.resx">
       <DependentUpon>InboxForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\WorkItemDetailForm.resx">
+      <DependentUpon>WorkItemDetailForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\WorkItemEditForm.resx">
       <DependentUpon>WorkItemEditForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -276,6 +298,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511170805523_AddStartedAtToWorkItem.resx">
       <DependentUpon>202511170805523_AddStartedAtToWorkItem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511180955475_coklu_sprint_takibi.resx">
+      <DependentUpon>202511180955475_coklu_sprint_takibi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511181228350_added_wiki_entity.resx">
+      <DependentUpon>202511181228350_added_wiki_entity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511181248004_added_wiki_entity_fix.resx">
+      <DependentUpon>202511181248004_added_wiki_entity_fix.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

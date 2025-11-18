@@ -508,11 +508,15 @@ namespace work_tracker.Forms
             // İş talebini güncelle
             try
             {
-                var dbWorkItem = _context.WorkItems.Find(workItem.Id);
+                    var dbWorkItem = _context.WorkItems.Find(workItem.Id);
                 if (dbWorkItem != null)
                 {
                     var oldStatus = dbWorkItem.Status;
-                    var selectedSprintId = cmbSprint.EditValue != null ? Convert.ToInt32(cmbSprint.EditValue) : 0;
+                        int? selectedSprintId = null;
+                        if (cmbSprint.EditValue != null)
+                        {
+                            selectedSprintId = Convert.ToInt32(cmbSprint.EditValue);
+                        }
 
                     // Aynı sütuna bırakıldıysa, sona taşı (sıralama)
                     if (oldStatus == targetColumn)
@@ -548,14 +552,22 @@ namespace work_tracker.Forms
                     }
 
                     // Tamamlandı durumuna geçildiğinde tamamlanma zamanını kaydet
-                    if (targetColumn == "Tamamlandi")
-                    {
-                        dbWorkItem.CompletedAt = DateTime.Now;
-                    }
-                    else if (oldStatus == "Tamamlandi")
-                    {
-                        dbWorkItem.CompletedAt = null;
-                    }
+                        if (targetColumn == "Tamamlandi")
+                        {
+                            dbWorkItem.CompletedAt = DateTime.Now;
+
+                            // İş hangi sprint'te tamamlandıysa onu da kaydet
+                            if (selectedSprintId.HasValue)
+                            {
+                                dbWorkItem.CompletedInSprintId = selectedSprintId.Value;
+                            }
+                        }
+                        else if (oldStatus == "Tamamlandi")
+                        {
+                            // Tamamlandı'dan çıkıyorsa tamamlanma bilgisini temizle
+                            dbWorkItem.CompletedAt = null;
+                            dbWorkItem.CompletedInSprintId = null;
+                        }
 
                     _context.SaveChanges();
                     LoadScrumBoard();

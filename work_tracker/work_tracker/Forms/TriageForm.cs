@@ -231,12 +231,22 @@ namespace work_tracker.Forms
                         {
                             workItem.Status = "Sirada";
                         }
-                        workItem.SprintId = null; // Kanban'da sprint yok
+
+                        // Kanban'a alınan işlerin Sprint bağını kopar, ancak tarihçeyi koru
+                        workItem.SprintId = null; // Kanban'da aktif sprint bilgisi tutulmaz
                     }
                     else if (targetBoard == "Scrum")
                     {
                         workItem.Status = "SprintBacklog";
-                        workItem.SprintId = cmbSprint.EditValue as int?;
+
+                        var selectedSprintId = cmbSprint.EditValue as int?;
+                        workItem.SprintId = selectedSprintId;
+
+                        // İlk kez sprint'e alınıyorsa InitialSprintId'yi set et
+                        if (!workItem.InitialSprintId.HasValue && selectedSprintId.HasValue)
+                        {
+                            workItem.InitialSprintId = selectedSprintId;
+                        }
                     }
 
                     workItem.TriagedBy = Environment.UserName;

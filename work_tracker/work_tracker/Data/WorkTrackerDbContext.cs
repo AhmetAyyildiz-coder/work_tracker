@@ -18,6 +18,7 @@ namespace work_tracker.Data
         public virtual DbSet<KanbanColumnSetting> KanbanColumnSettings { get; set; }
         public virtual DbSet<WorkItemActivity> WorkItemActivities { get; set; }
         public virtual DbSet<WorkItemAttachment> WorkItemAttachments { get; set; }
+        public virtual DbSet<WikiPage> WikiPages { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -51,11 +52,25 @@ namespace work_tracker.Data
                 .HasForeignKey(w => w.SourceMeetingId)
                 .WillCascadeOnDelete(false);
 
-            // Sprint - WorkItems ilişkisi
+            // Sprint - WorkItems ilişkisi (aktif sprint)
             modelBuilder.Entity<Sprint>()
                 .HasMany(s => s.WorkItems)
                 .WithOptional(w => w.Sprint)
                 .HasForeignKey(w => w.SprintId)
+                .WillCascadeOnDelete(false);
+
+            // Sprint - InitialSprint ilişkisi (ilk sprint)
+            modelBuilder.Entity<WorkItem>()
+                .HasOptional(w => w.InitialSprint)
+                .WithMany()
+                .HasForeignKey(w => w.InitialSprintId)
+                .WillCascadeOnDelete(false);
+
+            // Sprint - CompletedInSprint ilişkisi (tamamlanan sprint)
+            modelBuilder.Entity<WorkItem>()
+                .HasOptional(w => w.CompletedInSprint)
+                .WithMany()
+                .HasForeignKey(w => w.CompletedInSprintId)
                 .WillCascadeOnDelete(false);
 
             // WorkItem - Activities ilişkisi
@@ -71,6 +86,13 @@ namespace work_tracker.Data
                 .WithRequired(a => a.WorkItem)
                 .HasForeignKey(a => a.WorkItemId)
                 .WillCascadeOnDelete(true); // İş silindiğinde dosyaları da sil
+
+            // WikiPage - Parent/Children ilişkisi
+            modelBuilder.Entity<WikiPage>()
+                .HasMany(w => w.ChildPages)
+                .WithOptional(c => c.ParentPage)
+                .HasForeignKey(c => c.ParentPageId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

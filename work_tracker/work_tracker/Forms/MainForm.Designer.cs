@@ -22,6 +22,7 @@ namespace work_tracker
         private BarButtonItem btnReports;
         private BarButtonItem btnHelp;
         private BarButtonItem btnAllWorkItems;
+        private BarButtonItem btnWiki;
 
         protected override void Dispose(bool disposing)
         {
@@ -46,6 +47,7 @@ namespace work_tracker
             this.btnReports = new DevExpress.XtraBars.BarButtonItem();
             this.btnHelp = new DevExpress.XtraBars.BarButtonItem();
             this.btnAllWorkItems = new DevExpress.XtraBars.BarButtonItem();
+            this.btnWiki = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPageHome = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroupWorkflow = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupSettings = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -68,9 +70,10 @@ namespace work_tracker
             this.btnSprints,
             this.btnReports,
             this.btnHelp,
-            this.btnAllWorkItems});
+            this.btnAllWorkItems,
+            this.btnWiki});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 12;
+            this.ribbonControl1.MaxItemId = 13;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPageHome});
@@ -153,6 +156,13 @@ namespace work_tracker
             this.btnAllWorkItems.Name = "btnAllWorkItems";
             this.btnAllWorkItems.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnAllWorkItems_ItemClick);
             // 
+            // btnWiki
+            // 
+            this.btnWiki.Caption = "Wiki";
+            this.btnWiki.Id = 12;
+            this.btnWiki.Name = "btnWiki";
+            this.btnWiki.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnWiki_ItemClick);
+            // 
             // ribbonPageHome
             // 
             this.ribbonPageHome.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
@@ -178,6 +188,7 @@ namespace work_tracker
             this.ribbonPageGroupSettings.ItemLinks.Add(this.btnProjects);
             this.ribbonPageGroupSettings.ItemLinks.Add(this.btnModules);
             this.ribbonPageGroupSettings.ItemLinks.Add(this.btnSprints);
+            this.ribbonPageGroupSettings.ItemLinks.Add(this.btnWiki);
             this.ribbonPageGroupSettings.ItemLinks.Add(this.btnReports);
             this.ribbonPageGroupSettings.Name = "ribbonPageGroupSettings";
             this.ribbonPageGroupSettings.Text = "Ayarlar";
