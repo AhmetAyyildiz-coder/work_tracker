@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
+using DevExpress.XtraEditors.Controls;
 using DevExpress.XtraLayout;
 using work_tracker.Data;
 using work_tracker.Data.Entities;
@@ -23,6 +24,7 @@ namespace work_tracker.Forms
         // Drag & drop durumu (Kanban ile aynı mantık)
         private PanelControl draggedCard = null;
         private bool isDragging = false;
+        private bool isMouseDown = false;
         private Point mouseDownPoint;
 
         public ScrumBoardForm()
@@ -45,10 +47,28 @@ namespace work_tracker.Forms
                 .ThenByDescending(s => s.StartDate)
                 .ToList();
 
-            cmbSprint.Properties.DataSource = sprints;
-            cmbSprint.Properties.DisplayMember = "Name";
-            cmbSprint.Properties.ValueMember = "Id";
-            cmbSprint.Properties.NullText = "Sprint Seçin...";
+                cmbSprint.Properties.DataSource = sprints;
+                cmbSprint.Properties.DisplayMember = "Name";
+                cmbSprint.Properties.ValueMember = "Id";
+                cmbSprint.Properties.NullText = "Sprint Seçin...";
+
+                // Dropdown'da gösterilen kolonları sadeleştir
+                cmbSprint.Properties.Columns.Clear();
+                cmbSprint.Properties.Columns.Add(new LookUpColumnInfo("Name", "Sprint"));
+                cmbSprint.Properties.Columns.Add(new LookUpColumnInfo("Goals", "Hedef"));
+                cmbSprint.Properties.Columns.Add(new LookUpColumnInfo("StartDate", "Başlangıç Tarihi")
+                {
+                    FormatType = DevExpress.Utils.FormatType.DateTime,
+                    FormatString = "dd.MM.yyyy"
+                });
+                cmbSprint.Properties.Columns.Add(new LookUpColumnInfo("EndDate", "Bitiş Tarihi")
+                {
+                    FormatType = DevExpress.Utils.FormatType.DateTime,
+                    FormatString = "dd.MM.yyyy"
+                });
+
+                // Gerekirse popup genişliğini de ayarla
+                cmbSprint.Properties.BestFitMode = BestFitMode.BestFitResizePopup;
 
             if (sprints.Any())
             {
@@ -173,6 +193,7 @@ namespace work_tracker.Forms
             scroll.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             scroll.Tag = columnName;
             scroll.BackColor = SystemColors.Control;
+            scroll.AllowDrop = true;
             panel.Controls.Add(scroll);
 
             int yPos = 5;
@@ -185,10 +206,14 @@ namespace work_tracker.Forms
                 yPos += card.Height + 5;
             }
 
-            // Drag & Drop olayları
+            // Drag & Drop olayları - hem scroll hem de ana panel için
             scroll.DragEnter += Panel_DragEnter;
             scroll.DragOver += Panel_DragOver;
             scroll.DragDrop += Panel_DragDrop;
+            
+            panel.DragEnter += Panel_DragEnter;
+            panel.DragOver += Panel_DragOver;
+            panel.DragDrop += Panel_DragDrop;
 
             return panel;
         }
@@ -340,6 +365,7 @@ namespace work_tracker.Forms
             // Drag & Click olayları (Kanban ile aynı yaklaşım)
             card.MouseDown += Card_MouseDown;
             card.MouseMove += Card_MouseMove;
+            card.MouseUp += Card_MouseUp;
             card.Click += (s, e) => { if (!isDragging) OpenWorkItemDetail(workItem.Id); };
 
             foreach (Control ctrl in card.Controls)
@@ -347,6 +373,7 @@ namespace work_tracker.Forms
                 ctrl.Cursor = Cursors.Hand;
                 ctrl.MouseDown += Card_MouseDown;
                 ctrl.MouseMove += Card_MouseMove;
+                ctrl.MouseUp += Card_MouseUp;
                 ctrl.Click += (s, e) => { if (!isDragging) OpenWorkItemDetail(workItem.Id); };
             }
 
@@ -414,22 +441,39 @@ namespace work_tracker.Forms
                 if (card != null)
                 {
                     draggedCard = card;
-                    mouseDownPoint = e.Location;
+                    mouseDownPoint = Control.MousePosition;
                     isDragging = false;
+                    isMouseDown = true;
                 }
             }
         }
 
         private void Card_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left && draggedCard != null && !isDragging)
+            if (isMouseDown && draggedCard != null && !isDragging)
             {
+                // Sürükleme eşiği - ekran koordinatlarında kontrol et
+                var currentPosition = Control.MousePosition;
                 var dragSize = SystemInformation.DragSize;
-                if (Math.Abs(e.X - mouseDownPoint.X) >= dragSize.Width / 2 ||
-                    Math.Abs(e.Y - mouseDownPoint.Y) >= dragSize.Height / 2)
+                
+                if (Math.Abs(currentPosition.X - mouseDownPoint.X) >= dragSize.Width / 2 ||
+                    Math.Abs(currentPosition.Y - mouseDownPoint.Y) >= dragSize.Height / 2)
                 {
                     isDragging = true;
                     draggedCard.DoDragDrop(draggedCard, DragDropEffects.Move);
+                    isMouseDown = false;
+                }
+            }
+        }
+
+        private void Card_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isMouseDown = false;
+                if (!isDragging)
+                {
+                    draggedCard = null;
                 }
             }
         }

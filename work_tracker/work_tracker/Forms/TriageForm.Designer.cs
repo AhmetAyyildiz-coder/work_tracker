@@ -26,6 +26,7 @@ namespace work_tracker.Forms
         private ComboBoxEdit cmbType;
         private ComboBoxEdit cmbUrgency;
         private TextEdit txtEffort;
+        private ComboBoxEdit cmbEffortUnit;
         private ComboBoxEdit cmbTargetBoard;
         private LabelControl lblSprint;
         private LookUpEdit cmbSprint;
@@ -63,6 +64,8 @@ namespace work_tracker.Forms
             this.lblSprint = new DevExpress.XtraEditors.LabelControl();
             this.cmbSprint = new DevExpress.XtraEditors.LookUpEdit();
             this.txtEffort = new DevExpress.XtraEditors.TextEdit();
+            this.cmbEffortUnit = new DevExpress.XtraEditors.ComboBoxEdit();
+            this.cmbEffortUnit = new DevExpress.XtraEditors.ComboBoxEdit();
             this.cmbUrgency = new DevExpress.XtraEditors.ComboBoxEdit();
             this.cmbType = new DevExpress.XtraEditors.ComboBoxEdit();
             this.cmbModule = new DevExpress.XtraEditors.LookUpEdit();
@@ -83,6 +86,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.groupControl2)).BeginInit();
             this.groupControl2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cmbTargetBoard.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbEffortUnit.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtEffort.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbUrgency.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbType.Properties)).BeginInit();
@@ -123,6 +127,7 @@ namespace work_tracker.Forms
             this.groupControl2.Controls.Add(this.cmbTargetBoard);
             this.groupControl2.Controls.Add(this.lblSprint);
             this.groupControl2.Controls.Add(this.cmbSprint);
+            this.groupControl2.Controls.Add(this.cmbEffortUnit);
             this.groupControl2.Controls.Add(this.txtEffort);
             this.groupControl2.Controls.Add(this.cmbUrgency);
             this.groupControl2.Controls.Add(this.cmbType);
