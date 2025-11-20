@@ -11,10 +11,19 @@ namespace work_tracker.Helpers
     public static class FileStorageHelper
     {
         // Ana depolama klasörü (uygulama dizini altında)
-        private static string BaseStoragePath => Path.Combine(
-            AppDomain.CurrentDomain.BaseDirectory, 
-            "WorkItemAttachments"
-        );
+        // Ana depolama klasörü
+        private static string BaseStoragePath
+        {
+            get
+            {
+                string path = @"C:\work_tracker_docs";
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return path;
+            }
+        }
 
         /// <summary>
         /// Belirli bir iş öğesi için depolama klasörünü oluşturur

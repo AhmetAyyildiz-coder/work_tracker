@@ -15,9 +15,8 @@ namespace work_tracker.Helpers
 
         static Logger()
         {
-            // Log klasörünü uygulamanın bin klasörü altında oluştur
-            var appDir = AppDomain.CurrentDomain.BaseDirectory;
-            _logDirectory = Path.Combine(appDir, "Logs");
+            // Log klasörünü C:\work_tracker_docs\logs altında oluştur
+            _logDirectory = @"C:\work_tracker_docs\logs";
             
             // Klasör yoksa oluştur
             if (!Directory.Exists(_logDirectory))
