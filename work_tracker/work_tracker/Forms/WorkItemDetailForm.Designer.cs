@@ -130,11 +130,11 @@ namespace work_tracker.Forms
             this.lblEffort = new DevExpress.XtraEditors.LabelControl();
             this.txtBoard = new DevExpress.XtraEditors.TextEdit();
             this.lblBoard = new DevExpress.XtraEditors.LabelControl();
-            this.cmbSprint = new DevExpress.XtraEditors.LookUpEdit();
-            this.btnChangeSprint = new DevExpress.XtraEditors.SimpleButton();
-            this.lblSprint = new DevExpress.XtraEditors.LabelControl();
-            this.lblInitialSprint = new DevExpress.XtraEditors.LabelControl();
             this.lblCompletedInSprint = new DevExpress.XtraEditors.LabelControl();
+            this.lblInitialSprint = new DevExpress.XtraEditors.LabelControl();
+            this.btnChangeSprint = new DevExpress.XtraEditors.SimpleButton();
+            this.cmbSprint = new DevExpress.XtraEditors.LookUpEdit();
+            this.lblSprint = new DevExpress.XtraEditors.LabelControl();
             this.txtModule = new DevExpress.XtraEditors.TextEdit();
             this.lblModule = new DevExpress.XtraEditors.LabelControl();
             this.txtProject = new DevExpress.XtraEditors.TextEdit();
@@ -171,13 +171,6 @@ namespace work_tracker.Forms
             this.colCommentText = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPageAttachments = new DevExpress.XtraTab.XtraTabPage();
             this.groupAttachments = new DevExpress.XtraEditors.GroupControl();
-            this.btnDeleteFile = new DevExpress.XtraEditors.SimpleButton();
-            this.btnPreviewFile = new DevExpress.XtraEditors.SimpleButton();
-            this.btnOpenFile = new DevExpress.XtraEditors.SimpleButton();
-            this.btnDownloadFile = new DevExpress.XtraEditors.SimpleButton();
-            this.btnAddFile = new DevExpress.XtraEditors.SimpleButton();
-            this.lblTotalSize = new DevExpress.XtraEditors.LabelControl();
-            this.lblAttachmentCount = new DevExpress.XtraEditors.LabelControl();
             this.lstAttachments = new System.Windows.Forms.ListView();
             this.colIcon = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -185,6 +178,13 @@ namespace work_tracker.Forms
             this.colFileDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colUploadedBy = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colUploadedAt = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnDeleteFile = new DevExpress.XtraEditors.SimpleButton();
+            this.btnPreviewFile = new DevExpress.XtraEditors.SimpleButton();
+            this.btnOpenFile = new DevExpress.XtraEditors.SimpleButton();
+            this.btnDownloadFile = new DevExpress.XtraEditors.SimpleButton();
+            this.btnAddFile = new DevExpress.XtraEditors.SimpleButton();
+            this.lblTotalSize = new DevExpress.XtraEditors.LabelControl();
+            this.lblAttachmentCount = new DevExpress.XtraEditors.LabelControl();
             this.tabPageEmails = new DevExpress.XtraTab.XtraTabPage();
             this.groupEmails = new DevExpress.XtraEditors.GroupControl();
             this.btnUnlinkEmail = new DevExpress.XtraEditors.SimpleButton();
@@ -277,7 +277,7 @@ namespace work_tracker.Forms
             this.groupWorkItemInfo.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupWorkItemInfo.Location = new System.Drawing.Point(0, 0);
             this.groupWorkItemInfo.Name = "groupWorkItemInfo";
-            this.groupWorkItemInfo.Size = new System.Drawing.Size(1200, 320);
+            this.groupWorkItemInfo.Size = new System.Drawing.Size(1200, 350);
             this.groupWorkItemInfo.TabIndex = 0;
             this.groupWorkItemInfo.Text = "İş Bilgileri";
             // 
@@ -291,7 +291,7 @@ namespace work_tracker.Forms
             // 
             // lblCreatedAt
             // 
-            this.lblCreatedAt.Location = new System.Drawing.Point(20, 290);
+            this.lblCreatedAt.Location = new System.Drawing.Point(20, 331);
             this.lblCreatedAt.Name = "lblCreatedAt";
             this.lblCreatedAt.Size = new System.Drawing.Size(68, 13);
             this.lblCreatedAt.TabIndex = 24;
@@ -329,15 +329,29 @@ namespace work_tracker.Forms
             this.lblBoard.TabIndex = 24;
             this.lblBoard.Text = "Pano:";
             // 
-            // cmbSprint
+            // lblCompletedInSprint
             // 
-            this.cmbSprint.Location = new System.Drawing.Point(710, 140);
-            this.cmbSprint.Name = "cmbSprint";
-            this.cmbSprint.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.cmbSprint.Properties.NullText = "(Sprint seçilmedi)";
-            this.cmbSprint.Size = new System.Drawing.Size(350, 20);
-            this.cmbSprint.TabIndex = 19;
+            this.lblCompletedInSprint.Appearance.Font = new System.Drawing.Font("Tahoma", 7.5F, System.Drawing.FontStyle.Italic);
+            this.lblCompletedInSprint.Appearance.ForeColor = System.Drawing.Color.Gray;
+            this.lblCompletedInSprint.Appearance.Options.UseFont = true;
+            this.lblCompletedInSprint.Appearance.Options.UseForeColor = true;
+            this.lblCompletedInSprint.Location = new System.Drawing.Point(820, 170);
+            this.lblCompletedInSprint.Name = "lblCompletedInSprint";
+            this.lblCompletedInSprint.Size = new System.Drawing.Size(98, 12);
+            this.lblCompletedInSprint.TabIndex = 22;
+            this.lblCompletedInSprint.Text = "Tamamlanan Sprint: -";
+            // 
+            // lblInitialSprint
+            // 
+            this.lblInitialSprint.Appearance.Font = new System.Drawing.Font("Tahoma", 7.5F, System.Drawing.FontStyle.Italic);
+            this.lblInitialSprint.Appearance.ForeColor = System.Drawing.Color.Gray;
+            this.lblInitialSprint.Appearance.Options.UseFont = true;
+            this.lblInitialSprint.Appearance.Options.UseForeColor = true;
+            this.lblInitialSprint.Location = new System.Drawing.Point(600, 170);
+            this.lblInitialSprint.Name = "lblInitialSprint";
+            this.lblInitialSprint.Size = new System.Drawing.Size(54, 12);
+            this.lblInitialSprint.TabIndex = 21;
+            this.lblInitialSprint.Text = "İlk Sprint: -";
             // 
             // btnChangeSprint
             // 
@@ -348,37 +362,23 @@ namespace work_tracker.Forms
             this.btnChangeSprint.Text = "Sprint Değiştir";
             this.btnChangeSprint.Click += new System.EventHandler(this.btnChangeSprint_Click);
             // 
+            // cmbSprint
+            // 
+            this.cmbSprint.Location = new System.Drawing.Point(710, 140);
+            this.cmbSprint.Name = "cmbSprint";
+            this.cmbSprint.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbSprint.Properties.NullText = "(Sprint seçilmedi)";
+            this.cmbSprint.Size = new System.Drawing.Size(350, 20);
+            this.cmbSprint.TabIndex = 19;
+            // 
             // lblSprint
             // 
             this.lblSprint.Location = new System.Drawing.Point(600, 145);
             this.lblSprint.Name = "lblSprint";
-            this.lblSprint.Size = new System.Drawing.Size(69, 13);
+            this.lblSprint.Size = new System.Drawing.Size(57, 13);
             this.lblSprint.TabIndex = 18;
             this.lblSprint.Text = "Aktif Sprint:";
-            // 
-            // lblInitialSprint
-            // 
-            this.lblInitialSprint.Appearance.Font = new System.Drawing.Font("Tahoma", 7.5F, System.Drawing.FontStyle.Italic);
-            this.lblInitialSprint.Appearance.ForeColor = System.Drawing.Color.Gray;
-            this.lblInitialSprint.Appearance.Options.UseFont = true;
-            this.lblInitialSprint.Appearance.Options.UseForeColor = true;
-            this.lblInitialSprint.Location = new System.Drawing.Point(600, 170);
-            this.lblInitialSprint.Name = "lblInitialSprint";
-            this.lblInitialSprint.Size = new System.Drawing.Size(58, 12);
-            this.lblInitialSprint.TabIndex = 21;
-            this.lblInitialSprint.Text = "İlk Sprint: -";
-            // 
-            // lblCompletedInSprint
-            // 
-            this.lblCompletedInSprint.Appearance.Font = new System.Drawing.Font("Tahoma", 7.5F, System.Drawing.FontStyle.Italic);
-            this.lblCompletedInSprint.Appearance.ForeColor = System.Drawing.Color.Gray;
-            this.lblCompletedInSprint.Appearance.Options.UseFont = true;
-            this.lblCompletedInSprint.Appearance.Options.UseForeColor = true;
-            this.lblCompletedInSprint.Location = new System.Drawing.Point(820, 170);
-            this.lblCompletedInSprint.Name = "lblCompletedInSprint";
-            this.lblCompletedInSprint.Size = new System.Drawing.Size(107, 12);
-            this.lblCompletedInSprint.TabIndex = 22;
-            this.lblCompletedInSprint.Text = "Tamamlanan Sprint: -";
             // 
             // txtModule
             // 
@@ -553,10 +553,10 @@ namespace work_tracker.Forms
             // tabControl
             // 
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl.Location = new System.Drawing.Point(0, 320);
+            this.tabControl.Location = new System.Drawing.Point(0, 350);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedTabPage = this.tabPageActivities;
-            this.tabControl.Size = new System.Drawing.Size(1200, 300);
+            this.tabControl.Size = new System.Drawing.Size(1200, 345);
             this.tabControl.TabIndex = 1;
             this.tabControl.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
             this.tabPageActivities,
@@ -568,7 +568,7 @@ namespace work_tracker.Forms
             // 
             this.tabPageActivities.Controls.Add(this.groupActivities);
             this.tabPageActivities.Name = "tabPageActivities";
-            this.tabPageActivities.Size = new System.Drawing.Size(1198, 275);
+            this.tabPageActivities.Size = new System.Drawing.Size(1198, 320);
             this.tabPageActivities.Text = "📋 Aktivite Geçmişi";
             // 
             // groupActivities
@@ -578,7 +578,7 @@ namespace work_tracker.Forms
             this.groupActivities.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupActivities.Location = new System.Drawing.Point(0, 0);
             this.groupActivities.Name = "groupActivities";
-            this.groupActivities.Size = new System.Drawing.Size(1198, 275);
+            this.groupActivities.Size = new System.Drawing.Size(1198, 320);
             this.groupActivities.TabIndex = 0;
             this.groupActivities.Text = "Aktivite Geçmişi (Timeline)";
             // 
@@ -605,7 +605,7 @@ namespace work_tracker.Forms
             this.lstActivities.HideSelection = false;
             this.lstActivities.Location = new System.Drawing.Point(15, 55);
             this.lstActivities.Name = "lstActivities";
-            this.lstActivities.Size = new System.Drawing.Size(1170, 236);
+            this.lstActivities.Size = new System.Drawing.Size(1170, 281);
             this.lstActivities.TabIndex = 0;
             this.lstActivities.UseCompatibleStateImageBehavior = false;
             this.lstActivities.View = System.Windows.Forms.View.Details;
@@ -697,140 +697,6 @@ namespace work_tracker.Forms
             this.tabPageAttachments.Size = new System.Drawing.Size(1198, 275);
             this.tabPageAttachments.Text = "📎 Dosyalar";
             // 
-            // tabPageEmails
-            // 
-            this.tabPageEmails.Controls.Add(this.groupEmails);
-            this.tabPageEmails.Name = "tabPageEmails";
-            this.tabPageEmails.Size = new System.Drawing.Size(1198, 275);
-            this.tabPageEmails.Text = "📧 Email'ler";
-            // 
-            // groupEmails
-            // 
-            this.groupEmails.Controls.Add(this.btnUnlinkEmail);
-            this.groupEmails.Controls.Add(this.btnOpenEmail);
-            this.groupEmails.Controls.Add(this.btnLinkEmail);
-            this.groupEmails.Controls.Add(this.btnRefreshEmails);
-            this.groupEmails.Controls.Add(this.txtSearchEmail);
-            this.groupEmails.Controls.Add(this.lblEmailCount);
-            this.groupEmails.Controls.Add(this.lstEmails);
-            this.groupEmails.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupEmails.Location = new System.Drawing.Point(0, 0);
-            this.groupEmails.Name = "groupEmails";
-            this.groupEmails.Size = new System.Drawing.Size(1198, 275);
-            this.groupEmails.TabIndex = 0;
-            this.groupEmails.Text = "Bağlı Email'ler";
-            // 
-            // btnUnlinkEmail
-            // 
-            this.btnUnlinkEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUnlinkEmail.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
-            this.btnUnlinkEmail.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.btnUnlinkEmail.Appearance.Options.UseBackColor = true;
-            this.btnUnlinkEmail.Appearance.Options.UseFont = true;
-            this.btnUnlinkEmail.Location = new System.Drawing.Point(1101, 242);
-            this.btnUnlinkEmail.Name = "btnUnlinkEmail";
-            this.btnUnlinkEmail.Size = new System.Drawing.Size(85, 28);
-            this.btnUnlinkEmail.TabIndex = 6;
-            this.btnUnlinkEmail.Text = "🔗 Bağlantıyı Kaldır";
-            this.btnUnlinkEmail.Click += new System.EventHandler(this.btnUnlinkEmail_Click);
-            // 
-            // btnOpenEmail
-            // 
-            this.btnOpenEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenEmail.Location = new System.Drawing.Point(1015, 242);
-            this.btnOpenEmail.Name = "btnOpenEmail";
-            this.btnOpenEmail.Size = new System.Drawing.Size(80, 28);
-            this.btnOpenEmail.TabIndex = 5;
-            this.btnOpenEmail.Text = "📧 Outlook'ta Aç";
-            this.btnOpenEmail.Click += new System.EventHandler(this.btnOpenEmail_Click);
-            // 
-            // btnLinkEmail
-            // 
-            this.btnLinkEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLinkEmail.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
-            this.btnLinkEmail.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.btnLinkEmail.Appearance.Options.UseBackColor = true;
-            this.btnLinkEmail.Appearance.Options.UseFont = true;
-            this.btnLinkEmail.Location = new System.Drawing.Point(815, 242);
-            this.btnLinkEmail.Name = "btnLinkEmail";
-            this.btnLinkEmail.Size = new System.Drawing.Size(194, 28);
-            this.btnLinkEmail.TabIndex = 4;
-            this.btnLinkEmail.Text = "📧 Outlook'tan Email Bağla";
-            this.btnLinkEmail.Click += new System.EventHandler(this.btnLinkEmail_Click);
-            // 
-            // btnRefreshEmails
-            // 
-            this.btnRefreshEmails.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnRefreshEmails.Location = new System.Drawing.Point(200, 242);
-            this.btnRefreshEmails.Name = "btnRefreshEmails";
-            this.btnRefreshEmails.Size = new System.Drawing.Size(85, 28);
-            this.btnRefreshEmails.TabIndex = 3;
-            this.btnRefreshEmails.Text = "🔄 Yenile";
-            this.btnRefreshEmails.Click += new System.EventHandler(this.btnRefreshEmails_Click);
-            // 
-            // txtSearchEmail
-            // 
-            this.txtSearchEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.txtSearchEmail.Location = new System.Drawing.Point(15, 245);
-            this.txtSearchEmail.Name = "txtSearchEmail";
-            this.txtSearchEmail.Properties.NullText = "Email ara...";
-            this.txtSearchEmail.Size = new System.Drawing.Size(179, 20);
-            this.txtSearchEmail.TabIndex = 2;
-            // 
-            // lblEmailCount
-            // 
-            this.lblEmailCount.Location = new System.Drawing.Point(15, 30);
-            this.lblEmailCount.Name = "lblEmailCount";
-            this.lblEmailCount.Size = new System.Drawing.Size(75, 13);
-            this.lblEmailCount.TabIndex = 1;
-            this.lblEmailCount.Text = "Toplam 0 email";
-            // 
-            // lstEmails
-            // 
-            this.lstEmails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lstEmails.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colEmailDate,
-            this.colEmailFrom,
-            this.colEmailSubject,
-            this.colEmailRead,
-            this.colEmailAttachments});
-            this.lstEmails.FullRowSelect = true;
-            this.lstEmails.GridLines = true;
-            this.lstEmails.HideSelection = false;
-            this.lstEmails.Location = new System.Drawing.Point(15, 55);
-            this.lstEmails.Name = "lstEmails";
-            this.lstEmails.Size = new System.Drawing.Size(1170, 181);
-            this.lstEmails.TabIndex = 0;
-            this.lstEmails.UseCompatibleStateImageBehavior = false;
-            this.lstEmails.View = System.Windows.Forms.View.Details;
-            // 
-            // colEmailDate
-            // 
-            this.colEmailDate.Text = "Tarih";
-            this.colEmailDate.Width = 150;
-            // 
-            // colEmailFrom
-            // 
-            this.colEmailFrom.Text = "Gönderen";
-            this.colEmailFrom.Width = 250;
-            // 
-            // colEmailSubject
-            // 
-            this.colEmailSubject.Text = "Konu";
-            this.colEmailSubject.Width = 500;
-            // 
-            // colEmailRead
-            // 
-            this.colEmailRead.Text = "Okundu";
-            this.colEmailRead.Width = 80;
-            // 
-            // colEmailAttachments
-            // 
-            this.colEmailAttachments.Text = "Ekler";
-            this.colEmailAttachments.Width = 80;
-            // 
             // groupAttachments
             // 
             this.groupAttachments.Controls.Add(this.lstAttachments);
@@ -847,6 +713,58 @@ namespace work_tracker.Forms
             this.groupAttachments.Size = new System.Drawing.Size(1198, 275);
             this.groupAttachments.TabIndex = 0;
             this.groupAttachments.Text = "Ekli Dosyalar";
+            // 
+            // lstAttachments
+            // 
+            this.lstAttachments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstAttachments.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colIcon,
+            this.colFileName,
+            this.colFileSize,
+            this.colFileDescription,
+            this.colUploadedBy,
+            this.colUploadedAt});
+            this.lstAttachments.FullRowSelect = true;
+            this.lstAttachments.GridLines = true;
+            this.lstAttachments.HideSelection = false;
+            this.lstAttachments.Location = new System.Drawing.Point(15, 55);
+            this.lstAttachments.Name = "lstAttachments";
+            this.lstAttachments.Size = new System.Drawing.Size(1170, 181);
+            this.lstAttachments.TabIndex = 0;
+            this.lstAttachments.UseCompatibleStateImageBehavior = false;
+            this.lstAttachments.View = System.Windows.Forms.View.Details;
+            // 
+            // colIcon
+            // 
+            this.colIcon.Text = "";
+            this.colIcon.Width = 40;
+            // 
+            // colFileName
+            // 
+            this.colFileName.Text = "Dosya Adı";
+            this.colFileName.Width = 350;
+            // 
+            // colFileSize
+            // 
+            this.colFileSize.Text = "Boyut";
+            this.colFileSize.Width = 100;
+            // 
+            // colFileDescription
+            // 
+            this.colFileDescription.Text = "Açıklama";
+            this.colFileDescription.Width = 300;
+            // 
+            // colUploadedBy
+            // 
+            this.colUploadedBy.Text = "Yükleyen";
+            this.colUploadedBy.Width = 180;
+            // 
+            // colUploadedAt
+            // 
+            this.colUploadedAt.Text = "Yükleme Tarihi";
+            this.colUploadedAt.Width = 180;
             // 
             // btnDeleteFile
             // 
@@ -922,57 +840,139 @@ namespace work_tracker.Forms
             this.lblAttachmentCount.TabIndex = 1;
             this.lblAttachmentCount.Text = "Toplam 0 dosya";
             // 
-            // lstAttachments
+            // tabPageEmails
             // 
-            this.lstAttachments.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabPageEmails.Controls.Add(this.groupEmails);
+            this.tabPageEmails.Name = "tabPageEmails";
+            this.tabPageEmails.Size = new System.Drawing.Size(1198, 275);
+            this.tabPageEmails.Text = "📧 Email\'ler";
+            // 
+            // groupEmails
+            // 
+            this.groupEmails.Controls.Add(this.btnUnlinkEmail);
+            this.groupEmails.Controls.Add(this.btnOpenEmail);
+            this.groupEmails.Controls.Add(this.btnLinkEmail);
+            this.groupEmails.Controls.Add(this.btnRefreshEmails);
+            this.groupEmails.Controls.Add(this.txtSearchEmail);
+            this.groupEmails.Controls.Add(this.lblEmailCount);
+            this.groupEmails.Controls.Add(this.lstEmails);
+            this.groupEmails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupEmails.Location = new System.Drawing.Point(0, 0);
+            this.groupEmails.Name = "groupEmails";
+            this.groupEmails.Size = new System.Drawing.Size(1198, 275);
+            this.groupEmails.TabIndex = 0;
+            this.groupEmails.Text = "Bağlı Email\'ler";
+            // 
+            // btnUnlinkEmail
+            // 
+            this.btnUnlinkEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUnlinkEmail.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(53)))), ((int)(((byte)(69)))));
+            this.btnUnlinkEmail.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnUnlinkEmail.Appearance.Options.UseBackColor = true;
+            this.btnUnlinkEmail.Appearance.Options.UseFont = true;
+            this.btnUnlinkEmail.Location = new System.Drawing.Point(1101, 242);
+            this.btnUnlinkEmail.Name = "btnUnlinkEmail";
+            this.btnUnlinkEmail.Size = new System.Drawing.Size(85, 28);
+            this.btnUnlinkEmail.TabIndex = 6;
+            this.btnUnlinkEmail.Text = "🔗 Bağlantıyı Kaldır";
+            this.btnUnlinkEmail.Click += new System.EventHandler(this.btnUnlinkEmail_Click);
+            // 
+            // btnOpenEmail
+            // 
+            this.btnOpenEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenEmail.Location = new System.Drawing.Point(1015, 242);
+            this.btnOpenEmail.Name = "btnOpenEmail";
+            this.btnOpenEmail.Size = new System.Drawing.Size(80, 28);
+            this.btnOpenEmail.TabIndex = 5;
+            this.btnOpenEmail.Text = "📧 Outlook\'ta Aç";
+            this.btnOpenEmail.Click += new System.EventHandler(this.btnOpenEmail_Click);
+            // 
+            // btnLinkEmail
+            // 
+            this.btnLinkEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLinkEmail.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnLinkEmail.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnLinkEmail.Appearance.Options.UseBackColor = true;
+            this.btnLinkEmail.Appearance.Options.UseFont = true;
+            this.btnLinkEmail.Location = new System.Drawing.Point(815, 242);
+            this.btnLinkEmail.Name = "btnLinkEmail";
+            this.btnLinkEmail.Size = new System.Drawing.Size(194, 28);
+            this.btnLinkEmail.TabIndex = 4;
+            this.btnLinkEmail.Text = "📧 Outlook\'tan Email Bağla";
+            this.btnLinkEmail.Click += new System.EventHandler(this.btnLinkEmail_Click);
+            // 
+            // btnRefreshEmails
+            // 
+            this.btnRefreshEmails.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRefreshEmails.Location = new System.Drawing.Point(200, 242);
+            this.btnRefreshEmails.Name = "btnRefreshEmails";
+            this.btnRefreshEmails.Size = new System.Drawing.Size(85, 28);
+            this.btnRefreshEmails.TabIndex = 3;
+            this.btnRefreshEmails.Text = "🔄 Yenile";
+            this.btnRefreshEmails.Click += new System.EventHandler(this.btnRefreshEmails_Click);
+            // 
+            // txtSearchEmail
+            // 
+            this.txtSearchEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.txtSearchEmail.Location = new System.Drawing.Point(15, 245);
+            this.txtSearchEmail.Name = "txtSearchEmail";
+            this.txtSearchEmail.Properties.NullText = "Email ara...";
+            this.txtSearchEmail.Size = new System.Drawing.Size(179, 20);
+            this.txtSearchEmail.TabIndex = 2;
+            // 
+            // lblEmailCount
+            // 
+            this.lblEmailCount.Location = new System.Drawing.Point(15, 30);
+            this.lblEmailCount.Name = "lblEmailCount";
+            this.lblEmailCount.Size = new System.Drawing.Size(70, 13);
+            this.lblEmailCount.TabIndex = 1;
+            this.lblEmailCount.Text = "Toplam 0 email";
+            // 
+            // lstEmails
+            // 
+            this.lstEmails.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lstAttachments.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.colIcon,
-            this.colFileName,
-            this.colFileSize,
-            this.colFileDescription,
-            this.colUploadedBy,
-            this.colUploadedAt});
-            this.lstAttachments.FullRowSelect = true;
-            this.lstAttachments.GridLines = true;
-            this.lstAttachments.HideSelection = false;
-            this.lstAttachments.Location = new System.Drawing.Point(15, 55);
-            this.lstAttachments.Name = "lstAttachments";
-            this.lstAttachments.Size = new System.Drawing.Size(1170, 181);
-            this.lstAttachments.TabIndex = 0;
-            this.lstAttachments.UseCompatibleStateImageBehavior = false;
-            this.lstAttachments.View = System.Windows.Forms.View.Details;
+            this.lstEmails.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colEmailDate,
+            this.colEmailFrom,
+            this.colEmailSubject,
+            this.colEmailRead,
+            this.colEmailAttachments});
+            this.lstEmails.FullRowSelect = true;
+            this.lstEmails.GridLines = true;
+            this.lstEmails.HideSelection = false;
+            this.lstEmails.Location = new System.Drawing.Point(15, 55);
+            this.lstEmails.Name = "lstEmails";
+            this.lstEmails.Size = new System.Drawing.Size(1170, 181);
+            this.lstEmails.TabIndex = 0;
+            this.lstEmails.UseCompatibleStateImageBehavior = false;
+            this.lstEmails.View = System.Windows.Forms.View.Details;
             // 
-            // colIcon
+            // colEmailDate
             // 
-            this.colIcon.Text = "";
-            this.colIcon.Width = 40;
+            this.colEmailDate.Text = "Tarih";
+            this.colEmailDate.Width = 150;
             // 
-            // colFileName
+            // colEmailFrom
             // 
-            this.colFileName.Text = "Dosya Adı";
-            this.colFileName.Width = 350;
+            this.colEmailFrom.Text = "Gönderen";
+            this.colEmailFrom.Width = 250;
             // 
-            // colFileSize
+            // colEmailSubject
             // 
-            this.colFileSize.Text = "Boyut";
-            this.colFileSize.Width = 100;
+            this.colEmailSubject.Text = "Konu";
+            this.colEmailSubject.Width = 500;
             // 
-            // colFileDescription
+            // colEmailRead
             // 
-            this.colFileDescription.Text = "Açıklama";
-            this.colFileDescription.Width = 300;
+            this.colEmailRead.Text = "Okundu";
+            this.colEmailRead.Width = 80;
             // 
-            // colUploadedBy
+            // colEmailAttachments
             // 
-            this.colUploadedBy.Text = "Yükleyen";
-            this.colUploadedBy.Width = 180;
-            // 
-            // colUploadedAt
-            // 
-            this.colUploadedAt.Text = "Yükleme Tarihi";
-            this.colUploadedAt.Width = 180;
+            this.colEmailAttachments.Text = "Ekler";
+            this.colEmailAttachments.Width = 80;
             // 
             // groupAddComment
             // 
@@ -980,7 +980,7 @@ namespace work_tracker.Forms
             this.groupAddComment.Controls.Add(this.btnAddComment);
             this.groupAddComment.Controls.Add(this.txtNewComment);
             this.groupAddComment.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupAddComment.Location = new System.Drawing.Point(0, 620);
+            this.groupAddComment.Location = new System.Drawing.Point(0, 695);
             this.groupAddComment.Name = "groupAddComment";
             this.groupAddComment.Size = new System.Drawing.Size(1200, 120);
             this.groupAddComment.TabIndex = 2;
@@ -1024,7 +1024,7 @@ namespace work_tracker.Forms
             this.panelBottom.Controls.Add(this.btnRefresh);
             this.panelBottom.Controls.Add(this.btnClose);
             this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelBottom.Location = new System.Drawing.Point(0, 740);
+            this.panelBottom.Location = new System.Drawing.Point(0, 815);
             this.panelBottom.Name = "panelBottom";
             this.panelBottom.Size = new System.Drawing.Size(1200, 50);
             this.panelBottom.TabIndex = 3;
@@ -1054,7 +1054,7 @@ namespace work_tracker.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 790);
+            this.ClientSize = new System.Drawing.Size(1200, 865);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.groupAddComment);
             this.Controls.Add(this.groupWorkItemInfo);
