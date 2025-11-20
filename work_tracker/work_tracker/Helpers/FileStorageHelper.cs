@@ -125,12 +125,81 @@ namespace work_tracker.Helpers
         }
 
         /// <summary>
+        /// Dosyanın var olup olmadığını kontrol eder ve varsa tam yolunu döner.
+        /// Eğer dosya eski konumdaysa (AppDomain) yeni konuma (C:\work_tracker_docs) taşır.
+        /// </summary>
+        public static bool TryGetExistingFile(string relativePath, out string fullPath)
+        {
+            // 1. Yeni konumda ara
+            fullPath = GetFullPath(relativePath);
+            if (File.Exists(fullPath))
+            {
+                return true;
+            }
+
+            // 2. Eski konumda ara (Legacy Support)
+            try
+            {
+                var appDir = AppDomain.CurrentDomain.BaseDirectory;
+                // Eski yapı: AppDir/WorkItem_123/file.txt veya AppDir/Attachments/WorkItem_123/file.txt
+                // Bizim yapımız: WorkItem_123/file.txt
+                
+                // Olası eski yollar
+                var legacyPaths = new[]
+                {
+                    Path.Combine(appDir, relativePath),
+                    Path.Combine(appDir, "Attachments", relativePath)
+                };
+
+                foreach (var legacyPath in legacyPaths)
+                {
+                    if (File.Exists(legacyPath))
+                    {
+                        // Dosyayı bulduk! Yeni konuma taşıyalım.
+                        try
+                        {
+                            var directory = Path.GetDirectoryName(fullPath);
+                            if (!Directory.Exists(directory))
+                            {
+                                Directory.CreateDirectory(directory);
+                            }
+
+                            File.Copy(legacyPath, fullPath, overwrite: true);
+                            Logger.Info($"Dosya eski konumdan taşındı: {legacyPath} -> {fullPath}");
+                            
+                            // Eski dosyayı silmeyi deneyebiliriz ama riskli olabilir, şimdilik kalsın veya loglayalım.
+                            // File.Delete(legacyPath); 
+                            
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error($"Dosya taşınırken hata oluştu: {legacyPath}", ex);
+                            // Taşıyamadık ama dosya orada, eski yoldan devam edelim mi?
+                            // Hayır, tutarlılık için false dönelim veya exception fırlatalım.
+                            // Ancak kullanıcıya dosyayı göstermek istiyoruz.
+                            // Geçici olarak eski yolu dönelim.
+                            fullPath = legacyPath;
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Legacy dosya kontrolü sırasında hata", ex);
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Dosyanın var olup olmadığını kontrol eder
         /// </summary>
         public static bool FileExists(string relativePath)
         {
-            var fullPath = GetFullPath(relativePath);
-            return File.Exists(fullPath);
+            string fullPath;
+            return TryGetExistingFile(relativePath, out fullPath);
         }
 
         /// <summary>

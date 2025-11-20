@@ -694,7 +694,7 @@ namespace work_tracker.Forms
             // 
             this.tabPageAttachments.Controls.Add(this.groupAttachments);
             this.tabPageAttachments.Name = "tabPageAttachments";
-            this.tabPageAttachments.Size = new System.Drawing.Size(1198, 275);
+            this.tabPageAttachments.Size = new System.Drawing.Size(1198, 320);
             this.tabPageAttachments.Text = "📎 Dosyalar";
             // 
             // groupAttachments
@@ -710,7 +710,7 @@ namespace work_tracker.Forms
             this.groupAttachments.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupAttachments.Location = new System.Drawing.Point(0, 0);
             this.groupAttachments.Name = "groupAttachments";
-            this.groupAttachments.Size = new System.Drawing.Size(1198, 275);
+            this.groupAttachments.Size = new System.Drawing.Size(1198, 320);
             this.groupAttachments.TabIndex = 0;
             this.groupAttachments.Text = "Ekli Dosyalar";
             // 
@@ -731,7 +731,7 @@ namespace work_tracker.Forms
             this.lstAttachments.HideSelection = false;
             this.lstAttachments.Location = new System.Drawing.Point(15, 55);
             this.lstAttachments.Name = "lstAttachments";
-            this.lstAttachments.Size = new System.Drawing.Size(1170, 181);
+            this.lstAttachments.Size = new System.Drawing.Size(1170, 226);
             this.lstAttachments.TabIndex = 0;
             this.lstAttachments.UseCompatibleStateImageBehavior = false;
             this.lstAttachments.View = System.Windows.Forms.View.Details;
@@ -773,7 +773,7 @@ namespace work_tracker.Forms
             this.btnDeleteFile.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.btnDeleteFile.Appearance.Options.UseBackColor = true;
             this.btnDeleteFile.Appearance.Options.UseFont = true;
-            this.btnDeleteFile.Location = new System.Drawing.Point(1101, 242);
+            this.btnDeleteFile.Location = new System.Drawing.Point(1101, 287);
             this.btnDeleteFile.Name = "btnDeleteFile";
             this.btnDeleteFile.Size = new System.Drawing.Size(85, 28);
             this.btnDeleteFile.TabIndex = 7;
@@ -783,7 +783,7 @@ namespace work_tracker.Forms
             // btnPreviewFile
             // 
             this.btnPreviewFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPreviewFile.Location = new System.Drawing.Point(915, 242);
+            this.btnPreviewFile.Location = new System.Drawing.Point(915, 287);
             this.btnPreviewFile.Name = "btnPreviewFile";
             this.btnPreviewFile.Size = new System.Drawing.Size(94, 28);
             this.btnPreviewFile.TabIndex = 6;
@@ -793,7 +793,7 @@ namespace work_tracker.Forms
             // btnOpenFile
             // 
             this.btnOpenFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenFile.Location = new System.Drawing.Point(1015, 242);
+            this.btnOpenFile.Location = new System.Drawing.Point(1015, 287);
             this.btnOpenFile.Name = "btnOpenFile";
             this.btnOpenFile.Size = new System.Drawing.Size(80, 28);
             this.btnOpenFile.TabIndex = 5;
@@ -803,7 +803,7 @@ namespace work_tracker.Forms
             // btnDownloadFile
             // 
             this.btnDownloadFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDownloadFile.Location = new System.Drawing.Point(815, 242);
+            this.btnDownloadFile.Location = new System.Drawing.Point(815, 287);
             this.btnDownloadFile.Name = "btnDownloadFile";
             this.btnDownloadFile.Size = new System.Drawing.Size(94, 28);
             this.btnDownloadFile.TabIndex = 4;
@@ -817,7 +817,7 @@ namespace work_tracker.Forms
             this.btnAddFile.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.btnAddFile.Appearance.Options.UseBackColor = true;
             this.btnAddFile.Appearance.Options.UseFont = true;
-            this.btnAddFile.Location = new System.Drawing.Point(679, 242);
+            this.btnAddFile.Location = new System.Drawing.Point(679, 287);
             this.btnAddFile.Name = "btnAddFile";
             this.btnAddFile.Size = new System.Drawing.Size(130, 28);
             this.btnAddFile.TabIndex = 3;

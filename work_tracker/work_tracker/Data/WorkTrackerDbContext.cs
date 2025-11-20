@@ -20,6 +20,7 @@ namespace work_tracker.Data
         public virtual DbSet<WorkItemAttachment> WorkItemAttachments { get; set; }
         public virtual DbSet<WorkItemEmail> WorkItemEmails { get; set; }
         public virtual DbSet<WikiPage> WikiPages { get; set; }
+        public virtual DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -101,6 +102,17 @@ namespace work_tracker.Data
                 .WithOptional(c => c.ParentPage)
                 .HasForeignKey(c => c.ParentPageId)
                 .WillCascadeOnDelete(false);
+
+            // WorkItem - Tags (Many-to-Many)
+            modelBuilder.Entity<WorkItem>()
+                .HasMany(w => w.Tags)
+                .WithMany(t => t.WorkItems)
+                .Map(m =>
+                {
+                    m.ToTable("WorkItemTags");
+                    m.MapLeftKey("WorkItemId");
+                    m.MapRightKey("TagId");
+                });
         }
     }
 }

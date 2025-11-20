@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
+using DevExpress.XtraEditors.Controls;
 using work_tracker.Data;
 using work_tracker.Data.Entities;
 
@@ -81,11 +84,16 @@ namespace work_tracker.Forms
                 Width = 100,
                 FormatString = "dd.MM.yyyy"
             });
+
+            LoadTags();
         }
 
         private void LoadWorkItem(int workItemId)
         {
-            var workItem = _context.WorkItems.Find(workItemId);
+            var workItem = _context.WorkItems
+                .Include(w => w.Tags)
+                .FirstOrDefault(w => w.Id == workItemId);
+                
             if (workItem != null)
             {
                 txtTitle.Text = workItem.Title;
@@ -95,6 +103,8 @@ namespace work_tracker.Forms
                 cmbProject.EditValue = workItem.ProjectId;
                 cmbModule.EditValue = workItem.ModuleId;
                 cmbMeeting.EditValue = workItem.SourceMeetingId;
+
+                LoadTags(workItem.Tags.Select(t => t.Id));
             }
         }
 
@@ -145,9 +155,15 @@ namespace work_tracker.Forms
 
             try
             {
+                WorkItem workItem;
+                
                 if (_workItemId.HasValue)
                 {
-                    var workItem = _context.WorkItems.Find(_workItemId.Value);
+                    // Mevcut WorkItem'ı etiketleriyle beraber yükle
+                    workItem = _context.WorkItems
+                        .Include(w => w.Tags)
+                        .FirstOrDefault(w => w.Id == _workItemId.Value);
+                        
                     if (workItem != null)
                     {
                         workItem.Title = txtTitle.Text.Trim();
@@ -161,7 +177,7 @@ namespace work_tracker.Forms
                 }
                 else
                 {
-                    var newWorkItem = new WorkItem
+                    workItem = new WorkItem
                     {
                         Title = txtTitle.Text.Trim(),
                         Description = txtDescription.Text,
@@ -174,7 +190,27 @@ namespace work_tracker.Forms
                         Status = "Bekliyor",
                         CreatedAt = DateTime.Now
                     };
-                    _context.WorkItems.Add(newWorkItem);
+                    _context.WorkItems.Add(workItem);
+                }
+
+                if (workItem != null)
+                {
+                    // Seçili etiketleri al
+                    var selectedTagIds = cmbTags.Properties.Items
+                        .GetCheckedValues()
+                        .Cast<int>()
+                        .ToList();
+
+                    // Etiketleri güncelle
+                    workItem.Tags.Clear();
+                    foreach (var tagId in selectedTagIds)
+                    {
+                        var tag = _context.Tags.Find(tagId);
+                        if (tag != null)
+                        {
+                            workItem.Tags.Add(tag);
+                        }
+                    }
                 }
 
                 _context.SaveChanges();
@@ -191,6 +227,79 @@ namespace work_tracker.Forms
         {
             DialogResult = DialogResult.Cancel;
             Close();
+        }
+
+        private void LoadTags(IEnumerable<int> selectedTagIds = null)
+        {
+            IEnumerable<int> currentSelection = selectedTagIds ??
+                cmbTags.Properties.Items
+                    .GetCheckedValues()
+                    .OfType<int>();
+
+            var selectedSet = new HashSet<int>(currentSelection);
+
+            var tags = _context.Tags
+                .OrderBy(t => t.Name)
+                .ToList();
+
+            cmbTags.Properties.Items.BeginUpdate();
+            cmbTags.Properties.Items.Clear();
+
+            foreach (var tag in tags)
+            {
+                var item = new CheckedListBoxItem(tag.Id, tag.Name);
+                if (selectedSet.Contains(tag.Id))
+                {
+                    item.CheckState = CheckState.Checked;
+                }
+
+                cmbTags.Properties.Items.Add(item);
+            }
+
+            cmbTags.Properties.Items.EndUpdate();
+        }
+
+        private void btnAddTag_Click(object sender, EventArgs e)
+        {
+            var tagName = XtraInputBox.Show("Yeni etiket adını girin:", "Etiket Ekle", string.Empty);
+            if (string.IsNullOrWhiteSpace(tagName))
+                return;
+
+            tagName = tagName.Trim();
+
+            if (_context.Tags.Any(t => t.Name == tagName))
+            {
+                XtraMessageBox.Show("Bu isimde bir etiket zaten mevcut.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var tag = new Tag
+            {
+                Name = tagName,
+                ColorHex = GenerateColorHex(tagName)
+            };
+
+            _context.Tags.Add(tag);
+            _context.SaveChanges();
+
+            LoadTags(new[] { tag.Id });
+
+            XtraMessageBox.Show("Etiket oluşturuldu ve seçildi.", "Bilgi",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private string GenerateColorHex(string seed)
+        {
+            var palette = new[]
+            {
+                "#EC407A", "#AB47BC", "#7E57C2", "#5C6BC0",
+                "#42A5F5", "#26A69A", "#66BB6A", "#9CCC65",
+                "#D4E157", "#FFA726", "#FF7043", "#8D6E63"
+            };
+
+            var index = Math.Abs(seed.GetHashCode());
+            return palette[index % palette.Length];
         }
     }
 }

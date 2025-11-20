@@ -20,9 +20,10 @@
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
+    <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
+    <MinimumRequiredVersion>1.0.0.2</MinimumRequiredVersion>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -100,6 +101,7 @@
     <Compile Include="Data\Entities\Project.cs" />
     <Compile Include="Data\Entities\ProjectModule.cs" />
     <Compile Include="Data\Entities\Sprint.cs" />
+    <Compile Include="Data\Entities\Tag.cs" />
     <Compile Include="Data\Entities\WikiPage.cs" />
     <Compile Include="Data\Entities\WorkItem.cs" />
     <Compile Include="Data\Entities\WorkItemActivity.cs" />
@@ -150,6 +152,10 @@
     <Compile Include="Migrations\202511200628598_test_outlook_integration.cs" />
     <Compile Include="Migrations\202511200628598_test_outlook_integration.Designer.cs">
       <DependentUpon>202511200628598_test_outlook_integration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511201104517_added_tag.cs" />
+    <Compile Include="Migrations\202511201104517_added_tag.Designer.cs">
+      <DependentUpon>202511201104517_added_tag.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -345,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511200628598_test_outlook_integration.resx">
       <DependentUpon>202511200628598_test_outlook_integration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511201104517_added_tag.resx">
+      <DependentUpon>202511201104517_added_tag.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

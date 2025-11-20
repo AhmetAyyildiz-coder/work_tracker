@@ -22,6 +22,10 @@ namespace work_tracker.Forms
         private SimpleButton btnSave;
         private SimpleButton btnCancel;
 
+        private LabelControl labelControl8;
+        private CheckedComboBoxEdit cmbTags;
+        private SimpleButton btnAddTag;
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -44,6 +48,7 @@ namespace work_tracker.Forms
             this.labelControl5 = new DevExpress.XtraEditors.LabelControl();
             this.labelControl6 = new DevExpress.XtraEditors.LabelControl();
             this.labelControl7 = new DevExpress.XtraEditors.LabelControl();
+            this.labelControl8 = new DevExpress.XtraEditors.LabelControl();
             this.txtTitle = new DevExpress.XtraEditors.TextEdit();
             this.txtDescription = new DevExpress.XtraEditors.MemoEdit();
             this.txtRequestedBy = new DevExpress.XtraEditors.TextEdit();
@@ -51,8 +56,10 @@ namespace work_tracker.Forms
             this.cmbProject = new DevExpress.XtraEditors.LookUpEdit();
             this.cmbModule = new DevExpress.XtraEditors.LookUpEdit();
             this.cmbMeeting = new DevExpress.XtraEditors.LookUpEdit();
+            this.cmbTags = new DevExpress.XtraEditors.CheckedComboBoxEdit();
             this.btnSave = new DevExpress.XtraEditors.SimpleButton();
             this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
+            this.btnAddTag = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.txtTitle.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtDescription.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtRequestedBy.Properties)).BeginInit();
@@ -61,6 +68,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbModule.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbTags.Properties)).BeginInit();
             this.SuspendLayout();
             // 
             // labelControl1
@@ -118,6 +126,14 @@ namespace work_tracker.Forms
             this.labelControl7.Size = new System.Drawing.Size(127, 13);
             this.labelControl7.TabIndex = 6;
             this.labelControl7.Text = "İlişkili Toplantı (Opsiyonel):";
+            // 
+            // labelControl8
+            // 
+            this.labelControl8.Location = new System.Drawing.Point(20, 330);
+            this.labelControl8.Name = "labelControl8";
+            this.labelControl8.Size = new System.Drawing.Size(45, 13);
+            this.labelControl8.TabIndex = 16;
+            this.labelControl8.Text = "Etiketler:";
             // 
             // txtTitle
             // 
@@ -183,9 +199,28 @@ namespace work_tracker.Forms
             this.cmbMeeting.Size = new System.Drawing.Size(720, 20);
             this.cmbMeeting.TabIndex = 13;
             // 
+            // cmbTags
+            // 
+            this.cmbTags.Location = new System.Drawing.Point(20, 350);
+            this.cmbTags.Name = "cmbTags";
+            this.cmbTags.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbTags.Properties.NullText = "Etiket seçin (opsiyonel)...";
+            this.cmbTags.Size = new System.Drawing.Size(720, 20);
+            this.cmbTags.TabIndex = 17;
+            // 
+            // btnAddTag
+            // 
+            this.btnAddTag.Location = new System.Drawing.Point(560, 330);
+            this.btnAddTag.Name = "btnAddTag";
+            this.btnAddTag.Size = new System.Drawing.Size(180, 20);
+            this.btnAddTag.TabIndex = 18;
+            this.btnAddTag.Text = "➕ Yeni Etiket";
+            this.btnAddTag.Click += new System.EventHandler(this.btnAddTag_Click);
+            // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(560, 340);
+            this.btnSave.Location = new System.Drawing.Point(560, 390);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(90, 30);
             this.btnSave.TabIndex = 14;
@@ -194,7 +229,7 @@ namespace work_tracker.Forms
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(650, 340);
+            this.btnCancel.Location = new System.Drawing.Point(650, 390);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(90, 30);
             this.btnCancel.TabIndex = 15;
@@ -205,9 +240,11 @@ namespace work_tracker.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(760, 390);
+            this.ClientSize = new System.Drawing.Size(760, 440);
             this.Controls.Add(this.btnCancel);
+            this.Controls.Add(this.btnAddTag);
             this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.cmbTags);
             this.Controls.Add(this.cmbMeeting);
             this.Controls.Add(this.cmbModule);
             this.Controls.Add(this.cmbProject);
@@ -215,6 +252,7 @@ namespace work_tracker.Forms
             this.Controls.Add(this.txtRequestedBy);
             this.Controls.Add(this.txtDescription);
             this.Controls.Add(this.txtTitle);
+            this.Controls.Add(this.labelControl8);
             this.Controls.Add(this.labelControl7);
             this.Controls.Add(this.labelControl6);
             this.Controls.Add(this.labelControl5);
@@ -237,6 +275,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbModule.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbTags.Properties)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -583,11 +583,18 @@ namespace work_tracker.Forms
                 {
                     try
                     {
-                        var sourcePath = FileStorageHelper.GetFullPath(attachment.FilePath);
-                        File.Copy(sourcePath, saveFileDialog.FileName, overwrite: true);
-                        
-                        XtraMessageBox.Show("Dosya başarıyla indirildi.", "Başarılı", 
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (FileStorageHelper.TryGetExistingFile(attachment.FilePath, out string sourcePath))
+                        {
+                            File.Copy(sourcePath, saveFileDialog.FileName, overwrite: true);
+                            
+                            XtraMessageBox.Show("Dosya başarıyla indirildi.", "Başarılı", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            XtraMessageBox.Show("Dosya bulunamadı. Silinmiş veya taşınmış olabilir.", "Hata", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -612,8 +619,7 @@ namespace work_tracker.Forms
 
             try
             {
-                var fullPath = FileStorageHelper.GetFullPath(attachment.FilePath);
-                if (File.Exists(fullPath))
+                if (FileStorageHelper.TryGetExistingFile(attachment.FilePath, out string fullPath))
                 {
                     Process.Start(fullPath);
                 }
@@ -656,10 +662,9 @@ namespace work_tracker.Forms
 
             try
             {
-                var fullPath = FileStorageHelper.GetFullPath(attachment.FilePath);
-                if (!File.Exists(fullPath))
+                if (!FileStorageHelper.TryGetExistingFile(attachment.FilePath, out string fullPath))
                 {
-                    XtraMessageBox.Show("Dosya bulunamadı. Silinmiş veya taşınmış olabilir.", "Hata", 
+                    XtraMessageBox.Show("Dosya bulunamadı. Silinmiş veya taşınmış olabilir."  + fullPath + " - " + attachment.FilePath, "Hata", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
