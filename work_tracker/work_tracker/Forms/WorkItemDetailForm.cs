@@ -150,6 +150,21 @@ namespace work_tracker.Forms
                     totalDevTime += DateTime.Now - devStartTime.Value;
                 }
 
+                // Fallback: Eğer aktivite geçmişinden süre hesaplanamadıysa (eski kayıtlar için)
+                // StartedAt ve CompletedAt alanlarını kullan
+                if (totalDevTime == TimeSpan.Zero && _workItem.StartedAt.HasValue)
+                {
+                    if (_workItem.Status == "Cozuldu" || _workItem.Status == "Tamamlandi")
+                    {
+                        if (_workItem.CompletedAt.HasValue)
+                            totalDevTime = _workItem.CompletedAt.Value - _workItem.StartedAt.Value;
+                    }
+                    else if (_workItem.Status == "MudahaleEdiliyor" || _workItem.Status == "Gelistirmede")
+                    {
+                        totalDevTime = DateTime.Now - _workItem.StartedAt.Value;
+                    }
+                }
+
                 if (totalDevTime > TimeSpan.Zero)
                 {
                     // Süreyi formatla
