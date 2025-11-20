@@ -124,7 +124,7 @@ namespace work_tracker.Forms
 
                 TimeSpan totalDevTime = TimeSpan.Zero;
                 DateTime? devStartTime = null;
-                
+
                 // Başlangıç durumu kontrolü (eğer oluşturulduğunda direkt geliştirmedeyse)
                 // Ancak genelde "Bekliyor" olarak başlar.
                 // StartedAt alanı varsa onu baz alabiliriz ama activity log daha hassas.
@@ -160,7 +160,7 @@ namespace work_tracker.Forms
                         durationStr += $"{totalDevTime.Hours} sa ";
                     if (totalDevTime.Minutes > 0)
                         durationStr += $"{totalDevTime.Minutes} dk";
-                    
+
                     if (string.IsNullOrEmpty(durationStr)) durationStr = "< 1 dk";
 
                     // Label oluştur veya güncelle
@@ -172,7 +172,7 @@ namespace work_tracker.Forms
                         lblDevTime.Name = "lblDevTime";
                         lblDevTime.Appearance.Font = new Font("Tahoma", 8.25F, FontStyle.Bold);
                         lblDevTime.Appearance.ForeColor = Color.DarkOrange;
-                        
+
                         // Konumlandırma (lblCompletedAt'in yerini bulmamız lazım, ama designer'da olduğu için tam koordinat zor)
                         // Basitçe lblCompletedAt'in altına koyalım.
                         if (lblCompletedAt != null)
@@ -181,7 +181,7 @@ namespace work_tracker.Forms
                             lblCompletedAt.Parent.Controls.Add(lblDevTime);
                         }
                     }
-                    
+
                     lblDevTime.Text = $"Geliştirme Süresi: {durationStr}";
                     lblDevTime.Visible = true;
                 }
@@ -190,6 +190,7 @@ namespace work_tracker.Forms
             {
                 Logger.Error("Geliştirme süresi hesaplanırken hata", ex);
             }
+        }
 
         private void LoadActivities()
         {
