@@ -45,6 +45,10 @@
     <Reference Include="DevExpress.RichEdit.v21.2.Core" />
     <Reference Include="DevExpress.Office.v21.2.Core" />
     <Reference Include="DevExpress.Printing.v21.2.Core" />
+    <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Outlook.15.0.4797.1004\lib\net20\Microsoft.Office.Interop.Outlook.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.dll</HintPath>
@@ -75,6 +79,7 @@
     <Compile Include="Data\Entities\WorkItem.cs" />
     <Compile Include="Data\Entities\WorkItemActivity.cs" />
     <Compile Include="Data\Entities\WorkItemAttachment.cs" />
+    <Compile Include="Data\Entities\WorkItemEmail.cs" />
     <Compile Include="Data\WorkTrackerDbContext.cs" />
     <Compile Include="Forms\WikiForm.cs">
       <SubType>Form</SubType>
@@ -84,6 +89,7 @@
     </Compile>
     <Compile Include="Helpers\FileStorageHelper.cs" />
     <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Helpers\OutlookHelper.cs" />
     <Compile Include="Migrations\202511111409311_initial.cs" />
     <Compile Include="Migrations\202511111409311_initial.Designer.cs">
       <DependentUpon>202511111409311_initial.cs</DependentUpon>
@@ -115,6 +121,10 @@
     <Compile Include="Migrations\202511181248004_added_wiki_entity_fix.cs" />
     <Compile Include="Migrations\202511181248004_added_wiki_entity_fix.Designer.cs">
       <DependentUpon>202511181248004_added_wiki_entity_fix.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511200628598_test_outlook_integration.cs" />
+    <Compile Include="Migrations\202511200628598_test_outlook_integration.Designer.cs">
+      <DependentUpon>202511200628598_test_outlook_integration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -307,6 +317,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511181248004_added_wiki_entity_fix.resx">
       <DependentUpon>202511181248004_added_wiki_entity_fix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511200628598_test_outlook_integration.resx">
+      <DependentUpon>202511200628598_test_outlook_integration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

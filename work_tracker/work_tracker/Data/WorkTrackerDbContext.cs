@@ -18,6 +18,7 @@ namespace work_tracker.Data
         public virtual DbSet<KanbanColumnSetting> KanbanColumnSettings { get; set; }
         public virtual DbSet<WorkItemActivity> WorkItemActivities { get; set; }
         public virtual DbSet<WorkItemAttachment> WorkItemAttachments { get; set; }
+        public virtual DbSet<WorkItemEmail> WorkItemEmails { get; set; }
         public virtual DbSet<WikiPage> WikiPages { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -86,6 +87,13 @@ namespace work_tracker.Data
                 .WithRequired(a => a.WorkItem)
                 .HasForeignKey(a => a.WorkItemId)
                 .WillCascadeOnDelete(true); // İş silindiğinde dosyaları da sil
+
+            // WorkItem - Emails ilişkisi
+            modelBuilder.Entity<WorkItem>()
+                .HasMany(w => w.Emails)
+                .WithOptional(e => e.WorkItem)
+                .HasForeignKey(e => e.WorkItemId)
+                .WillCascadeOnDelete(true); // İş silindiğinde email bağlantıları da sil
 
             // WikiPage - Parent/Children ilişkisi
             modelBuilder.Entity<WikiPage>()

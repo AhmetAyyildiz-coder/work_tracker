@@ -570,6 +570,24 @@ namespace work_tracker.Forms
                         }
 
                     _context.SaveChanges();
+
+                    // Aktivite kaydı oluştur
+                    if (oldStatus != targetColumn)
+                    {
+                        var activity = new WorkItemActivity
+                        {
+                            WorkItemId = dbWorkItem.Id,
+                            ActivityType = "StatusChange",
+                            Description = $"Durum değiştirildi: {GetColumnDisplayName(oldStatus)} → {GetColumnDisplayName(targetColumn)}",
+                            OldValue = oldStatus,
+                            NewValue = targetColumn,
+                            CreatedBy = Environment.UserName,
+                            CreatedAt = DateTime.Now
+                        };
+                        _context.WorkItemActivities.Add(activity);
+                        _context.SaveChanges();
+                    }
+
                     LoadScrumBoard();
                 }
             }

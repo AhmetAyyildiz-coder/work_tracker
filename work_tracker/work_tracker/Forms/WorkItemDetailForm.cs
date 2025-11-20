@@ -36,6 +36,7 @@ namespace work_tracker.Forms
             LoadActivities();
             LoadComments();
             LoadAttachments();
+            LoadEmails();
         }
 
         private void LoadSprints()
@@ -106,8 +107,89 @@ namespace work_tracker.Forms
                 lblCreatedAt.Text = $"Oluşturulma: {_workItem.CreatedAt:dd.MM.yyyy HH:mm}";
                 if (_workItem.CompletedAt.HasValue)
                     lblCompletedAt.Text = $"Tamamlanma: {_workItem.CompletedAt:dd.MM.yyyy HH:mm}";
+
+                // Geliştirme süresini hesapla ve göster
+                CalculateAndShowDevelopmentTime();
             }
         }
+
+        private void CalculateAndShowDevelopmentTime()
+        {
+            try
+            {
+                var activities = _context.WorkItemActivities
+                    .Where(a => a.WorkItemId == _workItemId && a.ActivityType == "StatusChange")
+                    .OrderBy(a => a.CreatedAt)
+                    .ToList();
+
+                TimeSpan totalDevTime = TimeSpan.Zero;
+                DateTime? devStartTime = null;
+                
+                // Başlangıç durumu kontrolü (eğer oluşturulduğunda direkt geliştirmedeyse)
+                // Ancak genelde "Bekliyor" olarak başlar.
+                // StartedAt alanı varsa onu baz alabiliriz ama activity log daha hassas.
+
+                foreach (var activity in activities)
+                {
+                    // Geliştirmeye giriş
+                    if ((activity.NewValue == "Gelistirmede" || activity.NewValue == "MudahaleEdiliyor") && devStartTime == null)
+                    {
+                        devStartTime = activity.CreatedAt;
+                    }
+                    // Geliştirmeden çıkış
+                    else if ((activity.OldValue == "Gelistirmede" || activity.OldValue == "MudahaleEdiliyor") && devStartTime != null)
+                    {
+                        totalDevTime += activity.CreatedAt - devStartTime.Value;
+                        devStartTime = null;
+                    }
+                }
+
+                // Şu an hala geliştirmedeyse
+                if (devStartTime != null)
+                {
+                    totalDevTime += DateTime.Now - devStartTime.Value;
+                }
+
+                if (totalDevTime > TimeSpan.Zero)
+                {
+                    // Süreyi formatla
+                    string durationStr = "";
+                    if (totalDevTime.TotalDays >= 1)
+                        durationStr += $"{(int)totalDevTime.TotalDays} gün ";
+                    if (totalDevTime.Hours > 0)
+                        durationStr += $"{totalDevTime.Hours} sa ";
+                    if (totalDevTime.Minutes > 0)
+                        durationStr += $"{totalDevTime.Minutes} dk";
+                    
+                    if (string.IsNullOrEmpty(durationStr)) durationStr = "< 1 dk";
+
+                    // Label oluştur veya güncelle
+                    var lblDevTime = this.Controls.Find("lblDevTime", true).FirstOrDefault() as LabelControl;
+                    if (lblDevTime == null)
+                    {
+                        // Dinamik olarak label ekle (lblCompletedAt'in altına)
+                        lblDevTime = new LabelControl();
+                        lblDevTime.Name = "lblDevTime";
+                        lblDevTime.Appearance.Font = new Font("Tahoma", 8.25F, FontStyle.Bold);
+                        lblDevTime.Appearance.ForeColor = Color.DarkOrange;
+                        
+                        // Konumlandırma (lblCompletedAt'in yerini bulmamız lazım, ama designer'da olduğu için tam koordinat zor)
+                        // Basitçe lblCompletedAt'in altına koyalım.
+                        if (lblCompletedAt != null)
+                        {
+                            lblDevTime.Location = new Point(lblCompletedAt.Location.X, lblCompletedAt.Location.Y + 20);
+                            lblCompletedAt.Parent.Controls.Add(lblDevTime);
+                        }
+                    }
+                    
+                    lblDevTime.Text = $"Geliştirme Süresi: {durationStr}";
+                    lblDevTime.Visible = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Geliştirme süresi hesaplanırken hata", ex);
+            }
 
         private void LoadActivities()
         {
@@ -668,6 +750,195 @@ namespace work_tracker.Forms
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        #endregion
+
+        #region Email Yönetimi
+
+        private void LoadEmails()
+        {
+            var emails = _context.WorkItemEmails
+                .Where(e => e.WorkItemId == _workItemId)
+                .OrderByDescending(e => e.ReceivedDate ?? e.SentDate ?? e.LinkedAt)
+                .ToList();
+
+            lstEmails.Items.Clear();
+            foreach (var email in emails)
+            {
+                var item = new ListViewItem((email.ReceivedDate ?? email.SentDate ?? email.LinkedAt).ToString("dd.MM.yyyy HH:mm"));
+                item.SubItems.Add(email.From ?? "-");
+                item.SubItems.Add(email.Subject ?? "-");
+                item.SubItems.Add(email.IsRead ? "✓" : "✗");
+                item.SubItems.Add(email.HasAttachments ? $"📎 {email.AttachmentCount}" : "-");
+                item.Tag = email;
+                
+                lstEmails.Items.Add(item);
+            }
+
+            lblEmailCount.Text = $"Toplam {emails.Count} email";
+        }
+
+        private void btnLinkEmail_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Outlook'tan email'leri çek
+                var outlookEmails = OutlookHelper.GetEmailsFromOutlook(50, txtSearchEmail.Text);
+
+                if (outlookEmails.Count == 0)
+                {
+                    XtraMessageBox.Show("Outlook'ta email bulunamadı.", "Bilgi", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Email seçim formu (basit bir liste)
+                using (var form = new XtraForm())
+                {
+                    form.Text = "Email Seç";
+                    form.Size = new System.Drawing.Size(800, 500);
+                    form.StartPosition = FormStartPosition.CenterParent;
+
+                    var listBox = new System.Windows.Forms.ListBox
+                    {
+                        Dock = DockStyle.Fill,
+                        DisplayMember = "Subject"
+                    };
+
+                    foreach (var email in outlookEmails)
+                    {
+                        listBox.Items.Add(email);
+                    }
+
+                    var btnSelect = new SimpleButton
+                    {
+                        Text = "Seç",
+                        Dock = DockStyle.Bottom,
+                        Height = 40
+                    };
+
+                    var btnCancel = new SimpleButton
+                    {
+                        Text = "İptal",
+                        Dock = DockStyle.Bottom,
+                        Height = 40
+                    };
+
+                    btnSelect.Click += (s, args) => { form.DialogResult = DialogResult.OK; form.Close(); };
+                    btnCancel.Click += (s, args) => { form.DialogResult = DialogResult.Cancel; form.Close(); };
+
+                    form.Controls.Add(listBox);
+                    form.Controls.Add(btnSelect);
+                    form.Controls.Add(btnCancel);
+
+                    if (form.ShowDialog() == DialogResult.OK && listBox.SelectedItem != null)
+                    {
+                        var selectedEmail = listBox.SelectedItem as WorkItemEmail;
+                        if (selectedEmail != null)
+                        {
+                            // Email'i veritabanına kaydet ve işe bağla
+                            selectedEmail.WorkItemId = _workItemId;
+                            selectedEmail.LinkedBy = Environment.UserName;
+                            selectedEmail.LinkedAt = DateTime.Now;
+
+                            _context.WorkItemEmails.Add(selectedEmail);
+                            _context.SaveChanges();
+
+                            // Aktivite kaydet
+                            AddActivity(ActivityTypes.FieldUpdate, 
+                                $"Email bağlandı: {selectedEmail.Subject}");
+
+                            LoadEmails();
+                            XtraMessageBox.Show("Email başarıyla bağlandı.", "Başarılı", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Email bağlanırken hata oluştu:\n\n{ex.Message}", "Hata", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Error("Email bağlama hatası", ex);
+            }
+        }
+
+        private void btnOpenEmail_Click(object sender, EventArgs e)
+        {
+            if (lstEmails.SelectedItems.Count == 0)
+            {
+                XtraMessageBox.Show("Lütfen bir email seçin.", "Uyarı", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var email = lstEmails.SelectedItems[0].Tag as WorkItemEmail;
+            if (email == null || string.IsNullOrEmpty(email.OutlookEntryId))
+            {
+                XtraMessageBox.Show("Bu email Outlook'ta bulunamadı.", "Uyarı", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                OutlookHelper.OpenEmailInOutlook(email.OutlookEntryId);
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Email açılırken hata oluştu:\n\n{ex.Message}", "Hata", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Error("Email açma hatası", ex);
+            }
+        }
+
+        private void btnUnlinkEmail_Click(object sender, EventArgs e)
+        {
+            if (lstEmails.SelectedItems.Count == 0)
+            {
+                XtraMessageBox.Show("Lütfen bir email seçin.", "Uyarı", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var email = lstEmails.SelectedItems[0].Tag as WorkItemEmail;
+            if (email == null) return;
+
+            var result = XtraMessageBox.Show(
+                $"Bu email'in bağlantısını kaldırmak istediğinizden emin misiniz?\n\n" +
+                $"Konu: {email.Subject}",
+                "Bağlantıyı Kaldır",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            try
+            {
+                email.WorkItemId = null;
+                email.LinkedBy = null;
+                _context.SaveChanges();
+
+                // Aktivite kaydet
+                AddActivity(ActivityTypes.FieldUpdate, 
+                    $"Email bağlantısı kaldırıldı: {email.Subject}");
+
+                LoadEmails();
+                XtraMessageBox.Show("Email bağlantısı kaldırıldı.", "Başarılı", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Email bağlantısı kaldırılırken hata oluştu:\n\n{ex.Message}", "Hata", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Error("Email bağlantısı kaldırma hatası", ex);
+            }
+        }
+
+        private void btnRefreshEmails_Click(object sender, EventArgs e)
+        {
+            LoadEmails();
         }
 
         #endregion

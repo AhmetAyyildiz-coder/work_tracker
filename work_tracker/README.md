@@ -48,6 +48,13 @@ Planlı işler (Scrum) ve plansız/acil işleri (Kanban) birbirinden ayırarak y
 - Toplantı-iş talebi ilişkilendirme ve izlenebilirlik
 - Toplantıdan gelen iş taleplerinin listesi ve durumları
 
+### ✅ 🆕 Modül 8: Outlook Entegrasyonu
+- **E-posta Bağlama**: Outlook'tan gelen e-postaları doğrudan iş taleplerine bağlama
+- **Otomatik Arama**: Konu başlığına göre ilgili e-postaları bulma
+- **Akıllı Filtreleme**: Performans için sadece son 7 güne ait e-postaları listeleme
+- **İçerik Aktarımı**: E-posta içeriğini iş açıklamasına veya yorumlara ekleme
+- **Ek Dosya Desteği**: E-posta eklerini iş talebine dosya olarak kaydetme
+
 ### ✅ 🆕 İş Detayı & Aktivite Takibi
 - **Geliştirilmiş İş Kartları**: Modern, interaktif tasarım
   - 🎨 Hover efektleri ile animasyonlu gölgeler

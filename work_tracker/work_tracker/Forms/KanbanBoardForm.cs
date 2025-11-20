@@ -134,8 +134,19 @@ namespace work_tracker.Forms
             headerPanel.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
 
             // İş kartlarını yükle
-            var workItems = _context.WorkItems
-                .Where(w => w.Board == "Kanban" && w.Status == columnSetting.ColumnName)
+            // İş kartlarını yükle
+            var query = _context.WorkItems
+                .Include(w => w.Activities)
+                .Where(w => w.Board == "Kanban" && w.Status == columnSetting.ColumnName);
+
+            // Filtre: Çözüldü sütununda 2 haftadan eski işleri gizle
+            if (columnSetting.ColumnName == "Cozuldu")
+            {
+                var twoWeeksAgo = DateTime.Now.AddDays(-14);
+                query = query.Where(w => !w.CompletedAt.HasValue || w.CompletedAt >= twoWeeksAgo);
+            }
+
+            var workItems = query
                 .OrderBy(w => w.OrderIndex)
                 .ToList();
 
@@ -294,6 +305,46 @@ namespace work_tracker.Forms
             if (workItem.EffortEstimate.HasValue)
             {
                 footerText += (string.IsNullOrEmpty(footerText) ? "" : " | ") + $"{workItem.EffortEstimate}g";
+            }
+
+            // Çalışma süresini hesapla
+            if (workItem.Activities != null)
+            {
+                var activities = workItem.Activities
+                    .Where(a => a.ActivityType == "StatusChange")
+                    .OrderBy(a => a.CreatedAt)
+                    .ToList();
+
+                TimeSpan totalDevTime = TimeSpan.Zero;
+                DateTime? devStartTime = null;
+
+                foreach (var activity in activities)
+                {
+                    if ((activity.NewValue == "Gelistirmede" || activity.NewValue == "MudahaleEdiliyor") && devStartTime == null)
+                    {
+                        devStartTime = activity.CreatedAt;
+                    }
+                    else if ((activity.OldValue == "Gelistirmede" || activity.OldValue == "MudahaleEdiliyor") && devStartTime != null)
+                    {
+                        totalDevTime += activity.CreatedAt - devStartTime.Value;
+                        devStartTime = null;
+                    }
+                }
+
+                if (devStartTime != null)
+                {
+                    totalDevTime += DateTime.Now - devStartTime.Value;
+                }
+
+                if (totalDevTime > TimeSpan.Zero)
+                {
+                    string timeStr = "";
+                    if (totalDevTime.TotalDays >= 1) timeStr = $"{(int)totalDevTime.TotalDays}g ";
+                    if (totalDevTime.Hours > 0) timeStr += $"{totalDevTime.Hours}s";
+                    if (string.IsNullOrEmpty(timeStr)) timeStr = $"{totalDevTime.Minutes}dk";
+                    
+                    footerText += (string.IsNullOrEmpty(footerText) ? "" : " | ") + $"⏱️{timeStr.Trim()}";
+                }
             }
 
             if (!string.IsNullOrEmpty(footerText))
@@ -569,6 +620,24 @@ namespace work_tracker.Forms
                     }
 
                     _context.SaveChanges();
+
+                    // Aktivite kaydı oluştur
+                    if (oldStatus != targetColumn)
+                    {
+                        var activity = new WorkItemActivity
+                        {
+                            WorkItemId = dbWorkItem.Id,
+                            ActivityType = "StatusChange",
+                            Description = $"Durum değiştirildi: {GetColumnDisplayName(oldStatus)} → {GetColumnDisplayName(targetColumn)}",
+                            OldValue = oldStatus,
+                            NewValue = targetColumn,
+                            CreatedBy = Environment.UserName,
+                            CreatedAt = DateTime.Now
+                        };
+                        _context.WorkItemActivities.Add(activity);
+                        _context.SaveChanges();
+                    }
+
                     LoadKanbanBoard();
                 }
             }
