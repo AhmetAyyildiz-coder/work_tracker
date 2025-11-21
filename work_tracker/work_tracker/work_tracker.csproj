@@ -175,6 +175,10 @@
     <Compile Include="Migrations\202511210519335_added_time_entry.Designer.cs">
       <DependentUpon>202511210519335_added_time_entry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511210614146_added_person_entity.cs" />
+    <Compile Include="Migrations\202511210614146_added_person_entity.Designer.cs">
+      <DependentUpon>202511210614146_added_person_entity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -378,6 +382,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511210519335_added_time_entry.resx">
       <DependentUpon>202511210519335_added_time_entry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511210614146_added_person_entity.resx">
+      <DependentUpon>202511210614146_added_person_entity.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
