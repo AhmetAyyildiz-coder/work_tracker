@@ -49,6 +49,8 @@ namespace work_tracker.Forms
 
         private void InitializeControls()
         {
+            lblSubject.Text = "Konu / Özet";
+
             // Aktivite tipi seçenekleri
             cmbActivityType.Properties.Items.Add(TimeEntryActivityTypes.PhoneCall);
             cmbActivityType.Properties.Items.Add(TimeEntryActivityTypes.Work);
@@ -57,15 +59,7 @@ namespace work_tracker.Forms
             cmbActivityType.SelectedIndex = 0;
 
             // Projeleri yükle
-            var projects = _context.Projects
-                .Where(p => p.IsActive)
-                .OrderBy(p => p.Name)
-                .ToList();
-
-            cmbProject.Properties.DataSource = projects;
-            cmbProject.Properties.DisplayMember = "Name";
-            cmbProject.Properties.ValueMember = "Id";
-            cmbProject.EditValue = null;
+            LoadProjects();
 
             // Person'ları yükle
             LoadPersons();
@@ -73,15 +67,34 @@ namespace work_tracker.Forms
             // Varsayılan değerler
             dtEntryDate.EditValue = DateTime.Now;
             spinDurationMinutes.EditValue = 30;
+            txtSubject.Text = string.Empty;
         }
 
         private void LoadData()
         {
-            // WorkItem'ları yükle
-            LoadWorkItems();
+            // WorkItem ve Project ID'lerini al (eğer düzenleme modundaysa)
+            int? workItemId = null;
+            int? projectId = null;
+            
+            if (_timeEntryId.HasValue)
+            {
+                var timeEntry = _context.TimeEntries
+                    .FirstOrDefault(t => t.Id == _timeEntryId.Value);
+                if (timeEntry != null)
+                {
+                    workItemId = timeEntry.WorkItemId;
+                    projectId = timeEntry.ProjectId;
+                }
+            }
+            
+            // WorkItem'ları yükle (seçili olanı da ekle)
+            LoadWorkItems(workItemId);
+            
+            // Project'leri yükle (seçili olanı da ekle)
+            LoadProjects(projectId);
         }
 
-        private void LoadWorkItems()
+        private void LoadWorkItems(int? selectedWorkItemId = null)
         {
             var workItems = _context.WorkItems
                 .Include(w => w.Project)
@@ -90,10 +103,66 @@ namespace work_tracker.Forms
                 .Take(100) // Performans için son 100 iş
                 .ToList();
 
+            // Eğer seçili WorkItem listede yoksa ekle
+            if (selectedWorkItemId.HasValue && !workItems.Any(w => w.Id == selectedWorkItemId.Value))
+            {
+                var selectedWorkItem = _context.WorkItems
+                    .Include(w => w.Project)
+                    .FirstOrDefault(w => w.Id == selectedWorkItemId.Value && !w.IsArchived);
+                if (selectedWorkItem != null)
+                {
+                    workItems.Insert(0, selectedWorkItem);
+                }
+            }
+
             cmbWorkItem.Properties.DataSource = workItems;
             cmbWorkItem.Properties.DisplayMember = "Title";
             cmbWorkItem.Properties.ValueMember = "Id";
+            cmbWorkItem.Properties.NullText = "Seçiniz";
+            
+            // LookUpEdit için kolonları ayarla
+            cmbWorkItem.Properties.Columns.Clear();
+            cmbWorkItem.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Title", "Başlık"));
+            cmbWorkItem.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Project.Name", "Proje") 
+            { 
+                Width = 150
+            });
+            cmbWorkItem.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Status", "Durum") 
+            { 
+                Width = 100
+            });
+            
             cmbWorkItem.EditValue = null;
+        }
+
+        private void LoadProjects(int? selectedProjectId = null)
+        {
+            var projects = _context.Projects
+                .Where(p => p.IsActive)
+                .OrderBy(p => p.Name)
+                .ToList();
+
+            // Eğer seçili Project listede yoksa ekle
+            if (selectedProjectId.HasValue && !projects.Any(p => p.Id == selectedProjectId.Value))
+            {
+                var selectedProject = _context.Projects
+                    .FirstOrDefault(p => p.Id == selectedProjectId.Value && p.IsActive);
+                if (selectedProject != null)
+                {
+                    projects.Insert(0, selectedProject);
+                }
+            }
+
+            cmbProject.Properties.DataSource = projects;
+            cmbProject.Properties.DisplayMember = "Name";
+            cmbProject.Properties.ValueMember = "Id";
+            cmbProject.Properties.NullText = "Seçiniz";
+            
+            // LookUpEdit için kolonları ayarla
+            cmbProject.Properties.Columns.Clear();
+            cmbProject.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Proje Adı"));
+            
+            cmbProject.EditValue = null;
         }
 
         private void LoadTimeEntry()
@@ -112,16 +181,30 @@ namespace work_tracker.Forms
                 spinDurationMinutes.EditValue = _timeEntry.DurationMinutes;
                 cmbActivityType.SelectedItem = _timeEntry.ActivityType;
                 
+                // WorkItem ve Project'i yeniden yükle (seçili olanları da ekle)
+                LoadWorkItems(_timeEntry.WorkItemId);
+                LoadProjects(_timeEntry.ProjectId);
+                
+                // WorkItem seç
                 if (_timeEntry.WorkItemId.HasValue)
                 {
                     cmbWorkItem.EditValue = _timeEntry.WorkItemId.Value;
+                    
+                    // WorkItem seçildiğinde projesini de seç (eğer ProjectId yoksa)
+                    if (!_timeEntry.ProjectId.HasValue && _timeEntry.WorkItem != null && _timeEntry.WorkItem.Project != null)
+                    {
+                        cmbProject.EditValue = _timeEntry.WorkItem.Project.Id;
+                    }
                 }
                 
+                // Project seç (WorkItem'dan gelmediyse)
                 if (_timeEntry.ProjectId.HasValue)
                 {
                     cmbProject.EditValue = _timeEntry.ProjectId.Value;
                 }
                 
+                txtSubject.Text = _timeEntry.Subject ?? string.Empty;
+
                 if (_timeEntry.PersonId.HasValue)
                 {
                     cmbPerson.EditValue = _timeEntry.PersonId.Value;
@@ -191,6 +274,8 @@ namespace work_tracker.Forms
                     
                     var projectId = cmbProject.EditValue as int?;
                     _timeEntry.ProjectId = projectId.HasValue && projectId.Value > 0 ? projectId : null;
+
+                    _timeEntry.Subject = txtSubject.Text.Trim();
                     
                     var personId = cmbPerson.EditValue as int?;
                     _timeEntry.PersonId = personId.HasValue && personId.Value > 0 ? personId : null;
@@ -222,6 +307,8 @@ namespace work_tracker.Forms
                         
                         ProjectId = (cmbProject.EditValue as int?).HasValue && (cmbProject.EditValue as int?).Value > 0 
                             ? cmbProject.EditValue as int? : null,
+
+                        Subject = txtSubject.Text.Trim(),
                         
                         PersonId = (cmbPerson.EditValue as int?).HasValue && (cmbPerson.EditValue as int?).Value > 0 
                             ? cmbPerson.EditValue as int? : null,

@@ -24,6 +24,7 @@ namespace work_tracker.Forms
             this.cmbActivityType = new DevExpress.XtraEditors.ComboBoxEdit();
             this.cmbWorkItem = new DevExpress.XtraEditors.LookUpEdit();
             this.cmbProject = new DevExpress.XtraEditors.LookUpEdit();
+            this.txtSubject = new DevExpress.XtraEditors.TextEdit();
             this.cmbPerson = new DevExpress.XtraEditors.LookUpEdit();
             this.btnAddPerson = new DevExpress.XtraEditors.SimpleButton();
             this.txtPhoneNumber = new DevExpress.XtraEditors.TextEdit();
@@ -33,6 +34,7 @@ namespace work_tracker.Forms
             this.lblActivityType = new DevExpress.XtraEditors.LabelControl();
             this.lblWorkItem = new DevExpress.XtraEditors.LabelControl();
             this.lblProject = new DevExpress.XtraEditors.LabelControl();
+            this.lblSubject = new DevExpress.XtraEditors.LabelControl();
             this.lblContactName = new DevExpress.XtraEditors.LabelControl();
             this.lblPhoneNumber = new DevExpress.XtraEditors.LabelControl();
             this.lblDescription = new DevExpress.XtraEditors.LabelControl();
@@ -52,6 +54,9 @@ namespace work_tracker.Forms
             this.layoutControlItem13 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem14 = new DevExpress.XtraLayout.LayoutControlItem();
             this.layoutControlItem15 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem16 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem17 = new DevExpress.XtraLayout.LayoutControlItem();
+            this.layoutControlItem18 = new DevExpress.XtraLayout.LayoutControlItem();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             this.layoutControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtEntryDate.Properties.CalendarTimeProperties)).BeginInit();
@@ -60,6 +65,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.cmbActivityType.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbWorkItem.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbPerson.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPhoneNumber.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memDescription.Properties)).BeginInit();
@@ -79,6 +85,9 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem13)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem14)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem15)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem16)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem17)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.layoutControlItem18)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl1
@@ -176,43 +185,52 @@ namespace work_tracker.Forms
             this.cmbProject.StyleController = this.layoutControl1;
             this.cmbProject.TabIndex = 6;
             // 
+            // txtSubject
+            // 
+            this.txtSubject.Location = new System.Drawing.Point(174, 142);
+            this.txtSubject.Name = "txtSubject";
+            this.txtSubject.Properties.MaxLength = 200;
+            this.txtSubject.Size = new System.Drawing.Size(400, 20);
+            this.txtSubject.StyleController = this.layoutControl1;
+            this.txtSubject.TabIndex = 7;
+            // 
             // cmbPerson
             // 
-            this.cmbPerson.Location = new System.Drawing.Point(174, 142);
+            this.cmbPerson.Location = new System.Drawing.Point(174, 168);
             this.cmbPerson.Name = "cmbPerson";
             this.cmbPerson.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.cmbPerson.Properties.NullText = "Kişi seçin (opsiyonel)...";
             this.cmbPerson.Size = new System.Drawing.Size(370, 20);
             this.cmbPerson.StyleController = this.layoutControl1;
-            this.cmbPerson.TabIndex = 7;
+            this.cmbPerson.TabIndex = 8;
             this.cmbPerson.EditValueChanged += new System.EventHandler(this.cmbPerson_EditValueChanged);
             // 
             // btnAddPerson
             // 
-            this.btnAddPerson.Location = new System.Drawing.Point(548, 142);
+            this.btnAddPerson.Location = new System.Drawing.Point(548, 168);
             this.btnAddPerson.Name = "btnAddPerson";
             this.btnAddPerson.Size = new System.Drawing.Size(26, 20);
             this.btnAddPerson.StyleController = this.layoutControl1;
-            this.btnAddPerson.TabIndex = 15;
+            this.btnAddPerson.TabIndex = 9;
             this.btnAddPerson.Text = "+";
             this.btnAddPerson.Click += new System.EventHandler(this.btnAddPerson_Click);
             // 
             // txtPhoneNumber
             // 
-            this.txtPhoneNumber.Location = new System.Drawing.Point(174, 168);
+            this.txtPhoneNumber.Location = new System.Drawing.Point(174, 194);
             this.txtPhoneNumber.Name = "txtPhoneNumber";
             this.txtPhoneNumber.Size = new System.Drawing.Size(400, 20);
             this.txtPhoneNumber.StyleController = this.layoutControl1;
-            this.txtPhoneNumber.TabIndex = 8;
+            this.txtPhoneNumber.TabIndex = 10;
             // 
             // memDescription
             // 
-            this.memDescription.Location = new System.Drawing.Point(174, 194);
+            this.memDescription.Location = new System.Drawing.Point(174, 220);
             this.memDescription.Name = "memDescription";
             this.memDescription.Size = new System.Drawing.Size(400, 100);
             this.memDescription.StyleController = this.layoutControl1;
-            this.memDescription.TabIndex = 9;
+            this.memDescription.TabIndex = 11;
             // 
             // lblEntryDate
             // 
@@ -305,7 +323,9 @@ namespace work_tracker.Forms
             this.layoutControlItem12,
             this.layoutControlItem13,
             this.layoutControlItem14,
-            this.layoutControlItem15});
+            this.layoutControlItem15,
+            this.layoutControlItem16,
+            this.layoutControlItem17});
             this.layoutControlGroup1.Location = new System.Drawing.Point(0, 0);
             this.layoutControlGroup1.Name = "Root";
             this.layoutControlGroup1.Size = new System.Drawing.Size(600, 400);
@@ -433,7 +453,7 @@ namespace work_tracker.Forms
             // 
             // layoutControlItem13
             // 
-            this.layoutControlItem13.Control = this.lblContactName;
+            this.layoutControlItem13.Control = this.lblSubject;
             this.layoutControlItem13.Location = new System.Drawing.Point(0, 312);
             this.layoutControlItem13.Name = "layoutControlItem13";
             this.layoutControlItem13.Size = new System.Drawing.Size(580, 26);
@@ -443,22 +463,40 @@ namespace work_tracker.Forms
             // 
             // layoutControlItem14
             // 
-            this.layoutControlItem14.Control = this.cmbPerson;
+            this.layoutControlItem14.Control = this.txtSubject;
             this.layoutControlItem14.Location = new System.Drawing.Point(0, 338);
             this.layoutControlItem14.Name = "layoutControlItem14";
-            this.layoutControlItem14.Size = new System.Drawing.Size(554, 26);
+            this.layoutControlItem14.Size = new System.Drawing.Size(580, 26);
             this.layoutControlItem14.Text = "layoutControlItem14";
             this.layoutControlItem14.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem14.TextVisible = false;
             // 
             // layoutControlItem15
             // 
-            this.layoutControlItem15.Control = this.btnAddPerson;
-            this.layoutControlItem15.Location = new System.Drawing.Point(554, 338);
+            this.layoutControlItem15.Control = this.lblContactName;
+            this.layoutControlItem15.Location = new System.Drawing.Point(0, 364);
             this.layoutControlItem15.Name = "layoutControlItem15";
-            this.layoutControlItem15.Size = new System.Drawing.Size(26, 26);
+            this.layoutControlItem15.Size = new System.Drawing.Size(580, 26);
             this.layoutControlItem15.TextSize = new System.Drawing.Size(0, 0);
             this.layoutControlItem15.TextVisible = false;
+            // 
+            // layoutControlItem16
+            // 
+            this.layoutControlItem16.Control = this.cmbPerson;
+            this.layoutControlItem16.Location = new System.Drawing.Point(0, 390);
+            this.layoutControlItem16.Name = "layoutControlItem16";
+            this.layoutControlItem16.Size = new System.Drawing.Size(554, 26);
+            this.layoutControlItem16.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem16.TextVisible = false;
+            // 
+            // layoutControlItem17
+            // 
+            this.layoutControlItem17.Control = this.btnAddPerson;
+            this.layoutControlItem17.Location = new System.Drawing.Point(554, 390);
+            this.layoutControlItem17.Name = "layoutControlItem17";
+            this.layoutControlItem17.Size = new System.Drawing.Size(26, 26);
+            this.layoutControlItem17.TextSize = new System.Drawing.Size(0, 0);
+            this.layoutControlItem17.TextVisible = false;
             // 
             // TimeEntryEditForm
             // 
@@ -537,5 +575,9 @@ namespace work_tracker.Forms
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem13;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem14;
         private DevExpress.XtraLayout.LayoutControlItem layoutControlItem15;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem16;
+        private DevExpress.XtraLayout.LayoutControlItem layoutControlItem17;
+        private DevExpress.XtraEditors.TextEdit txtSubject;
+        private DevExpress.XtraEditors.LabelControl lblSubject;
     }
 }

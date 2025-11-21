@@ -207,6 +207,11 @@ namespace work_tracker.Forms
             this.colEmailSubject = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colEmailRead = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colEmailAttachments = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPageTimeEntries = new DevExpress.XtraTab.XtraTabPage();
+            this.groupTimeEntries = new DevExpress.XtraEditors.GroupControl();
+            this.gridTimeEntries = new DevExpress.XtraGrid.GridControl();
+            this.gridViewTimeEntries = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.lblTimeEntryCount = new DevExpress.XtraEditors.LabelControl();
             this.groupAddComment = new DevExpress.XtraEditors.GroupControl();
             this.btnChangeStatus = new DevExpress.XtraEditors.SimpleButton();
             this.btnAddComment = new DevExpress.XtraEditors.SimpleButton();
@@ -575,7 +580,8 @@ namespace work_tracker.Forms
             this.tabPageActivities,
             this.tabPageComments,
             this.tabPageAttachments,
-            this.tabPageEmails});
+            this.tabPageEmails,
+            this.tabPageTimeEntries});
             // 
             // tabPageActivities
             // 
@@ -986,6 +992,51 @@ namespace work_tracker.Forms
             // 
             this.colEmailAttachments.Text = "Ekler";
             this.colEmailAttachments.Width = 80;
+            // 
+            // tabPageTimeEntries
+            // 
+            this.tabPageTimeEntries.Controls.Add(this.groupTimeEntries);
+            this.tabPageTimeEntries.Name = "tabPageTimeEntries";
+            this.tabPageTimeEntries.Size = new System.Drawing.Size(1198, 320);
+            this.tabPageTimeEntries.Text = "⏱️ Zaman Kayıtları";
+            // 
+            // groupTimeEntries
+            // 
+            this.groupTimeEntries.Controls.Add(this.gridTimeEntries);
+            this.groupTimeEntries.Controls.Add(this.lblTimeEntryCount);
+            this.groupTimeEntries.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupTimeEntries.Location = new System.Drawing.Point(0, 0);
+            this.groupTimeEntries.Name = "groupTimeEntries";
+            this.groupTimeEntries.Size = new System.Drawing.Size(1198, 320);
+            this.groupTimeEntries.TabIndex = 0;
+            this.groupTimeEntries.Text = "Zaman Kayıtları";
+            // 
+            // gridTimeEntries
+            // 
+            this.gridTimeEntries.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridTimeEntries.Location = new System.Drawing.Point(2, 42);
+            this.gridTimeEntries.MainView = this.gridViewTimeEntries;
+            this.gridTimeEntries.Name = "gridTimeEntries";
+            this.gridTimeEntries.Size = new System.Drawing.Size(1194, 276);
+            this.gridTimeEntries.TabIndex = 1;
+            this.gridTimeEntries.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gridViewTimeEntries});
+            // 
+            // gridViewTimeEntries
+            // 
+            this.gridViewTimeEntries.GridControl = this.gridTimeEntries;
+            this.gridViewTimeEntries.Name = "gridViewTimeEntries";
+            this.gridViewTimeEntries.OptionsBehavior.Editable = false;
+            this.gridViewTimeEntries.OptionsView.ShowFooter = true;
+            this.gridViewTimeEntries.OptionsView.ShowGroupPanel = false;
+            // 
+            // lblTimeEntryCount
+            // 
+            this.lblTimeEntryCount.Location = new System.Drawing.Point(15, 25);
+            this.lblTimeEntryCount.Name = "lblTimeEntryCount";
+            this.lblTimeEntryCount.Size = new System.Drawing.Size(97, 13);
+            this.lblTimeEntryCount.TabIndex = 0;
+            this.lblTimeEntryCount.Text = "Toplam 0 zaman kaydı";
             // 
             // groupAddComment
             // 

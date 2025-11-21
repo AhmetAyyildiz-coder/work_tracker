@@ -63,6 +63,7 @@ namespace work_tracker.Forms
                         t.Id,
                         t.EntryDate,
                         t.DurationMinutes,
+                        t.Subject,
                         Saat = TimeSpan.FromMinutes(t.DurationMinutes).ToString(@"hh\:mm"),
                         t.ActivityType,
                         AktiviteTipi = GetActivityTypeDisplay(t.ActivityType),
@@ -84,6 +85,7 @@ namespace work_tracker.Forms
                 if (view.Columns["EntryDate"] != null) view.Columns["EntryDate"].Caption = "Tarih";
                 if (view.Columns["DurationMinutes"] != null) view.Columns["DurationMinutes"].Caption = "Süre (dk)";
                 if (view.Columns["Saat"] != null) view.Columns["Saat"].Caption = "Saat";
+                if (view.Columns["Subject"] != null) view.Columns["Subject"].Caption = "Konu";
                 if (view.Columns["ActivityType"] != null) view.Columns["ActivityType"].Visible = false;
                 if (view.Columns["AktiviteTipi"] != null) view.Columns["AktiviteTipi"].Caption = "Aktivite Tipi";
                 if (view.Columns["ContactName"] != null) view.Columns["ContactName"].Caption = "Kişi";

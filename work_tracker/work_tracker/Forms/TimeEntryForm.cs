@@ -84,6 +84,7 @@ namespace work_tracker.Forms
                         t.Id,
                         t.EntryDate,
                         t.DurationMinutes,
+                        t.Subject,
                         t.ActivityType,
                         t.WorkItem,
                         t.Project,
@@ -99,6 +100,8 @@ namespace work_tracker.Forms
                         t.Id,
                         t.EntryDate,
                         t.DurationMinutes,
+                        t.Subject,
+                        Konu = string.IsNullOrWhiteSpace(t.Subject) ? "" : t.Subject,
                         Saat = TimeSpan.FromMinutes(t.DurationMinutes).ToString(@"hh\:mm"),
                         t.ActivityType,
                         AktiviteTipi = GetActivityTypeDisplay(t.ActivityType),
@@ -124,6 +127,8 @@ namespace work_tracker.Forms
                 if (view.Columns["EntryDate"] != null) view.Columns["EntryDate"].Caption = "Tarih";
                 if (view.Columns["DurationMinutes"] != null) view.Columns["DurationMinutes"].Caption = "Süre (dk)";
                 if (view.Columns["Saat"] != null) view.Columns["Saat"].Caption = "Saat";
+                if (view.Columns["Subject"] != null) view.Columns["Subject"].Visible = false;
+                if (view.Columns["Konu"] != null) view.Columns["Konu"].Caption = "Konu";
                 if (view.Columns["ActivityType"] != null) view.Columns["ActivityType"].Visible = false;
                 if (view.Columns["AktiviteTipi"] != null) view.Columns["AktiviteTipi"].Caption = "Aktivite Tipi";
                 if (view.Columns["WorkItem"] != null) view.Columns["WorkItem"].Visible = false;
@@ -178,15 +183,22 @@ namespace work_tracker.Forms
 
         private void btnEdit_Click(object sender, EventArgs e)
         {
-            var selectedRow = gridViewTimeEntries.GetFocusedDataRow();
-            if (selectedRow == null)
+            if (gridViewTimeEntries.FocusedRowHandle < 0)
             {
                 XtraMessageBox.Show("Lütfen düzenlemek için bir kayıt seçin.", "Uyarı",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            int timeEntryId = Convert.ToInt32(selectedRow["Id"]);
+            var idObj = gridViewTimeEntries.GetRowCellValue(gridViewTimeEntries.FocusedRowHandle, "Id");
+            if (idObj == null)
+            {
+                XtraMessageBox.Show("Lütfen düzenlemek için bir kayıt seçin.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int timeEntryId = Convert.ToInt32(idObj);
             var form = new TimeEntryEditForm(timeEntryId);
             if (form.ShowDialog() == DialogResult.OK)
             {
@@ -196,8 +208,15 @@ namespace work_tracker.Forms
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            var selectedRow = gridViewTimeEntries.GetFocusedDataRow();
-            if (selectedRow == null)
+            if (gridViewTimeEntries.FocusedRowHandle < 0)
+            {
+                XtraMessageBox.Show("Lütfen silmek için bir kayıt seçin.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var idObj = gridViewTimeEntries.GetRowCellValue(gridViewTimeEntries.FocusedRowHandle, "Id");
+            if (idObj == null)
             {
                 XtraMessageBox.Show("Lütfen silmek için bir kayıt seçin.", "Uyarı",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -211,7 +230,7 @@ namespace work_tracker.Forms
             {
                 try
                 {
-                    int timeEntryId = Convert.ToInt32(selectedRow["Id"]);
+                    int timeEntryId = Convert.ToInt32(idObj);
                     var timeEntry = _context.TimeEntries.Find(timeEntryId);
                     
                     if (timeEntry != null)

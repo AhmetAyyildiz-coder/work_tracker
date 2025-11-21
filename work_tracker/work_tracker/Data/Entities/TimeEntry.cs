@@ -49,6 +49,12 @@ namespace work_tracker.Data.Entities
         public int? PersonId { get; set; }
 
         /// <summary>
+        /// Özet/Konu bilgisi
+        /// </summary>
+        [MaxLength(200)]
+        public string Subject { get; set; }
+
+        /// <summary>
         /// Kişi adı (telefon görüşmeleri için - geriye dönük uyumluluk)
         /// </summary>
         [MaxLength(200)]
