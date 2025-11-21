@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.2</MinimumRequiredVersion>
-    <ApplicationRevision>10</ApplicationRevision>
+    <ApplicationRevision>12</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -178,6 +178,10 @@
     <Compile Include="Migrations\202511210614146_added_person_entity.cs" />
     <Compile Include="Migrations\202511210614146_added_person_entity.Designer.cs">
       <DependentUpon>202511210614146_added_person_entity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511210717152_updated_time_track.cs" />
+    <Compile Include="Migrations\202511210717152_updated_time_track.Designer.cs">
+      <DependentUpon>202511210717152_updated_time_track.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -385,6 +389,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511210614146_added_person_entity.resx">
       <DependentUpon>202511210614146_added_person_entity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511210717152_updated_time_track.resx">
+      <DependentUpon>202511210717152_updated_time_track.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

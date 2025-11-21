@@ -64,6 +64,20 @@ namespace work_tracker.Forms
                         t.EntryDate,
                         t.DurationMinutes,
                         t.Subject,
+                        t.ActivityType,
+                        t.ContactName,
+                        t.PhoneNumber,
+                        t.Description,
+                        t.CreatedBy,
+                        t.CreatedAt
+                    })
+                    .ToList()
+                    .Select(t => new
+                    {
+                        t.Id,
+                        t.EntryDate,
+                        t.DurationMinutes,
+                        t.Subject,
                         Saat = TimeSpan.FromMinutes(t.DurationMinutes).ToString(@"hh\:mm"),
                         t.ActivityType,
                         AktiviteTipi = GetActivityTypeDisplay(t.ActivityType),
