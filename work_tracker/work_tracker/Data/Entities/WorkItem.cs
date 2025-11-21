@@ -96,6 +96,7 @@ namespace work_tracker.Data.Entities
         public virtual ICollection<WorkItemAttachment> Attachments { get; set; }
         public virtual ICollection<WorkItemEmail> Emails { get; set; }
         public virtual ICollection<Tag> Tags {get;set;}
+        public virtual ICollection<Person> RequestedByPersons { get; set; }
 
         public WorkItem()
         {
@@ -109,6 +110,7 @@ namespace work_tracker.Data.Entities
             Attachments = new HashSet<WorkItemAttachment>();
             Emails = new HashSet<WorkItemEmail>();
             Tags = new HashSet<Tag>();
+            RequestedByPersons = new HashSet<Person>();
         }
     }
 }

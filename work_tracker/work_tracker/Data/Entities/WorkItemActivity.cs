@@ -70,9 +70,9 @@ namespace work_tracker.Data.Entities
     }
 
     /// <summary>
-    /// Aktivite tipleri için sabit değerler
+    /// İş öğesi aktivite tipleri için sabit değerler
     /// </summary>
-    public static class ActivityTypes
+    public static class WorkItemActivityTypes
     {
         public const string Comment = "Comment";              // Yorum eklendi
         public const string StatusChange = "StatusChange";    // Durum değişti

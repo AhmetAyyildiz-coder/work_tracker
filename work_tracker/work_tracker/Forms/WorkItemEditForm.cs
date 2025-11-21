@@ -48,7 +48,6 @@ namespace work_tracker.Forms
             {
                 // Varsayılan değerler
                 dtRequestedAt.EditValue = DateTime.Now;
-                txtRequestedBy.Text = Environment.UserName;
             }
         }
 
@@ -86,19 +85,34 @@ namespace work_tracker.Forms
             });
 
             LoadTags();
+            LoadPersons();
         }
 
         private void LoadWorkItem(int workItemId)
         {
             var workItem = _context.WorkItems
                 .Include(w => w.Tags)
+                .Include(w => w.RequestedByPersons)
                 .FirstOrDefault(w => w.Id == workItemId);
                 
             if (workItem != null)
             {
                 txtTitle.Text = workItem.Title;
                 txtDescription.Text = workItem.Description;
-                txtRequestedBy.Text = workItem.RequestedBy;
+                // Eğer Person seçiliyse onu göster, yoksa eski RequestedBy string'ini göster
+                if (workItem.RequestedByPersons != null && workItem.RequestedByPersons.Any())
+                {
+                    cmbRequestedBy.EditValue = workItem.RequestedByPersons.First().Id;
+                }
+                else if (!string.IsNullOrEmpty(workItem.RequestedBy))
+                {
+                    // Eski string değerini Person olarak ekle veya göster
+                    var existingPerson = _context.Persons.FirstOrDefault(p => p.Name == workItem.RequestedBy);
+                    if (existingPerson != null)
+                    {
+                        cmbRequestedBy.EditValue = existingPerson.Id;
+                    }
+                }
                 dtRequestedAt.EditValue = workItem.RequestedAt;
                 cmbProject.EditValue = workItem.ProjectId;
                 cmbModule.EditValue = workItem.ModuleId;
@@ -146,10 +160,10 @@ namespace work_tracker.Forms
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(txtRequestedBy.Text))
+            if (cmbRequestedBy.EditValue == null)
             {
-                XtraMessageBox.Show("Talep eden kişi boş olamaz!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtRequestedBy.Focus();
+                XtraMessageBox.Show("Talep eden kişi seçilmelidir!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cmbRequestedBy.Focus();
                 return;
             }
 
@@ -162,13 +176,25 @@ namespace work_tracker.Forms
                     // Mevcut WorkItem'ı etiketleriyle beraber yükle
                     workItem = _context.WorkItems
                         .Include(w => w.Tags)
+                        .Include(w => w.RequestedByPersons)
                         .FirstOrDefault(w => w.Id == _workItemId.Value);
                         
                     if (workItem != null)
                     {
                         workItem.Title = txtTitle.Text.Trim();
                         workItem.Description = txtDescription.Text;
-                        workItem.RequestedBy = txtRequestedBy.Text.Trim();
+                        var selectedPersonId = cmbRequestedBy.EditValue as int?;
+                        if (selectedPersonId.HasValue)
+                        {
+                            var person = _context.Persons.Find(selectedPersonId.Value);
+                            workItem.RequestedBy = person?.Name ?? "";
+                            // Person ilişkisini güncelle
+                            workItem.RequestedByPersons.Clear();
+                            if (person != null)
+                            {
+                                workItem.RequestedByPersons.Add(person);
+                            }
+                        }
                         workItem.RequestedAt = Convert.ToDateTime(dtRequestedAt.EditValue);
                         workItem.ProjectId = cmbProject.EditValue as int?;
                         workItem.ModuleId = cmbModule.EditValue as int?;
@@ -181,7 +207,6 @@ namespace work_tracker.Forms
                     {
                         Title = txtTitle.Text.Trim(),
                         Description = txtDescription.Text,
-                        RequestedBy = txtRequestedBy.Text.Trim(),
                         RequestedAt = Convert.ToDateTime(dtRequestedAt.EditValue),
                         ProjectId = cmbProject.EditValue as int?,
                         ModuleId = cmbModule.EditValue as int?,
@@ -190,6 +215,16 @@ namespace work_tracker.Forms
                         Status = "Bekliyor",
                         CreatedAt = DateTime.Now
                     };
+                    var selectedPersonId = cmbRequestedBy.EditValue as int?;
+                    if (selectedPersonId.HasValue)
+                    {
+                        var person = _context.Persons.Find(selectedPersonId.Value);
+                        workItem.RequestedBy = person?.Name ?? "";
+                        if (person != null)
+                        {
+                            workItem.RequestedByPersons.Add(person);
+                        }
+                    }
                     _context.WorkItems.Add(workItem);
                 }
 
@@ -286,6 +321,54 @@ namespace work_tracker.Forms
             LoadTags(new[] { tag.Id });
 
             XtraMessageBox.Show("Etiket oluşturuldu ve seçildi.", "Bilgi",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void LoadPersons()
+        {
+            var persons = _context.Persons
+                .OrderBy(p => p.Name)
+                .ToList();
+
+            cmbRequestedBy.Properties.DataSource = persons;
+            cmbRequestedBy.Properties.DisplayMember = "Name";
+            cmbRequestedBy.Properties.ValueMember = "Id";
+            cmbRequestedBy.Properties.NullText = "Kişi seçin...";
+            
+            // LookUpEdit için kolonları ayarla
+            cmbRequestedBy.Properties.Columns.Clear();
+            cmbRequestedBy.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Ad"));
+            cmbRequestedBy.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Email", "E-posta"));
+            cmbRequestedBy.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("PhoneNumber", "Telefon"));
+        }
+
+        private void btnAddPerson_Click(object sender, EventArgs e)
+        {
+            var personName = XtraInputBox.Show("Yeni kişi adını girin:", "Kişi Ekle", string.Empty);
+            if (string.IsNullOrWhiteSpace(personName))
+                return;
+
+            personName = personName.Trim();
+
+            if (_context.Persons.Any(p => p.Name == personName))
+            {
+                XtraMessageBox.Show("Bu isimde bir kişi zaten mevcut.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var person = new Person
+            {
+                Name = personName
+            };
+
+            _context.Persons.Add(person);
+            _context.SaveChanges();
+
+            LoadPersons();
+            cmbRequestedBy.EditValue = person.Id;
+
+            XtraMessageBox.Show("Kişi oluşturuldu ve seçildi.", "Bilgi",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 

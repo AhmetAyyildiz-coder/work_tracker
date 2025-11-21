@@ -1,12 +1,13 @@
+using DevExpress.XtraEditors;
+using DevExpress.XtraTab;
 using System;
 using System.Data.Entity;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using DevExpress.XtraEditors;
-using DevExpress.XtraTab;
 using System.Windows.Forms.DataVisualization.Charting;
 using work_tracker.Data;
+using work_tracker.Data.Entities;
 
 namespace work_tracker.Forms
 {
@@ -32,6 +33,7 @@ namespace work_tracker.Forms
         {
             LoadEffortChartReport();
             LoadDetailedReport();
+            LoadDailyEffortReport();
         }
 
         private Tuple<DateTime?, DateTime?> GetDateRange()
@@ -254,6 +256,111 @@ namespace work_tracker.Forms
             catch (Exception ex)
             {
                 XtraMessageBox.Show($"Detaylı rapor yüklenirken hata oluştu:\n\n{ex.Message}", "Rapor Hatası",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Günlük efor raporu - Her gün için toplam efor, iş bazında detay, aktivite türü ayrımı
+        /// </summary>
+        private void LoadDailyEffortReport()
+        {
+            try
+            {
+                var range = GetDateRange();
+                DateTime? from = range.Item1;
+                DateTime? to = range.Item2;
+
+                var query = _context.TimeEntries
+                    .Include(t => t.WorkItem)
+                    .Include(t => t.Project)
+                    .AsQueryable();
+
+                if (from.HasValue)
+                {
+                    query = query.Where(t => DbFunctions.TruncateTime(t.EntryDate) >= DbFunctions.TruncateTime(from.Value));
+                }
+
+                if (to.HasValue)
+                {
+                    var end = to.Value.Date.AddDays(1).AddTicks(-1);
+                    query = query.Where(t => t.EntryDate <= end);
+                }
+
+                var timeEntries = query.ToList();
+
+                // Günlük gruplandırma
+                var dailyData = timeEntries
+                    .GroupBy(t => DbFunctions.TruncateTime(t.EntryDate))
+                    .Select(g => new
+                    {
+                        Tarih = g.Key,
+                        ToplamSüre = g.Sum(t => t.DurationMinutes),
+                        TelefonSüre = g.Where(t => t.ActivityType == TimeEntryActivityTypes.PhoneCall).Sum(t => t.DurationMinutes),
+                        IsSüre = g.Where(t => t.ActivityType == TimeEntryActivityTypes.Work).Sum(t => t.DurationMinutes),
+                        ToplantiSüre = g.Where(t => t.ActivityType == TimeEntryActivityTypes.Meeting).Sum(t => t.DurationMinutes),
+                        DigerSüre = g.Where(t => t.ActivityType == TimeEntryActivityTypes.Other).Sum(t => t.DurationMinutes),
+                        KayitSayisi = g.Count()
+                    })
+                    .OrderByDescending(g => g.Tarih)
+                    .ToList();
+
+                gridDailyEffort.DataSource = dailyData;
+
+                var view = gridViewDailyEffort;
+                view.BestFitColumns();
+
+                // Kolon başlıkları
+                if (view.Columns["Tarih"] != null) view.Columns["Tarih"].Caption = "Tarih";
+                if (view.Columns["ToplamSüre"] != null) view.Columns["ToplamSüre"].Caption = "Toplam Süre (dk)";
+                if (view.Columns["TelefonSüre"] != null) view.Columns["TelefonSüre"].Caption = "Telefon (dk)";
+                if (view.Columns["IsSüre"] != null) view.Columns["IsSüre"].Caption = "İş (dk)";
+                if (view.Columns["ToplantiSüre"] != null) view.Columns["ToplantiSüre"].Caption = "Toplantı (dk)";
+                if (view.Columns["DigerSüre"] != null) view.Columns["DigerSüre"].Caption = "Diğer (dk)";
+                if (view.Columns["KayitSayisi"] != null) view.Columns["KayitSayisi"].Caption = "Kayıt Sayısı";
+
+                // Özetler
+                view.Columns["ToplamSüre"].Summary.Clear();
+                view.Columns["ToplamSüre"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamSüre", "Toplam: {0} dk");
+
+                view.Columns["KayitSayisi"].Summary.Clear();
+                view.Columns["KayitSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "KayitSayisi", "Toplam Kayıt: {0}");
+
+                // Gruplama için kullanıcıya alan bırakalım
+                view.OptionsView.ShowGroupPanel = true;
+
+                // İş bazında detay için ayrı bir grid
+                var workItemData = timeEntries
+                    .Where(t => t.WorkItemId.HasValue)
+                    .GroupBy(t => new { t.WorkItem.Id, t.WorkItem.Title, t.WorkItem.Project.Name })
+                    .Select(g => new
+                    {
+                        IsId = g.Key.Id,
+                        IsBaslik = g.Key.Title,
+                        Proje = g.Key.Name,
+                        ToplamSüre = g.Sum(t => t.DurationMinutes),
+                        KayitSayisi = g.Count()
+                    })
+                    .OrderByDescending(g => g.ToplamSüre)
+                    .ToList();
+
+                gridWorkItemEffort.DataSource = workItemData;
+
+                var workItemView = gridViewWorkItemEffort;
+                workItemView.BestFitColumns();
+
+                if (workItemView.Columns["IsId"] != null) workItemView.Columns["IsId"].Caption = "İş ID";
+                if (workItemView.Columns["IsBaslik"] != null) workItemView.Columns["IsBaslik"].Caption = "İş Başlığı";
+                if (workItemView.Columns["Proje"] != null) workItemView.Columns["Proje"].Caption = "Proje";
+                if (workItemView.Columns["ToplamSüre"] != null) workItemView.Columns["ToplamSüre"].Caption = "Toplam Süre (dk)";
+                if (workItemView.Columns["KayitSayisi"] != null) workItemView.Columns["KayitSayisi"].Caption = "Kayıt Sayısı";
+
+                workItemView.Columns["ToplamSüre"].Summary.Clear();
+                workItemView.Columns["ToplamSüre"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamSüre", "Toplam: {0} dk");
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Günlük efor raporu yüklenirken hata oluştu:\n\n{ex.Message}", "Rapor Hatası",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

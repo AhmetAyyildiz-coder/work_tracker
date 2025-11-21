@@ -14,7 +14,8 @@ namespace work_tracker.Forms
         private LabelControl labelControl7;
         private TextEdit txtTitle;
         private MemoEdit txtDescription;
-        private TextEdit txtRequestedBy;
+        private LookUpEdit cmbRequestedBy;
+        private SimpleButton btnAddPerson;
         private DateEdit dtRequestedAt;
         private LookUpEdit cmbProject;
         private LookUpEdit cmbModule;
@@ -51,7 +52,8 @@ namespace work_tracker.Forms
             this.labelControl8 = new DevExpress.XtraEditors.LabelControl();
             this.txtTitle = new DevExpress.XtraEditors.TextEdit();
             this.txtDescription = new DevExpress.XtraEditors.MemoEdit();
-            this.txtRequestedBy = new DevExpress.XtraEditors.TextEdit();
+            this.cmbRequestedBy = new DevExpress.XtraEditors.LookUpEdit();
+            this.btnAddPerson = new DevExpress.XtraEditors.SimpleButton();
             this.dtRequestedAt = new DevExpress.XtraEditors.DateEdit();
             this.cmbProject = new DevExpress.XtraEditors.LookUpEdit();
             this.cmbModule = new DevExpress.XtraEditors.LookUpEdit();
@@ -62,7 +64,7 @@ namespace work_tracker.Forms
             this.btnAddTag = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.txtTitle.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtDescription.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtRequestedBy.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbRequestedBy.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtRequestedAt.Properties.CalendarTimeProperties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtRequestedAt.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).BeginInit();
@@ -149,12 +151,24 @@ namespace work_tracker.Forms
             this.txtDescription.Size = new System.Drawing.Size(720, 70);
             this.txtDescription.TabIndex = 8;
             // 
-            // txtRequestedBy
+            // cmbRequestedBy
             // 
-            this.txtRequestedBy.Location = new System.Drawing.Point(20, 200);
-            this.txtRequestedBy.Name = "txtRequestedBy";
-            this.txtRequestedBy.Size = new System.Drawing.Size(350, 20);
-            this.txtRequestedBy.TabIndex = 9;
+            this.cmbRequestedBy.Location = new System.Drawing.Point(20, 200);
+            this.cmbRequestedBy.Name = "cmbRequestedBy";
+            this.cmbRequestedBy.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbRequestedBy.Properties.NullText = "Kişi seçin...";
+            this.cmbRequestedBy.Size = new System.Drawing.Size(300, 20);
+            this.cmbRequestedBy.TabIndex = 9;
+            // 
+            // btnAddPerson
+            // 
+            this.btnAddPerson.Location = new System.Drawing.Point(330, 200);
+            this.btnAddPerson.Name = "btnAddPerson";
+            this.btnAddPerson.Size = new System.Drawing.Size(20, 20);
+            this.btnAddPerson.TabIndex = 19;
+            this.btnAddPerson.Text = "+";
+            this.btnAddPerson.Click += new System.EventHandler(this.btnAddPerson_Click);
             // 
             // dtRequestedAt
             // 
@@ -249,7 +263,8 @@ namespace work_tracker.Forms
             this.Controls.Add(this.cmbModule);
             this.Controls.Add(this.cmbProject);
             this.Controls.Add(this.dtRequestedAt);
-            this.Controls.Add(this.txtRequestedBy);
+            this.Controls.Add(this.cmbRequestedBy);
+            this.Controls.Add(this.btnAddPerson);
             this.Controls.Add(this.txtDescription);
             this.Controls.Add(this.txtTitle);
             this.Controls.Add(this.labelControl8);
@@ -269,7 +284,7 @@ namespace work_tracker.Forms
             this.Load += new System.EventHandler(this.WorkItemEditForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.txtTitle.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtDescription.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.txtRequestedBy.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbRequestedBy.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtRequestedAt.Properties.CalendarTimeProperties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtRequestedAt.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).EndInit();

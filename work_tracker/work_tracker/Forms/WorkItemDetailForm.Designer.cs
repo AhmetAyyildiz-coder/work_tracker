@@ -47,6 +47,13 @@ namespace work_tracker.Forms
         private DevExpress.XtraTab.XtraTabPage tabPageComments;
         private DevExpress.XtraTab.XtraTabPage tabPageAttachments;
         private DevExpress.XtraTab.XtraTabPage tabPageEmails;
+        private DevExpress.XtraTab.XtraTabPage tabPageTimeEntries;
+        
+        // Zaman Kayıtları
+        private GroupControl groupTimeEntries;
+        private DevExpress.XtraGrid.GridControl gridTimeEntries;
+        private DevExpress.XtraGrid.Views.Grid.GridView gridViewTimeEntries;
+        private LabelControl lblTimeEntryCount;
         
         // Aktivite Timeline
         private GroupControl groupActivities;
@@ -102,6 +109,7 @@ namespace work_tracker.Forms
         private SimpleButton btnUnlinkEmail;
         private SimpleButton btnRefreshEmails;
         private TextEdit txtSearchEmail;
+
         
         // Alt panel
         private PanelControl panelBottom;
@@ -235,6 +243,11 @@ namespace work_tracker.Forms
             this.tabPageEmails.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupEmails)).BeginInit();
             this.groupEmails.SuspendLayout();
+            this.tabPageTimeEntries.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.groupTimeEntries)).BeginInit();
+            this.groupTimeEntries.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridTimeEntries)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewTimeEntries)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtSearchEmail.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupAddComment)).BeginInit();
             this.groupAddComment.SuspendLayout();
@@ -1097,6 +1110,12 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.groupEmails)).EndInit();
             this.groupEmails.ResumeLayout(false);
             this.groupEmails.PerformLayout();
+            this.tabPageTimeEntries.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.groupTimeEntries)).EndInit();
+            this.groupTimeEntries.ResumeLayout(false);
+            this.groupTimeEntries.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridTimeEntries)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewTimeEntries)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtSearchEmail.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupAddComment)).EndInit();
             this.groupAddComment.ResumeLayout(false);

@@ -24,6 +24,7 @@ namespace work_tracker
         private HelpForm helpForm;
         private AllWorkItemsForm allWorkItemsForm;
         private WikiForm wikiForm;
+        private TimeEntryForm timeEntryForm;
 
         public MainForm()
         {
@@ -94,6 +95,11 @@ namespace work_tracker
         private void btnWiki_ItemClick(object sender, ItemClickEventArgs e)
         {
             wikiForm = OpenOrActivateForm(wikiForm, () => new WikiForm(), f => wikiForm = f);
+        }
+
+        private void btnTimeEntry_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            timeEntryForm = OpenOrActivateForm(timeEntryForm, () => new TimeEntryForm(), f => timeEntryForm = f);
         }
 
         /// <summary>

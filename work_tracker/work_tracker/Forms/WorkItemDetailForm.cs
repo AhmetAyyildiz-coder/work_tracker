@@ -37,6 +37,7 @@ namespace work_tracker.Forms
             LoadComments();
             LoadAttachments();
             LoadEmails();
+            LoadTimeEntries();
         }
 
         private void LoadSprints()
@@ -48,16 +49,81 @@ namespace work_tracker.Forms
             cmbSprint.Properties.DataSource = sprints;
             cmbSprint.Properties.DisplayMember = "Name";
             cmbSprint.Properties.ValueMember = "Id";
-            cmbSprint.Properties.NullText = "(Sprint seçilmedi)";
+        }
 
-            // LookUpEdit kolonları
-            cmbSprint.Properties.Columns.Clear();
-            cmbSprint.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Sprint Adı"));
-            cmbSprint.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("StartDate", "Başlangıç") 
-            { 
-                Width = 80,
-                FormatString = "dd.MM.yyyy"
-            });
+        private void LoadTimeEntries()
+        {
+            try
+            {
+                var timeEntries = _context.TimeEntries
+                    .Where(t => t.WorkItemId == _workItemId)
+                    .OrderByDescending(t => t.EntryDate)
+                    .Select(t => new
+                    {
+                        t.Id,
+                        t.EntryDate,
+                        t.DurationMinutes,
+                        Saat = TimeSpan.FromMinutes(t.DurationMinutes).ToString(@"hh\:mm"),
+                        t.ActivityType,
+                        AktiviteTipi = GetActivityTypeDisplay(t.ActivityType),
+                        t.ContactName,
+                        t.PhoneNumber,
+                        t.Description,
+                        t.CreatedBy,
+                        t.CreatedAt
+                    })
+                    .ToList();
+
+                gridTimeEntries.DataSource = timeEntries;
+
+                var view = gridViewTimeEntries;
+                view.BestFitColumns();
+
+                // Kolon başlıkları
+                if (view.Columns["Id"] != null) view.Columns["Id"].Caption = "ID";
+                if (view.Columns["EntryDate"] != null) view.Columns["EntryDate"].Caption = "Tarih";
+                if (view.Columns["DurationMinutes"] != null) view.Columns["DurationMinutes"].Caption = "Süre (dk)";
+                if (view.Columns["Saat"] != null) view.Columns["Saat"].Caption = "Saat";
+                if (view.Columns["ActivityType"] != null) view.Columns["ActivityType"].Visible = false;
+                if (view.Columns["AktiviteTipi"] != null) view.Columns["AktiviteTipi"].Caption = "Aktivite Tipi";
+                if (view.Columns["ContactName"] != null) view.Columns["ContactName"].Caption = "Kişi";
+                if (view.Columns["PhoneNumber"] != null) view.Columns["PhoneNumber"].Caption = "Telefon";
+                if (view.Columns["Description"] != null) view.Columns["Description"].Caption = "Açıklama";
+                if (view.Columns["CreatedBy"] != null) view.Columns["CreatedBy"].Caption = "Oluşturan";
+                if (view.Columns["CreatedAt"] != null) view.Columns["CreatedAt"].Caption = "Kayıt Tarihi";
+
+                // Özetler
+                view.Columns["DurationMinutes"].Summary.Clear();
+                view.Columns["DurationMinutes"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "DurationMinutes", "Toplam Süre: {0} dk");
+
+                view.Columns["Id"].Summary.Clear();
+                view.Columns["Id"].Summary.Add(DevExpress.Data.SummaryItemType.Count, "Id", "Toplam Kayıt: {0}");
+
+                view.OptionsBehavior.Editable = false;
+                view.OptionsView.ShowGroupPanel = false;
+                view.OptionsView.ShowFooter = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, "Zaman kayıtları yüklenirken hata");
+            }
+        }
+
+        private string GetActivityTypeDisplay(string activityType)
+        {
+            switch (activityType)
+            {
+                case TimeEntryActivityTypes.PhoneCall:
+                    return "Telefon Görüşmesi";
+                case TimeEntryActivityTypes.Work:
+                    return "İş";
+                case TimeEntryActivityTypes.Meeting:
+                    return "Toplantı";
+                case TimeEntryActivityTypes.Other:
+                    return "Diğer";
+                default:
+                    return activityType;
+            }
         }
 
         private void LoadWorkItemDetails()
@@ -244,20 +310,20 @@ namespace work_tracker.Forms
         {
             switch (activityType)
             {
-                case ActivityTypes.Comment: return "💬 Yorum";
-                case ActivityTypes.StatusChange: return "📊 Durum";
-                case ActivityTypes.AssignmentChange: return "👤 Atama";
-                case ActivityTypes.FieldUpdate: return "✏️ Güncelleme";
-                case ActivityTypes.Created: return "✨ Oluşturuldu";
-                case ActivityTypes.PriorityChange: return "⚡ Öncelik";
-                case ActivityTypes.EstimateChange: return "⏱️ Efor";
+                case WorkItemActivityTypes.Comment: return "💬 Yorum";
+                case WorkItemActivityTypes.StatusChange: return "📊 Durum";
+                case WorkItemActivityTypes.AssignmentChange: return "👤 Atama";
+                case WorkItemActivityTypes.FieldUpdate: return "✏️ Güncelleme";
+                case WorkItemActivityTypes.Created: return "✨ Oluşturuldu";
+                case WorkItemActivityTypes.PriorityChange: return "⚡ Öncelik";
+                case WorkItemActivityTypes.EstimateChange: return "⏱️ Efor";
                 default: return "📝 Diğer";
             }
         }
 
         private string FormatActivityDescription(dynamic activity)
         {
-            if (activity.ActivityType == ActivityTypes.StatusChange && 
+            if (activity.ActivityType == WorkItemActivityTypes.StatusChange && 
                 !string.IsNullOrEmpty(activity.OldValue) && 
                 !string.IsNullOrEmpty(activity.NewValue))
             {
@@ -278,7 +344,7 @@ namespace work_tracker.Forms
             }
 
             // Yorum ekle
-            AddActivity(ActivityTypes.Comment, comment);
+            AddActivity(WorkItemActivityTypes.Comment, comment);
             
             txtNewComment.Text = "";
             XtraMessageBox.Show("Yorum başarıyla eklendi.", "Bilgi", 
@@ -315,7 +381,7 @@ namespace work_tracker.Forms
             _context.SaveChanges();
 
             // Aktivite kaydet
-            AddActivity(ActivityTypes.StatusChange, 
+            AddActivity(WorkItemActivityTypes.StatusChange, 
                 $"Durum değiştirildi: {oldStatus} → {newStatus}", 
                 oldStatus, 
                 newStatus);
@@ -350,7 +416,7 @@ namespace work_tracker.Forms
         private void LoadComments()
         {
             var comments = _context.WorkItemActivities
-                .Where(a => a.WorkItemId == _workItemId && a.ActivityType == ActivityTypes.Comment)
+                .Where(a => a.WorkItemId == _workItemId && a.ActivityType == WorkItemActivityTypes.Comment)
                 .OrderByDescending(a => a.CreatedAt)
                 .Select(a => new
                 {
@@ -446,7 +512,7 @@ namespace work_tracker.Forms
                         : "(Yok)";
                     
                     AddActivity(
-                        ActivityTypes.FieldUpdate,
+                        WorkItemActivityTypes.FieldUpdate,
                         $"Sprint değiştirildi: {oldSprintName} → {newSprintName}",
                         oldSprintName,
                         newSprintName);
@@ -558,7 +624,7 @@ namespace work_tracker.Forms
             _context.SaveChanges();
 
             // Aktivite kaydet
-            AddActivity(ActivityTypes.FieldUpdate, 
+            AddActivity(WorkItemActivityTypes.FieldUpdate, 
                 $"Dosya eklendi: {originalFileName} ({FileStorageHelper.FormatFileSize(fileInfo.Length)})");
         }
 
@@ -758,7 +824,7 @@ namespace work_tracker.Forms
                     _context.SaveChanges();
 
                     // Aktivite kaydet
-                    AddActivity(ActivityTypes.FieldUpdate, 
+                    AddActivity(WorkItemActivityTypes.FieldUpdate, 
                         $"Dosya silindi: {attachment.OriginalFileName}");
 
                     LoadAttachments();
@@ -867,7 +933,7 @@ namespace work_tracker.Forms
                             _context.SaveChanges();
 
                             // Aktivite kaydet
-                            AddActivity(ActivityTypes.FieldUpdate, 
+                            AddActivity(WorkItemActivityTypes.FieldUpdate, 
                                 $"Email bağlandı: {selectedEmail.Subject}");
 
                             LoadEmails();
@@ -942,7 +1008,7 @@ namespace work_tracker.Forms
                 _context.SaveChanges();
 
                 // Aktivite kaydet
-                AddActivity(ActivityTypes.FieldUpdate, 
+                AddActivity(WorkItemActivityTypes.FieldUpdate, 
                     $"Email bağlantısı kaldırıldı: {email.Subject}");
 
                 LoadEmails();

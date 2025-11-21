@@ -21,6 +21,8 @@ namespace work_tracker.Data
         public virtual DbSet<WorkItemEmail> WorkItemEmails { get; set; }
         public virtual DbSet<WikiPage> WikiPages { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
+        public virtual DbSet<TimeEntry> TimeEntries { get; set; }
+        public virtual DbSet<Person> Persons { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -113,6 +115,38 @@ namespace work_tracker.Data
                     m.MapLeftKey("WorkItemId");
                     m.MapRightKey("TagId");
                 });
+
+            // WorkItem - Persons (Many-to-Many)
+            modelBuilder.Entity<WorkItem>()
+                .HasMany(w => w.RequestedByPersons)
+                .WithMany(p => p.RequestedWorkItems)
+                .Map(m =>
+                {
+                    m.ToTable("WorkItemPersons");
+                    m.MapLeftKey("WorkItemId");
+                    m.MapRightKey("PersonId");
+                });
+
+            // TimeEntry - WorkItem ilişkisi
+            modelBuilder.Entity<TimeEntry>()
+                .HasOptional(t => t.WorkItem)
+                .WithMany()
+                .HasForeignKey(t => t.WorkItemId)
+                .WillCascadeOnDelete(false);
+
+            // TimeEntry - Project ilişkisi
+            modelBuilder.Entity<TimeEntry>()
+                .HasOptional(t => t.Project)
+                .WithMany()
+                .HasForeignKey(t => t.ProjectId)
+                .WillCascadeOnDelete(false);
+
+            // TimeEntry - Person ilişkisi
+            modelBuilder.Entity<TimeEntry>()
+                .HasOptional(t => t.Person)
+                .WithMany(p => p.TimeEntries)
+                .HasForeignKey(t => t.PersonId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

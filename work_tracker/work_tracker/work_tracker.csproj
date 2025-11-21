@@ -98,16 +98,30 @@
   <ItemGroup>
     <Compile Include="Data\Entities\KanbanColumnSetting.cs" />
     <Compile Include="Data\Entities\Meeting.cs" />
+    <Compile Include="Data\Entities\Person.cs" />
     <Compile Include="Data\Entities\Project.cs" />
     <Compile Include="Data\Entities\ProjectModule.cs" />
     <Compile Include="Data\Entities\Sprint.cs" />
     <Compile Include="Data\Entities\Tag.cs" />
+    <Compile Include="Data\Entities\TimeEntry.cs" />
     <Compile Include="Data\Entities\WikiPage.cs" />
     <Compile Include="Data\Entities\WorkItem.cs" />
     <Compile Include="Data\Entities\WorkItemActivity.cs" />
     <Compile Include="Data\Entities\WorkItemAttachment.cs" />
     <Compile Include="Data\Entities\WorkItemEmail.cs" />
     <Compile Include="Data\WorkTrackerDbContext.cs" />
+    <Compile Include="Forms\TimeEntryEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TimeEntryEditForm.Designer.cs">
+      <DependentUpon>TimeEntryEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TimeEntryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TimeEntryForm.Designer.cs">
+      <DependentUpon>TimeEntryForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\WikiForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -156,6 +170,10 @@
     <Compile Include="Migrations\202511201104517_added_tag.cs" />
     <Compile Include="Migrations\202511201104517_added_tag.Designer.cs">
       <DependentUpon>202511201104517_added_tag.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202511210519335_added_time_entry.cs" />
+    <Compile Include="Migrations\202511210519335_added_time_entry.Designer.cs">
+      <DependentUpon>202511210519335_added_time_entry.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -298,6 +316,9 @@
     <EmbeddedResource Include="Forms\InboxForm.resx">
       <DependentUpon>InboxForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TimeEntryForm.resx">
+      <DependentUpon>TimeEntryForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\WorkItemDetailForm.resx">
       <DependentUpon>WorkItemDetailForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -354,6 +375,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511201104517_added_tag.resx">
       <DependentUpon>202511201104517_added_tag.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511210519335_added_time_entry.resx">
+      <DependentUpon>202511210519335_added_time_entry.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
