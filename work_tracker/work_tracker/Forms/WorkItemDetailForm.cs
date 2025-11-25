@@ -38,6 +38,9 @@ namespace work_tracker.Forms
             LoadAttachments();
             LoadEmails();
             LoadTimeEntries();
+            
+            // Yorum listesi çift tıklama event'i
+            lstComments.DoubleClick += LstComments_DoubleClick;
         }
 
         private void LoadSprints()
@@ -456,6 +459,135 @@ namespace work_tracker.Forms
             }
 
             lblCommentCount.Text = $"Toplam {comments.Count} yorum";
+        }
+
+        private void LstComments_DoubleClick(object sender, EventArgs e)
+        {
+            if (lstComments.SelectedItems.Count == 0)
+                return;
+
+            var commentId = (int)lstComments.SelectedItems[0].Tag;
+            
+            // Yorumu veritabanından çek
+            var comment = _context.WorkItemActivities
+                .FirstOrDefault(a => a.Id == commentId && a.ActivityType == WorkItemActivityTypes.Comment);
+
+            if (comment == null)
+                return;
+
+            // Yorum detay modalını göster
+            ShowCommentDetail(comment);
+        }
+
+        private void ShowCommentDetail(WorkItemActivity comment)
+        {
+            using (var detailForm = new XtraForm())
+            {
+                detailForm.Text = "Yorum Detayı";
+                detailForm.Size = new Size(700, 500);
+                detailForm.StartPosition = FormStartPosition.CenterParent;
+                detailForm.MinimumSize = new Size(500, 300);
+
+                // Ana panel
+                var mainPanel = new DevExpress.XtraEditors.PanelControl
+                {
+                    Dock = DockStyle.Fill,
+                    Padding = new Padding(10)
+                };
+
+                // Bilgi paneli (üst kısım)
+                var infoPanel = new DevExpress.XtraEditors.PanelControl
+                {
+                    Dock = DockStyle.Top,
+                    Height = 80,
+                    Padding = new Padding(10)
+                };
+
+                var lblCreatedBy = new LabelControl
+                {
+                    Text = $"Yazan: {comment.CreatedBy}",
+                    Location = new Point(10, 10),
+                    AutoSizeMode = LabelAutoSizeMode.None,
+                    Width = 300
+                };
+
+                var lblCreatedAt = new LabelControl
+                {
+                    Text = $"Tarih: {comment.CreatedAt:dd.MM.yyyy HH:mm:ss}",
+                    Location = new Point(10, 35),
+                    AutoSizeMode = LabelAutoSizeMode.None,
+                    Width = 300
+                };
+
+                infoPanel.Controls.Add(lblCreatedBy);
+                infoPanel.Controls.Add(lblCreatedAt);
+
+                // Yorum içeriği (kopyalanabilir)
+                var memoComment = new MemoEdit
+                {
+                    Dock = DockStyle.Fill,
+                    Text = comment.Description ?? "",
+                    Properties = 
+                    {
+                        ReadOnly = false, // Kopyalama için readonly false
+                        ScrollBars = ScrollBars.Both,
+                        WordWrap = true
+                    },
+                    Margin = new Padding(10, 0, 10, 10)
+                };
+
+                // Alt panel (butonlar)
+                var buttonPanel = new DevExpress.XtraEditors.PanelControl
+                {
+                    Dock = DockStyle.Bottom,
+                    Height = 50,
+                    Padding = new Padding(10)
+                };
+
+                var btnCopy = new SimpleButton
+                {
+                    Text = "Kopyala",
+                    DialogResult = DialogResult.None,
+                    Location = new Point(10, 10),
+                    Width = 100
+                };
+
+                btnCopy.Click += (s, args) =>
+                {
+                    if (!string.IsNullOrEmpty(memoComment.Text))
+                    {
+                        Clipboard.SetText(memoComment.Text);
+                        XtraMessageBox.Show("Yorum içeriği panoya kopyalandı.", "Bilgi",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                };
+
+                var btnClose = new SimpleButton
+                {
+                    Text = "Kapat",
+                    DialogResult = DialogResult.OK,
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                    Width = 100
+                };
+
+                buttonPanel.Controls.Add(btnCopy);
+                buttonPanel.Controls.Add(btnClose);
+                
+                // Buton konumlarını ayarla
+                detailForm.Load += (s, args) =>
+                {
+                    btnClose.Location = new Point(buttonPanel.Width - btnClose.Width - 10, 10);
+                };
+
+                mainPanel.Controls.Add(memoComment);
+                mainPanel.Controls.Add(infoPanel);
+                mainPanel.Controls.Add(buttonPanel);
+
+                detailForm.Controls.Add(mainPanel);
+                detailForm.AcceptButton = btnClose;
+
+                detailForm.ShowDialog(this);
+            }
         }
 
         private void btnClose_Click(object sender, EventArgs e)

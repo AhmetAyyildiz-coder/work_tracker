@@ -19,6 +19,7 @@ x86/
 bld/
 [Bb]in/
 [Oo]bj/
+publish/
 
 # NuGet Packages
 *.nupkg
