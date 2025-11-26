@@ -235,8 +235,7 @@ namespace work_tracker.Forms
                     totalDevTime += DateTime.Now - devStartTime.Value;
                 }
 
-                // Fallback: Eğer aktivite geçmişinden süre hesaplanamadıysa (eski kayıtlar için)
-                // StartedAt ve CompletedAt alanlarını kullan
+
                 if (totalDevTime == TimeSpan.Zero && _workItem.StartedAt.HasValue)
                 {
                     if (_workItem.Status == "Cozuldu" || _workItem.Status == "Tamamlandi")
@@ -1174,6 +1173,21 @@ namespace work_tracker.Forms
         private void btnRefreshEmails_Click(object sender, EventArgs e)
         {
             LoadEmails();
+        }
+
+        private void btnDailyReport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var reportForm = new DailyActivityReportForm(_workItemId);
+                reportForm.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Rapor açılırken hata oluştu:\n\n{ex.Message}",
+                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Error("Günlük rapor açma hatası", ex);
+            }
         }
 
         #endregion

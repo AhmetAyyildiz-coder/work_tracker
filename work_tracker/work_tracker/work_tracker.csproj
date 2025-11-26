@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.2</MinimumRequiredVersion>
-    <ApplicationRevision>14</ApplicationRevision>
+    <ApplicationRevision>18</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -56,6 +56,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>gui_tracker_icon_158361.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DevExpress.BonusSkins.v21.2" />
@@ -110,6 +113,12 @@
     <Compile Include="Data\Entities\WorkItemAttachment.cs" />
     <Compile Include="Data\Entities\WorkItemEmail.cs" />
     <Compile Include="Data\WorkTrackerDbContext.cs" />
+    <Compile Include="Forms\DailyActivityReportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DailyActivityReportForm.Designer.cs">
+      <DependentUpon>DailyActivityReportForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\TimeEntryEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -426,6 +435,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="gui_tracker_icon_158361.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

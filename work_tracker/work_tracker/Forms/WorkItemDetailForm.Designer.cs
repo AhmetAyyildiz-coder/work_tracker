@@ -115,6 +115,7 @@ namespace work_tracker.Forms
         private PanelControl panelBottom;
         private SimpleButton btnClose;
         private SimpleButton btnRefresh;
+        private SimpleButton btnDailyReport;
 
         protected override void Dispose(bool disposing)
         {
@@ -219,6 +220,7 @@ namespace work_tracker.Forms
             this.panelBottom = new DevExpress.XtraEditors.PanelControl();
             this.btnRefresh = new DevExpress.XtraEditors.SimpleButton();
             this.btnClose = new DevExpress.XtraEditors.SimpleButton();
+            this.btnDailyReport = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.groupWorkItemInfo)).BeginInit();
             this.groupWorkItemInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtEffort.Properties)).BeginInit();
@@ -1085,6 +1087,7 @@ namespace work_tracker.Forms
             // 
             // panelBottom
             // 
+            this.panelBottom.Controls.Add(this.btnDailyReport);
             this.panelBottom.Controls.Add(this.btnRefresh);
             this.panelBottom.Controls.Add(this.btnClose);
             this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -1113,6 +1116,20 @@ namespace work_tracker.Forms
             this.btnClose.TabIndex = 0;
             this.btnClose.Text = "Kapat";
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // btnDailyReport
+            // 
+            this.btnDailyReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnDailyReport.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.btnDailyReport.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnDailyReport.Appearance.Options.UseBackColor = true;
+            this.btnDailyReport.Appearance.Options.UseFont = true;
+            this.btnDailyReport.Location = new System.Drawing.Point(120, 10);
+            this.btnDailyReport.Name = "btnDailyReport";
+            this.btnDailyReport.Size = new System.Drawing.Size(170, 30);
+            this.btnDailyReport.TabIndex = 2;
+            this.btnDailyReport.Text = "📊 Günlük Rapor";
+            this.btnDailyReport.Click += new System.EventHandler(this.btnDailyReport_Click);
             // 
             // WorkItemDetailForm
             // 
