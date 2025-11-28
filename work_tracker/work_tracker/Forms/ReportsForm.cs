@@ -14,6 +14,7 @@ namespace work_tracker.Forms
     public partial class ReportsForm : XtraForm
     {
         private WorkTrackerDbContext _context;
+        private static readonly string[] DevelopmentStatuses = { "Gelistirmede", "MudahaleEdiliyor" };
 
         public ReportsForm()
         {
@@ -122,10 +123,8 @@ namespace work_tracker.Forms
                     .Select(w => new
                     {
                         Key = $"#{w.Id} " + (w.Title.Length > 25 ? w.Title.Substring(0, 22) + "..." : w.Title),
-                        PlannedMinutes = (double)((w.EffortEstimate ?? 0m) * 24m * 60m),
-                        ActualMinutes = w.CompletedAt.HasValue
-                            ? (w.CompletedAt.Value - (w.StartedAt ?? w.CreatedAt)).TotalMinutes
-                            : 0
+                        PlannedMinutes = (double)((w.EffortEstimate ?? 0m) * 8m * 60m), // 8 saatlik iş günü varsayımı
+                        ActualMinutes = CalculateActualWorkTime(w.Id, w.StartedAt, w.CreatedAt, w.CompletedAt)
                     })
                     .ToList();
 
@@ -363,6 +362,98 @@ namespace work_tracker.Forms
                 XtraMessageBox.Show($"Günlük efor raporu yüklenirken hata oluştu:\n\n{ex.Message}", "Rapor Hatası",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        /// <summary>
+        /// Bir iş öğesi için gerçek çalışma süresini hesaplar
+        /// StatusChange aktivitelerine göre geliştirme sürelerini hesaplar
+        /// </summary>
+        private double CalculateActualWorkTime(int workItemId, DateTime? startedAt, DateTime? createdAt, DateTime? endTime)
+        {
+            try
+            {
+                // Aktiviteleri çek
+                var activities = _context.WorkItemActivities
+                    .Where(a => a.WorkItemId == workItemId && a.ActivityType == WorkItemActivityTypes.StatusChange)
+                    .OrderBy(a => a.CreatedAt)
+                    .ToList();
+
+                TimeSpan totalDevTime = TimeSpan.Zero;
+                DateTime? devStartTime = null;
+                DateTime? lastExitTime = null;
+
+                if (startedAt.HasValue)
+                {
+                    devStartTime = startedAt.Value;
+                }
+                else if (createdAt.HasValue)
+                {
+                    var firstActivity = activities.FirstOrDefault();
+                    if (firstActivity != null
+                        && createdAt.Value <= firstActivity.CreatedAt
+                        && IsDevelopmentStatus(firstActivity.OldValue))
+                    {
+                        devStartTime = createdAt.Value;
+                    }
+                }
+
+                foreach (var activity in activities)
+                {
+                    var enteredDevelopment = IsDevelopmentStatus(activity.NewValue) && !IsDevelopmentStatus(activity.OldValue);
+                    var exitedDevelopment = IsDevelopmentStatus(activity.OldValue) && !IsDevelopmentStatus(activity.NewValue);
+
+                    // Geliştirmeye giriş
+                    if (enteredDevelopment && devStartTime == null)
+                    {
+                        devStartTime = activity.CreatedAt;
+                    }
+                    // Geliştirmeden çıkış
+                    else if (exitedDevelopment && devStartTime != null)
+                    {
+                        // Çakışan zamanları önlemek için son çıkış zamanını kontrol et
+                        if (lastExitTime.HasValue && activity.CreatedAt <= lastExitTime.Value)
+                        {
+                            continue; // Çakışan kayıtları atla
+                        }
+                        
+                        totalDevTime += activity.CreatedAt - devStartTime.Value;
+                        devStartTime = null;
+                        lastExitTime = activity.CreatedAt;
+                    }
+                }
+
+                // Şu an hala geliştirmedeyse ve bitiş zamanı yoksa
+                if (devStartTime != null)
+                {
+                    var currentTime = endTime ?? DateTime.Now;
+                    // Çakışan zamanları önlemek için son çıkış zamanını kontrol et
+                    if (!lastExitTime.HasValue || currentTime > lastExitTime.Value)
+                    {
+                        totalDevTime += currentTime - devStartTime.Value;
+                    }
+                }
+
+                return totalDevTime.TotalMinutes;
+            }
+            catch (Exception)
+            {
+                // Hata durumunda basit hesaplama
+                if (startedAt.HasValue && endTime.HasValue)
+                    return (endTime.Value - startedAt.Value).TotalMinutes;
+
+                if (createdAt.HasValue && endTime.HasValue)
+                    return (endTime.Value - createdAt.Value).TotalMinutes;
+                return 0;
+            }
+        }
+
+        private static bool IsDevelopmentStatus(string status)
+        {
+            if (string.IsNullOrWhiteSpace(status))
+                return false;
+
+            return DevelopmentStatuses.Any(s =>
+                status.Equals(s, StringComparison.OrdinalIgnoreCase));
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)

@@ -211,7 +211,23 @@ namespace work_tracker.Forms
                     decimal effort;
                     if (decimal.TryParse(txtEffort.Text, out effort))
                     {
+                        // Validation: Effort should be between 0.1 and 30 days
+                        if (effort < 0.1m || effort > 30m)
+                        {
+                            XtraMessageBox.Show("Efor tahmini 0.1 ile 30 gün arasında olmalıdır!",
+                                "Geçersiz Değer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            txtEffort.Focus();
+                            return;
+                        }
+                        
                         workItem.EffortEstimate = effort;
+                    }
+                    else if (!string.IsNullOrEmpty(txtEffort.Text))
+                    {
+                        XtraMessageBox.Show("Geçersiz efor değeri! Lütfen geçerli bir sayı girin.",
+                            "Geçersiz Değer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        txtEffort.Focus();
+                        return;
                     }
 
                     var targetBoard = cmbTargetBoard.EditValue.ToString();

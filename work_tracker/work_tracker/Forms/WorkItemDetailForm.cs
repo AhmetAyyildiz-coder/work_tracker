@@ -204,88 +204,51 @@ namespace work_tracker.Forms
         {
             try
             {
-                var activities = _context.WorkItemActivities
-                    .Where(a => a.WorkItemId == _workItemId && a.ActivityType == "StatusChange")
-                    .OrderBy(a => a.CreatedAt)
+                var statusActivities = _context.WorkItemActivities
+                    .Where(a => a.WorkItemId == _workItemId && a.ActivityType == WorkItemActivityTypes.StatusChange)
                     .ToList();
 
-                TimeSpan totalDevTime = TimeSpan.Zero;
-                DateTime? devStartTime = null;
+                var totalDevTime = DevelopmentTimeHelper.CalculateTotalDuration(_workItem, statusActivities);
 
-                // Başlangıç durumu kontrolü (eğer oluşturulduğunda direkt geliştirmedeyse)
-                // Ancak genelde "Bekliyor" olarak başlar.
-                // StartedAt alanı varsa onu baz alabiliriz ama activity log daha hassas.
-
-                foreach (var activity in activities)
+                var lblDevTime = this.Controls.Find("lblDevTime", true).FirstOrDefault() as LabelControl;
+                if (totalDevTime <= TimeSpan.Zero)
                 {
-                    // Geliştirmeye giriş
-                    if ((activity.NewValue == "Gelistirmede" || activity.NewValue == "MudahaleEdiliyor") && devStartTime == null)
+                    if (lblDevTime != null)
                     {
-                        devStartTime = activity.CreatedAt;
+                        lblDevTime.Visible = false;
                     }
-                    // Geliştirmeden çıkış
-                    else if ((activity.OldValue == "Gelistirmede" || activity.OldValue == "MudahaleEdiliyor") && devStartTime != null)
+                    return;
+                }
+
+                string durationStr = "";
+                if (totalDevTime.TotalDays >= 1)
+                    durationStr += $"{(int)totalDevTime.TotalDays} gün ";
+                if (totalDevTime.Hours > 0)
+                    durationStr += $"{totalDevTime.Hours} sa ";
+                if (totalDevTime.Minutes > 0)
+                    durationStr += $"{totalDevTime.Minutes} dk";
+
+                if (string.IsNullOrEmpty(durationStr))
+                    durationStr = "< 1 dk";
+
+                if (lblDevTime == null)
+                {
+                    lblDevTime = new LabelControl
                     {
-                        totalDevTime += activity.CreatedAt - devStartTime.Value;
-                        devStartTime = null;
+                        Name = "lblDevTime"
+                    };
+                    lblDevTime.Appearance.Font = new Font("Tahoma", 8.25F, FontStyle.Bold);
+                    lblDevTime.Appearance.ForeColor = Color.DarkOrange;
+
+                    if (lblCompletedAt != null)
+                    {
+                        lblDevTime.Location = new Point(lblCompletedAt.Location.X, lblCompletedAt.Location.Y + 20);
+                        lblCompletedAt.Parent.Controls.Add(lblDevTime);
                     }
                 }
 
-                // Şu an hala geliştirmedeyse
-                if (devStartTime != null)
-                {
-                    totalDevTime += DateTime.Now - devStartTime.Value;
-                }
-
-
-                if (totalDevTime == TimeSpan.Zero && _workItem.StartedAt.HasValue)
-                {
-                    if (_workItem.Status == "Cozuldu" || _workItem.Status == "Tamamlandi")
-                    {
-                        if (_workItem.CompletedAt.HasValue)
-                            totalDevTime = _workItem.CompletedAt.Value - _workItem.StartedAt.Value;
-                    }
-                    else if (_workItem.Status == "MudahaleEdiliyor" || _workItem.Status == "Gelistirmede")
-                    {
-                        totalDevTime = DateTime.Now - _workItem.StartedAt.Value;
-                    }
-                }
-
-                if (totalDevTime > TimeSpan.Zero)
-                {
-                    // Süreyi formatla
-                    string durationStr = "";
-                    if (totalDevTime.TotalDays >= 1)
-                        durationStr += $"{(int)totalDevTime.TotalDays} gün ";
-                    if (totalDevTime.Hours > 0)
-                        durationStr += $"{totalDevTime.Hours} sa ";
-                    if (totalDevTime.Minutes > 0)
-                        durationStr += $"{totalDevTime.Minutes} dk";
-
-                    if (string.IsNullOrEmpty(durationStr)) durationStr = "< 1 dk";
-
-                    // Label oluştur veya güncelle
-                    var lblDevTime = this.Controls.Find("lblDevTime", true).FirstOrDefault() as LabelControl;
-                    if (lblDevTime == null)
-                    {
-                        // Dinamik olarak label ekle (lblCompletedAt'in altına)
-                        lblDevTime = new LabelControl();
-                        lblDevTime.Name = "lblDevTime";
-                        lblDevTime.Appearance.Font = new Font("Tahoma", 8.25F, FontStyle.Bold);
-                        lblDevTime.Appearance.ForeColor = Color.DarkOrange;
-
-                        // Konumlandırma (lblCompletedAt'in yerini bulmamız lazım, ama designer'da olduğu için tam koordinat zor)
-                        // Basitçe lblCompletedAt'in altına koyalım.
-                        if (lblCompletedAt != null)
-                        {
-                            lblDevTime.Location = new Point(lblCompletedAt.Location.X, lblCompletedAt.Location.Y + 20);
-                            lblCompletedAt.Parent.Controls.Add(lblDevTime);
-                        }
-                    }
-
-                    lblDevTime.Text = $"Geliştirme Süresi: {durationStr}";
-                    lblDevTime.Visible = true;
-                }
+                lblDevTime.Text = $"Geliştirme Süresi: {durationStr}";
+                lblDevTime.Visible = true;
             }
             catch (Exception ex)
             {
@@ -615,70 +578,67 @@ namespace work_tracker.Forms
                     .ToList();
 
                 var relationList = new System.Collections.Generic.List<object>();
+                var processedSiblingIds = new HashSet<int>();
 
-                // Parent ilişkisi
-                var parentRelation = relations.FirstOrDefault(r =>
-                    r.WorkItemId2 == _workItemId && r.RelationType == WorkItemRelationTypes.Parent);
-                if (parentRelation != null)
+                foreach (var relation in relations)
                 {
-                    relationList.Add(new
+                    var isCurrentSource = relation.WorkItemId1 == _workItemId;
+                    var isCurrentTarget = relation.WorkItemId2 == _workItemId;
+                    if (!isCurrentSource && !isCurrentTarget)
+                        continue;
+
+                    var otherWorkItemId = isCurrentSource ? relation.WorkItemId2 : relation.WorkItemId1;
+                    var otherWorkItem = isCurrentSource ? relation.TargetWorkItem : relation.SourceWorkItem;
+
+                    if (otherWorkItem == null)
                     {
-                        Id = parentRelation.SourceWorkItem.Id,
-                        RelationType = "Parent",
-                        RelationTypeText = "🔺 Üst İş",
-                        Title = parentRelation.SourceWorkItem.Title,
-                        Status = parentRelation.SourceWorkItem.Status,
-                        CreatedAt = parentRelation.CreatedAt,
-                        CreatedBy = parentRelation.CreatedBy
-                    });
-                }
-
-                // Child ilişkileri
-                var childRelations = relations.Where(r =>
-                    r.WorkItemId1 == _workItemId && r.RelationType == WorkItemRelationTypes.Parent);
-                foreach (var childRelation in childRelations)
-                {
-                    relationList.Add(new
-                    {
-                        Id = childRelation.TargetWorkItem.Id,
-                        RelationType = "Child",
-                        RelationTypeText = "🔻 Alt İş",
-                        Title = childRelation.TargetWorkItem.Title,
-                        Status = childRelation.TargetWorkItem.Status,
-                        CreatedAt = childRelation.CreatedAt,
-                        CreatedBy = childRelation.CreatedBy
-                    });
-                }
-
-                // Sibling ilişkileri
-                var siblingRelations = relations.Where(r => r.RelationType == WorkItemRelationTypes.Sibling);
-                var siblingWorkItemIds = siblingRelations
-                    .Where(r => r.WorkItemId1 == _workItemId)
-                    .Select(r => r.WorkItemId2)
-                    .Union(siblingRelations.Where(r => r.WorkItemId2 == _workItemId).Select(r => r.WorkItemId1))
-                    .Distinct()
-                    .ToList();
-
-                foreach (var siblingId in siblingWorkItemIds)
-                {
-                    var siblingWorkItem = _context.WorkItems.Find(siblingId);
-                    if (siblingWorkItem != null)
-                    {
-                        var relation = siblingRelations.FirstOrDefault(r =>
-                            (r.WorkItemId1 == _workItemId && r.WorkItemId2 == siblingId) ||
-                            (r.WorkItemId2 == _workItemId && r.WorkItemId1 == siblingId));
-
-                        relationList.Add(new
-                        {
-                            Id = siblingWorkItem.Id,
-                            RelationType = "Sibling",
-                            RelationTypeText = "🔗 Kardeş İş",
-                            Title = siblingWorkItem.Title,
-                            Status = siblingWorkItem.Status,
-                            CreatedAt = relation?.CreatedAt ?? DateTime.MinValue,
-                            CreatedBy = relation?.CreatedBy ?? ""
-                        });
+                        otherWorkItem = _context.WorkItems.Find(otherWorkItemId);
                     }
+
+                    if (otherWorkItem == null)
+                        continue;
+
+                    string relationType;
+                    string relationTypeText;
+
+                    if (relation.RelationType == WorkItemRelationTypes.Parent)
+                    {
+                        if (isCurrentSource)
+                        {
+                            relationType = "Child";
+                            relationTypeText = "🔻 Alt İş";
+                        }
+                        else
+                        {
+                            relationType = "Parent";
+                            relationTypeText = "🔺 Üst İş";
+                        }
+                    }
+                    else if (relation.RelationType == WorkItemRelationTypes.Sibling)
+                    {
+                        if (!processedSiblingIds.Add(otherWorkItem.Id))
+                        {
+                            continue;
+                        }
+
+                        relationType = "Sibling";
+                        relationTypeText = "🔗 Kardeş İş";
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    relationList.Add(new
+                    {
+                        Id = otherWorkItem.Id,
+                        RelationType = relationType,
+                        RelationTypeText = relationTypeText,
+                        Title = otherWorkItem.Title,
+                        Status = otherWorkItem.Status,
+                        CreatedAt = relation.CreatedAt,
+                        CreatedBy = relation.CreatedBy
+                    });
                 }
 
                 gridRelations.DataSource = relationList;

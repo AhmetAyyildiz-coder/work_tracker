@@ -245,7 +245,8 @@ namespace work_tracker.Forms
             this.txtEffort.Name = "txtEffort";
             this.txtEffort.Size = new System.Drawing.Size(280, 20);
             this.txtEffort.TabIndex = 4;
-            // 
+            this.txtEffort.Properties.NullText = "Gün olarak girin (örn: 0.5, 1, 2.5)";
+            //
             // cmbTargetBoard
             this.cmbTargetBoard.Location = new System.Drawing.Point(15, 150);
             this.cmbTargetBoard.Name = "cmbTargetBoard";

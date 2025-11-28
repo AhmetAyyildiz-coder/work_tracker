@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.2</MinimumRequiredVersion>
-    <ApplicationRevision>18</ApplicationRevision>
+    <ApplicationRevision>19</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -138,6 +138,7 @@
     <Compile Include="Forms\WikiForm.Designer.cs">
       <DependentUpon>WikiForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\DevelopmentTimeHelper.cs" />
     <Compile Include="Helpers\FileStorageHelper.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\OutlookHelper.cs" />

@@ -200,10 +200,10 @@ namespace work_tracker.Forms
                     view.Columns["Urgency"].Caption = "Aciliyet";
                     view.Columns["Urgency"].Width = 80;
                 }
-                if (view.Columns["EffortEstimate"] != null) 
+                if (view.Columns["EffortEstimate"] != null)
                 {
-                    view.Columns["EffortEstimate"].Caption = "Efor";
-                    view.Columns["EffortEstimate"].Width = 60;
+                    view.Columns["EffortEstimate"].Caption = "Efor (gün)";
+                    view.Columns["EffortEstimate"].Width = 80;
                 }
                 if (view.Columns["ProjectName"] != null) 
                 {

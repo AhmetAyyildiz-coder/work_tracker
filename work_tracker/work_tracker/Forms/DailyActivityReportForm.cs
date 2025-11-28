@@ -6,6 +6,7 @@ using System.Drawing;
 using DevExpress.XtraEditors;
 using work_tracker.Data;
 using work_tracker.Data.Entities;
+using work_tracker.Helpers;
 using System.Collections.Generic;
 
 namespace work_tracker.Forms
@@ -57,72 +58,19 @@ namespace work_tracker.Forms
                     .OrderBy(a => a.CreatedAt)
                     .ToList();
 
-                // Tüm unique tarihleri topla
-                var allDates = new HashSet<DateTime>();
-                
+                var developmentBreakdown = DevelopmentTimeHelper
+                    .CalculateDailyBreakdown(_workItem, activities);
+
+                var allDates = new HashSet<DateTime>(developmentBreakdown.Keys);
+
                 foreach (var entry in timeEntries)
                 {
                     allDates.Add(entry.EntryDate.Date);
                 }
-                
+
                 foreach (var activity in activities)
                 {
                     allDates.Add(activity.CreatedAt.Date);
-                }
-
-                // Her tarih için günlük geliştirme süresini hesapla
-                var dailyDevTimes = new Dictionary<DateTime, int>();
-                
-                foreach (var date in allDates)
-                {
-                    var dayStart = date.Date;
-                    var dayEnd = date.Date.AddDays(1);
-                    
-                    TimeSpan totalDevTime = TimeSpan.Zero;
-                    DateTime? devStartTime = null;
-
-                    foreach (var activity in activities)
-                    {
-                        // Geliştirmeye giriş
-                        if ((activity.NewValue == "Gelistirmede" || activity.NewValue == "MudahaleEdiliyor") && devStartTime == null)
-                        {
-                            devStartTime = activity.CreatedAt;
-                        }
-                        // Geliştirmeden çıkış
-                        else if ((activity.OldValue == "Gelistirmede" || activity.OldValue == "MudahaleEdiliyor") && devStartTime != null)
-                        {
-                            var devEndTime = activity.CreatedAt;
-                            
-                            // Bu gün içindeki süreyi hesapla
-                            if (devStartTime.Value < dayEnd && devEndTime > dayStart)
-                            {
-                                var effectiveStart = devStartTime.Value < dayStart ? dayStart : devStartTime.Value;
-                                var effectiveEnd = devEndTime > dayEnd ? dayEnd : devEndTime;
-                                
-                                if (effectiveStart < effectiveEnd)
-                                {
-                                    totalDevTime += effectiveEnd - effectiveStart;
-                                }
-                            }
-                            
-                            devStartTime = null;
-                        }
-                    }
-
-                    // Şu an hala geliştirmedeyse ve bu gün içindeyse
-                    if (devStartTime != null && devStartTime.Value < dayEnd)
-                    {
-                        var now = DateTime.Now;
-                        var effectiveEnd = now > dayEnd ? dayEnd : now;
-                        var effectiveStart = devStartTime.Value < dayStart ? dayStart : devStartTime.Value;
-                        
-                        if (effectiveStart < effectiveEnd)
-                        {
-                            totalDevTime += effectiveEnd - effectiveStart;
-                        }
-                    }
-
-                    dailyDevTimes[date] = (int)totalDevTime.TotalMinutes;
                 }
 
                 // Her tarih için günlük rapor satırı oluştur
@@ -135,7 +83,9 @@ namespace work_tracker.Forms
                             .Sum(t => (int?)t.DurationMinutes) ?? 0,
                         MudahaleEdiliyorSayisi = activities
                             .Count(a => a.CreatedAt.Date == date && a.NewValue == "MudahaleEdiliyor"),
-                        ToplamCalismaDk = dailyDevTimes.ContainsKey(date) ? dailyDevTimes[date] : 0
+                        ToplamCalismaDk = developmentBreakdown.ContainsKey(date)
+                            ? (int)developmentBreakdown[date].TotalMinutes
+                            : 0
                     })
                     .OrderByDescending(r => r.Tarih)
                     .Select(r => new

@@ -51,6 +51,9 @@ namespace work_tracker.Data.Entities
         [MaxLength(50)]
         public string Urgency { get; set; } // Kritik, Yuksek, Normal
 
+        /// <summary>
+        /// Efor tahmini (gün cinsinden, null olabilmeli)
+        /// </summary>
         public decimal? EffortEstimate { get; set; }
 
         [MaxLength(50)]
