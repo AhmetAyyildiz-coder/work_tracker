@@ -1,6 +1,7 @@
 using DevExpress.XtraEditors;
 using DevExpress.XtraTab;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Drawing;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using work_tracker.Data;
 using work_tracker.Data.Entities;
+using work_tracker.Helpers;
 
 namespace work_tracker.Forms
 {
@@ -260,46 +262,202 @@ namespace work_tracker.Forms
         }
 
         /// <summary>
-        /// Günlük efor raporu - Her gün için toplam efor, iş bazında detay, aktivite türü ayrımı
+        /// Günlük efor raporu - Her gün için geliştirme süreleri, iş bazında detay
         /// </summary>
         private void LoadDailyEffortReport()
         {
             try
             {
                 var range = GetDateRange();
-                DateTime? from = range.Item1;
-                DateTime? to = range.Item2;
+                DateTime? from = range.Item1?.Date;
+                DateTime? to = range.Item2?.Date;
+                DateTime? toExclusive = to?.AddDays(1);
 
-                var query = _context.TimeEntries
-                    .Include(t => t.WorkItem)
-                    .Include(t => t.Project)
-                    .AsQueryable();
+                // First, get work items that have development status changes in the date range
+                var activitiesQuery = _context.WorkItemActivities
+                    .Where(a => a.ActivityType == WorkItemActivityTypes.StatusChange &&
+                                (a.NewValue == "Gelistirmede" || a.NewValue == "MudahaleEdiliyor" ||
+                                 a.OldValue == "Gelistirmede" || a.OldValue == "MudahaleEdiliyor"));
+                
+                // Apply date filtering to activities as well for better performance
+                if (from.HasValue)
+                {
+                    activitiesQuery = activitiesQuery.Where(a => a.CreatedAt >= from.Value);
+                }
+                if (toExclusive.HasValue)
+                {
+                    activitiesQuery = activitiesQuery.Where(a => a.CreatedAt < toExclusive.Value);
+                }
+                
+                var developmentWorkItemIds = activitiesQuery
+                    .Select(a => a.WorkItemId)
+                    .Distinct()
+                    .ToList();
+
+                // Then query work items with their activities, filtered by the IDs above and date range
+                var workItemsQuery = _context.WorkItems
+                    .Include(w => w.Project)
+                    .Include(w => w.Activities)
+                    .Where(w => !w.IsArchived && developmentWorkItemIds.Contains(w.Id));
 
                 if (from.HasValue)
                 {
-                    query = query.Where(t => DbFunctions.TruncateTime(t.EntryDate) >= DbFunctions.TruncateTime(from.Value));
+                    workItemsQuery = workItemsQuery.Where(w =>
+                        (w.CompletedAt ?? DateTime.Now) >= from.Value);
                 }
 
-                if (to.HasValue)
+                if (toExclusive.HasValue)
                 {
-                    var end = to.Value.Date.AddDays(1).AddTicks(-1);
-                    query = query.Where(t => t.EntryDate <= end);
+                    workItemsQuery = workItemsQuery.Where(w =>
+                        (w.StartedAt ?? w.CreatedAt) < toExclusive.Value);
                 }
 
-                var timeEntries = query.ToList();
+                var workItems = workItemsQuery
+                    .OrderByDescending(w => w.CreatedAt)
+                    .ToList();
 
-                // Günlük gruplandırma
-                var dailyData = timeEntries
-                    .GroupBy(t => t.EntryDate.Date)
+                var dailyEntries = new List<DevelopmentDayRecord>();
+
+                foreach (var workItem in workItems)
+                {
+                    var statusActivities = workItem.Activities?
+                        .Where(a => a.ActivityType == WorkItemActivityTypes.StatusChange)
+                        .OrderBy(a => a.CreatedAt)
+                        .ToList() ?? new List<WorkItemActivity>();
+
+                    var intervals = DevelopmentTimeHelper.CalculateIntervals(workItem, statusActivities);
+
+                    foreach (var interval in intervals)
+                    {
+                        var intervalStart = interval.Start;
+                        var intervalEnd = interval.End;
+
+                        if (from.HasValue && intervalEnd <= from.Value)
+                        {
+                            continue;
+                        }
+
+                        if (toExclusive.HasValue && intervalStart >= toExclusive.Value)
+                        {
+                            continue;
+                        }
+
+                        var clampedStart = intervalStart;
+                        var clampedEnd = intervalEnd;
+
+                        if (from.HasValue && clampedStart < from.Value)
+                        {
+                            clampedStart = from.Value;
+                        }
+
+                        if (toExclusive.HasValue && clampedEnd > toExclusive.Value)
+                        {
+                            clampedEnd = toExclusive.Value;
+                        }
+
+                        if (clampedEnd <= clampedStart)
+                        {
+                            continue;
+                        }
+
+                        var dayCursor = clampedStart.Date;
+                        while (dayCursor < clampedEnd)
+                        {
+                            var dayStart = dayCursor;
+                            var dayEnd = dayCursor.AddDays(1);
+
+                            var effectiveStart = clampedStart > dayStart ? clampedStart : dayStart;
+                            var effectiveEnd = clampedEnd < dayEnd ? clampedEnd : dayEnd;
+
+                            if (effectiveStart < effectiveEnd)
+                            {
+                                dailyEntries.Add(new DevelopmentDayRecord
+                                {
+                                    Date = dayStart,
+                                    WorkItemId = workItem.Id,
+                                    Title = workItem.Title,
+                                    ProjectName = workItem.Project != null ? workItem.Project.Name : "",
+                                    Minutes = (effectiveEnd - effectiveStart).TotalMinutes
+                                });
+                            }
+
+                            dayCursor = dayCursor.AddDays(1);
+                        }
+                    }
+                }
+
+                // Get time entries grouped by work item and date to add to work item totals
+                var timeEntriesQuery = _context.TimeEntries
+                    .Include(t => t.WorkItem)
+                    .Include(t => t.Project);
+
+                if (from.HasValue)
+                {
+                    timeEntriesQuery = timeEntriesQuery.Where(t => t.EntryDate >= from.Value);
+                }
+                if (toExclusive.HasValue)
+                {
+                    timeEntriesQuery = timeEntriesQuery.Where(t => t.EntryDate < toExclusive.Value);
+                }
+
+                var timeEntries = timeEntriesQuery
+                    .Where(t => t.WorkItemId.HasValue) // Only include time entries linked to work items
+                    .ToList()
+                    .GroupBy(t => new { t.WorkItemId.Value, Date = t.EntryDate.Date })
+                    .ToDictionary(g => (g.Key.WorkItemId, g.Key.Date), g => g.Sum(t => t.DurationMinutes));
+
+                // Add time entries to existing work item records or create new ones
+                foreach (var timeEntryGroup in timeEntries)
+                {
+                    var workItemId = timeEntryGroup.Key.WorkItemId;
+                    var date = timeEntryGroup.Key.Date;
+                    var timeMinutes = timeEntryGroup.Value;
+                    
+                    // Check if the date is within our filtered range
+                    if (from.HasValue && date < from.Value.Date)
+                        continue;
+                    if (to.HasValue && date >= to.Value.Date)
+                        continue;
+
+                    // Find existing entry for this work item and date
+                    var existingEntry = dailyEntries.FirstOrDefault(e => e.WorkItemId == workItemId && e.Date == date);
+                    
+                    if (existingEntry != null)
+                    {
+                        // Add time entry minutes to existing development time
+                        existingEntry.Minutes += timeMinutes;
+                    }
+                    else
+                    {
+                        // Get work item details for this time entry
+                        var workItem = _context.WorkItems
+                            .Include(w => w.Project)
+                            .FirstOrDefault(w => w.Id == workItemId);
+                        
+                        if (workItem != null)
+                        {
+                            dailyEntries.Add(new DevelopmentDayRecord
+                            {
+                                Date = date,
+                                WorkItemId = workItemId,
+                                Title = workItem.Title,
+                                ProjectName = workItem.Project?.Name ?? "",
+                                Minutes = timeMinutes
+                            });
+                        }
+                    }
+                }
+
+                var dailyData = dailyEntries
+                    .GroupBy(e => e.Date)
                     .Select(g => new
                     {
                         Tarih = g.Key,
-                        ToplamSüre = g.Sum(t => t.DurationMinutes),
-                        TelefonSüre = g.Where(t => t.ActivityType == TimeEntryActivityTypes.PhoneCall).Sum(t => t.DurationMinutes),
-                        IsSüre = g.Where(t => t.ActivityType == TimeEntryActivityTypes.Work).Sum(t => t.DurationMinutes),
-                        ToplantiSüre = g.Where(t => t.ActivityType == TimeEntryActivityTypes.Meeting).Sum(t => t.DurationMinutes),
-                        DigerSüre = g.Where(t => t.ActivityType == TimeEntryActivityTypes.Other).Sum(t => t.DurationMinutes),
-                        KayitSayisi = g.Count()
+                        ToplamSüre = Math.Round(g.Sum(e => e.Minutes), 2),
+                        KartSayisi = g.Select(e => e.WorkItemId).Distinct().Count(),
+                        OrtalamaKartSuresi = g.Select(e => e.WorkItemId).Distinct().Any()
+                            ? Math.Round(g.Sum(e => e.Minutes) / g.Select(e => e.WorkItemId).Distinct().Count(), 2)
+                            : 0
                     })
                     .OrderByDescending(g => g.Tarih)
                     .ToList();
@@ -311,34 +469,33 @@ namespace work_tracker.Forms
 
                 // Kolon başlıkları
                 if (view.Columns["Tarih"] != null) view.Columns["Tarih"].Caption = "Tarih";
-                if (view.Columns["ToplamSüre"] != null) view.Columns["ToplamSüre"].Caption = "Toplam Süre (dk)";
-                if (view.Columns["TelefonSüre"] != null) view.Columns["TelefonSüre"].Caption = "Telefon (dk)";
-                if (view.Columns["IsSüre"] != null) view.Columns["IsSüre"].Caption = "İş (dk)";
-                if (view.Columns["ToplantiSüre"] != null) view.Columns["ToplantiSüre"].Caption = "Toplantı (dk)";
-                if (view.Columns["DigerSüre"] != null) view.Columns["DigerSüre"].Caption = "Diğer (dk)";
-                if (view.Columns["KayitSayisi"] != null) view.Columns["KayitSayisi"].Caption = "Kayıt Sayısı";
+                if (view.Columns["ToplamSüre"] != null) view.Columns["ToplamSüre"].Caption = "Toplam Çalışma Süresi (dk)";
+                if (view.Columns["KartSayisi"] != null) view.Columns["KartSayisi"].Caption = "Kart Sayısı";
+                if (view.Columns["OrtalamaKartSuresi"] != null) view.Columns["OrtalamaKartSuresi"].Caption = "Ort. Kart Süresi (dk)";
 
                 // Özetler
                 view.Columns["ToplamSüre"].Summary.Clear();
                 view.Columns["ToplamSüre"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamSüre", "Toplam: {0} dk");
 
-                view.Columns["KayitSayisi"].Summary.Clear();
-                view.Columns["KayitSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "KayitSayisi", "Toplam Kayıt: {0}");
+                if (view.Columns["KartSayisi"] != null)
+                {
+                    view.Columns["KartSayisi"].Summary.Clear();
+                    view.Columns["KartSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "KartSayisi", "Toplam Kart: {0}");
+                }
 
                 // Gruplama için kullanıcıya alan bırakalım
                 view.OptionsView.ShowGroupPanel = true;
 
-                // İş bazında detay için ayrı bir grid
-                var workItemData = timeEntries
-                    .Where(t => t.WorkItemId.HasValue)
-                    .GroupBy(t => new { t.WorkItem.Id, t.WorkItem.Title, t.WorkItem.Project.Name })
+                // İş bazında detay
+                var workItemData = dailyEntries
+                    .GroupBy(e => new { e.WorkItemId, e.Title, e.ProjectName })
                     .Select(g => new
                     {
-                        IsId = g.Key.Id,
+                        IsId = g.Key.WorkItemId,
                         IsBaslik = g.Key.Title,
-                        Proje = g.Key.Name,
-                        ToplamSüre = g.Sum(t => t.DurationMinutes),
-                        KayitSayisi = g.Count()
+                        Proje = g.Key.ProjectName,
+                        ToplamSüre = Math.Round(g.Sum(e => e.Minutes), 2),
+                        GunSayisi = g.Select(e => e.Date).Distinct().Count()
                     })
                     .OrderByDescending(g => g.ToplamSüre)
                     .ToList();
@@ -351,8 +508,8 @@ namespace work_tracker.Forms
                 if (workItemView.Columns["IsId"] != null) workItemView.Columns["IsId"].Caption = "İş ID";
                 if (workItemView.Columns["IsBaslik"] != null) workItemView.Columns["IsBaslik"].Caption = "İş Başlığı";
                 if (workItemView.Columns["Proje"] != null) workItemView.Columns["Proje"].Caption = "Proje";
-                if (workItemView.Columns["ToplamSüre"] != null) workItemView.Columns["ToplamSüre"].Caption = "Toplam Süre (dk)";
-                if (workItemView.Columns["KayitSayisi"] != null) workItemView.Columns["KayitSayisi"].Caption = "Kayıt Sayısı";
+                if (workItemView.Columns["ToplamSüre"] != null) workItemView.Columns["ToplamSüre"].Caption = "Toplam Çalışma Süresi (dk)";
+                if (workItemView.Columns["GunSayisi"] != null) workItemView.Columns["GunSayisi"].Caption = "Aktif Gün Sayısı";
 
                 workItemView.Columns["ToplamSüre"].Summary.Clear();
                 workItemView.Columns["ToplamSüre"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamSüre", "Toplam: {0} dk");
@@ -454,6 +611,15 @@ namespace work_tracker.Forms
 
             return DevelopmentStatuses.Any(s =>
                 status.Equals(s, StringComparison.OrdinalIgnoreCase));
+        }
+
+        private class DevelopmentDayRecord
+        {
+            public DateTime Date { get; set; }
+            public int WorkItemId { get; set; }
+            public string Title { get; set; }
+            public string ProjectName { get; set; }
+            public double Minutes { get; set; }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
