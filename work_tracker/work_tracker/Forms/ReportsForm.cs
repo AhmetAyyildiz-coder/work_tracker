@@ -291,7 +291,7 @@ namespace work_tracker.Forms
 
                 // Günlük gruplandırma
                 var dailyData = timeEntries
-                    .GroupBy(t => DbFunctions.TruncateTime(t.EntryDate))
+                    .GroupBy(t => t.EntryDate.Date)
                     .Select(g => new
                     {
                         Tarih = g.Key,

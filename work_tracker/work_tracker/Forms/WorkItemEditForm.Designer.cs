@@ -26,6 +26,11 @@ namespace work_tracker.Forms
         private LabelControl labelControl8;
         private CheckedComboBoxEdit cmbTags;
         private SimpleButton btnAddTag;
+        private LabelControl labelControl9;
+        private LabelControl labelControl10;
+        private LookUpEdit cmbParentWorkItem;
+        private SimpleButton btnDeleteParentWorkItem;
+        private CheckedComboBoxEdit cmbSiblingWorkItems;
 
         protected override void Dispose(bool disposing)
         {
@@ -62,6 +67,11 @@ namespace work_tracker.Forms
             this.btnSave = new DevExpress.XtraEditors.SimpleButton();
             this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
             this.btnAddTag = new DevExpress.XtraEditors.SimpleButton();
+            this.labelControl9 = new DevExpress.XtraEditors.LabelControl();
+            this.labelControl10 = new DevExpress.XtraEditors.LabelControl();
+            this.cmbParentWorkItem = new DevExpress.XtraEditors.LookUpEdit();
+            this.btnDeleteParentWorkItem = new DevExpress.XtraEditors.SimpleButton();
+            this.cmbSiblingWorkItems = new DevExpress.XtraEditors.CheckedComboBoxEdit();
             ((System.ComponentModel.ISupportInitialize)(this.txtTitle.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtDescription.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbRequestedBy.Properties)).BeginInit();
@@ -71,6 +81,8 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.cmbModule.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbTags.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbParentWorkItem.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbSiblingWorkItems.Properties)).BeginInit();
             this.SuspendLayout();
             // 
             // labelControl1
@@ -136,6 +148,22 @@ namespace work_tracker.Forms
             this.labelControl8.Size = new System.Drawing.Size(45, 13);
             this.labelControl8.TabIndex = 16;
             this.labelControl8.Text = "Etiketler:";
+            //
+            // labelControl9
+            //
+            this.labelControl9.Location = new System.Drawing.Point(20, 380);
+            this.labelControl9.Name = "labelControl9";
+            this.labelControl9.Size = new System.Drawing.Size(80, 13);
+            this.labelControl9.TabIndex = 20;
+            this.labelControl9.Text = "Üst İş (Parent):";
+            //
+            // labelControl10
+            //
+            this.labelControl10.Location = new System.Drawing.Point(20, 430);
+            this.labelControl10.Name = "labelControl10";
+            this.labelControl10.Size = new System.Drawing.Size(100, 13);
+            this.labelControl10.TabIndex = 21;
+            this.labelControl10.Text = "Kardeş İşler (Sibling):";
             // 
             // txtTitle
             // 
@@ -231,10 +259,39 @@ namespace work_tracker.Forms
             this.btnAddTag.TabIndex = 18;
             this.btnAddTag.Text = "➕ Yeni Etiket";
             this.btnAddTag.Click += new System.EventHandler(this.btnAddTag_Click);
+            //
+            // cmbParentWorkItem
+            //
+            this.cmbParentWorkItem.Location = new System.Drawing.Point(20, 400);
+            this.cmbParentWorkItem.Name = "cmbParentWorkItem";
+            this.cmbParentWorkItem.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbParentWorkItem.Properties.NullText = "Üst iş seçin (opsiyonel)...";
+            this.cmbParentWorkItem.Size = new System.Drawing.Size(650, 20);
+            this.cmbParentWorkItem.TabIndex = 22;
+            //
+            // btnDeleteParentWorkItem
+            //
+            this.btnDeleteParentWorkItem.Location = new System.Drawing.Point(680, 400);
+            this.btnDeleteParentWorkItem.Name = "btnDeleteParentWorkItem";
+            this.btnDeleteParentWorkItem.Size = new System.Drawing.Size(60, 20);
+            this.btnDeleteParentWorkItem.TabIndex = 24;
+            this.btnDeleteParentWorkItem.Text = "Sil";
+            this.btnDeleteParentWorkItem.Click += new System.EventHandler(this.btnDeleteParentWorkItem_Click);
+            //
+            // cmbSiblingWorkItems
+            //
+            this.cmbSiblingWorkItems.Location = new System.Drawing.Point(20, 450);
+            this.cmbSiblingWorkItems.Name = "cmbSiblingWorkItems";
+            this.cmbSiblingWorkItems.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbSiblingWorkItems.Properties.NullText = "Kardeş işler seçin (opsiyonel)...";
+            this.cmbSiblingWorkItems.Size = new System.Drawing.Size(720, 20);
+            this.cmbSiblingWorkItems.TabIndex = 23;
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(560, 390);
+            this.btnSave.Location = new System.Drawing.Point(560, 490);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(90, 30);
             this.btnSave.TabIndex = 14;
@@ -243,7 +300,7 @@ namespace work_tracker.Forms
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(650, 390);
+            this.btnCancel.Location = new System.Drawing.Point(650, 490);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(90, 30);
             this.btnCancel.TabIndex = 15;
@@ -254,10 +311,15 @@ namespace work_tracker.Forms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(760, 440);
+            this.ClientSize = new System.Drawing.Size(760, 540);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnAddTag);
             this.Controls.Add(this.btnSave);
+            this.Controls.Add(this.cmbSiblingWorkItems);
+            this.Controls.Add(this.btnDeleteParentWorkItem);
+            this.Controls.Add(this.cmbParentWorkItem);
+            this.Controls.Add(this.labelControl10);
+            this.Controls.Add(this.labelControl9);
             this.Controls.Add(this.cmbTags);
             this.Controls.Add(this.cmbMeeting);
             this.Controls.Add(this.cmbModule);
@@ -291,6 +353,8 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.cmbModule.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbTags.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbParentWorkItem.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbSiblingWorkItems.Properties)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

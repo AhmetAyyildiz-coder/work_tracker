@@ -48,6 +48,7 @@ namespace work_tracker.Forms
         private DevExpress.XtraTab.XtraTabPage tabPageAttachments;
         private DevExpress.XtraTab.XtraTabPage tabPageEmails;
         private DevExpress.XtraTab.XtraTabPage tabPageTimeEntries;
+        private DevExpress.XtraTab.XtraTabPage tabPageRelations;
         
         // Zaman Kayıtları
         private GroupControl groupTimeEntries;
@@ -109,6 +110,13 @@ namespace work_tracker.Forms
         private SimpleButton btnUnlinkEmail;
         private SimpleButton btnRefreshEmails;
         private TextEdit txtSearchEmail;
+        
+        // İlişkili İşler
+        private GroupControl groupRelations;
+        private DevExpress.XtraGrid.GridControl gridRelations;
+        private DevExpress.XtraGrid.Views.Grid.GridView gridViewRelations;
+        private LabelControl lblRelationCount;
+        private SimpleButton btnOpenRelatedWorkItem;
 
         
         // Alt panel
@@ -221,6 +229,12 @@ namespace work_tracker.Forms
             this.btnRefresh = new DevExpress.XtraEditors.SimpleButton();
             this.btnClose = new DevExpress.XtraEditors.SimpleButton();
             this.btnDailyReport = new DevExpress.XtraEditors.SimpleButton();
+            this.tabPageRelations = new DevExpress.XtraTab.XtraTabPage();
+            this.groupRelations = new DevExpress.XtraEditors.GroupControl();
+            this.gridRelations = new DevExpress.XtraGrid.GridControl();
+            this.gridViewRelations = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.lblRelationCount = new DevExpress.XtraEditors.LabelControl();
+            this.btnOpenRelatedWorkItem = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.groupWorkItemInfo)).BeginInit();
             this.groupWorkItemInfo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtEffort.Properties)).BeginInit();
@@ -261,6 +275,11 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.txtNewComment.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelBottom)).BeginInit();
             this.panelBottom.SuspendLayout();
+            this.tabPageRelations.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.groupRelations)).BeginInit();
+            this.groupRelations.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridRelations)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewRelations)).BeginInit();
             this.SuspendLayout();
             // 
             // groupWorkItemInfo
@@ -583,7 +602,8 @@ namespace work_tracker.Forms
             this.tabPageComments,
             this.tabPageAttachments,
             this.tabPageEmails,
-            this.tabPageTimeEntries});
+            this.tabPageTimeEntries,
+            this.tabPageRelations});
             // 
             // tabPageActivities
             // 
@@ -879,6 +899,69 @@ namespace work_tracker.Forms
             this.groupEmails.Controls.Add(this.lstEmails);
             this.groupEmails.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupEmails.Location = new System.Drawing.Point(0, 0);
+            //
+            // tabPageRelations
+            //
+            this.tabPageRelations.Controls.Add(this.groupRelations);
+            this.tabPageRelations.Name = "tabPageRelations";
+            this.tabPageRelations.Size = new System.Drawing.Size(1198, 275);
+            this.tabPageRelations.Text = "🔗 İlişkili İşler";
+            //
+            // groupRelations
+            //
+            this.groupRelations.Controls.Add(this.btnOpenRelatedWorkItem);
+            this.groupRelations.Controls.Add(this.lblRelationCount);
+            this.groupRelations.Controls.Add(this.gridRelations);
+            this.groupRelations.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupRelations.Location = new System.Drawing.Point(0, 0);
+            this.groupRelations.Name = "groupRelations";
+            this.groupRelations.Size = new System.Drawing.Size(1198, 275);
+            this.groupRelations.Text = "İlişkili İşler";
+            //
+            // gridRelations
+            //
+            this.gridRelations.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridRelations.Location = new System.Drawing.Point(2, 22);
+            this.gridRelations.MainView = this.gridViewRelations;
+            this.gridRelations.Name = "gridRelations";
+            this.gridRelations.Size = new System.Drawing.Size(1194, 200);
+            this.gridRelations.TabIndex = 0;
+            this.gridRelations.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gridViewRelations});
+            //
+            // gridViewRelations
+            //
+            this.gridViewRelations.GridControl = this.gridRelations;
+            this.gridViewRelations.Name = "gridViewRelations";
+            this.gridViewRelations.OptionsBehavior.Editable = false;
+            this.gridViewRelations.OptionsSelection.EnableAppearanceFocusedCell = false;
+            this.gridViewRelations.OptionsSelection.EnableAppearanceFocusedRow = false;
+            this.gridViewRelations.OptionsView.ShowGroupPanel = false;
+            //
+            // lblRelationCount
+            //
+            this.lblRelationCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblRelationCount.Appearance.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblRelationCount.Appearance.Options.UseFont = true;
+            this.lblRelationCount.Location = new System.Drawing.Point(15, 230);
+            this.lblRelationCount.Name = "lblRelationCount";
+            this.lblRelationCount.Size = new System.Drawing.Size(100, 13);
+            this.lblRelationCount.TabIndex = 1;
+            this.lblRelationCount.Text = "Toplam 0 ilişki";
+            //
+            // btnOpenRelatedWorkItem
+            //
+            this.btnOpenRelatedWorkItem.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenRelatedWorkItem.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69)))));
+            this.btnOpenRelatedWorkItem.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnOpenRelatedWorkItem.Appearance.Options.UseBackColor = true;
+            this.btnOpenRelatedWorkItem.Appearance.Options.UseFont = true;
+            this.btnOpenRelatedWorkItem.Location = new System.Drawing.Point(1050, 225);
+            this.btnOpenRelatedWorkItem.Name = "btnOpenRelatedWorkItem";
+            this.btnOpenRelatedWorkItem.Size = new System.Drawing.Size(130, 30);
+            this.btnOpenRelatedWorkItem.TabIndex = 2;
+            this.btnOpenRelatedWorkItem.Text = "🔗 İşi Aç";
+            this.btnOpenRelatedWorkItem.Click += new System.EventHandler(this.btnOpenRelatedWorkItem_Click);
             this.groupEmails.Name = "groupEmails";
             this.groupEmails.Size = new System.Drawing.Size(1198, 275);
             this.groupEmails.TabIndex = 0;
@@ -1140,6 +1223,12 @@ namespace work_tracker.Forms
             this.Controls.Add(this.groupAddComment);
             this.Controls.Add(this.groupWorkItemInfo);
             this.Controls.Add(this.panelBottom);
+            this.tabControl.Controls.Add(this.tabPageActivities);
+            this.tabControl.Controls.Add(this.tabPageComments);
+            this.tabControl.Controls.Add(this.tabPageAttachments);
+            this.tabControl.Controls.Add(this.tabPageEmails);
+            this.tabControl.Controls.Add(this.tabPageTimeEntries);
+            this.tabControl.Controls.Add(this.tabPageRelations);
             this.Name = "WorkItemDetailForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "İş Detayı";

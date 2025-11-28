@@ -23,6 +23,7 @@ namespace work_tracker.Data
         public virtual DbSet<Tag> Tags { get; set; }
         public virtual DbSet<TimeEntry> TimeEntries { get; set; }
         public virtual DbSet<Person> Persons { get; set; }
+        public virtual DbSet<WorkItemRelation> WorkItemRelations { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -147,6 +148,25 @@ namespace work_tracker.Data
                 .WithMany(p => p.TimeEntries)
                 .HasForeignKey(t => t.PersonId)
                 .WillCascadeOnDelete(false);
+
+            // WorkItemRelation - WorkItem ilişkileri
+            modelBuilder.Entity<WorkItemRelation>()
+                .HasRequired(r => r.SourceWorkItem)
+                .WithMany(w => w.RelatedWorkItemsAsSource)
+                .HasForeignKey(r => r.WorkItemId1)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<WorkItemRelation>()
+                .HasRequired(r => r.TargetWorkItem)
+                .WithMany(w => w.RelatedWorkItemsAsTarget)
+                .HasForeignKey(r => r.WorkItemId2)
+                .WillCascadeOnDelete(false);
+
+            // Aynı işin kendisiyle ilişki kurmasını engelle
+            modelBuilder.Entity<WorkItemRelation>()
+                .HasIndex(r => new { r.WorkItemId1, r.WorkItemId2, r.RelationType })
+                .IsUnique()
+                .HasName("IX_WorkItemRelations_Unique");
         }
     }
 }

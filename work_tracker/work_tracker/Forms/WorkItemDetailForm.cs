@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Windows.Forms;
@@ -38,6 +39,7 @@ namespace work_tracker.Forms
             LoadAttachments();
             LoadEmails();
             LoadTimeEntries();
+            LoadRelations();
             
             // Yorum listesi çift tıklama event'i
             lstComments.DoubleClick += LstComments_DoubleClick;
@@ -600,6 +602,163 @@ namespace work_tracker.Forms
             LoadActivities();
             LoadComments();
             LoadAttachments();
+        }
+
+        private void LoadRelations()
+        {
+            try
+            {
+                var relations = _context.WorkItemRelations
+                    .Where(r => r.WorkItemId1 == _workItemId || r.WorkItemId2 == _workItemId)
+                    .Include(r => r.SourceWorkItem)
+                    .Include(r => r.TargetWorkItem)
+                    .ToList();
+
+                var relationList = new System.Collections.Generic.List<object>();
+
+                // Parent ilişkisi
+                var parentRelation = relations.FirstOrDefault(r =>
+                    r.WorkItemId2 == _workItemId && r.RelationType == WorkItemRelationTypes.Parent);
+                if (parentRelation != null)
+                {
+                    relationList.Add(new
+                    {
+                        Id = parentRelation.SourceWorkItem.Id,
+                        RelationType = "Parent",
+                        RelationTypeText = "🔺 Üst İş",
+                        Title = parentRelation.SourceWorkItem.Title,
+                        Status = parentRelation.SourceWorkItem.Status,
+                        CreatedAt = parentRelation.CreatedAt,
+                        CreatedBy = parentRelation.CreatedBy
+                    });
+                }
+
+                // Child ilişkileri
+                var childRelations = relations.Where(r =>
+                    r.WorkItemId1 == _workItemId && r.RelationType == WorkItemRelationTypes.Parent);
+                foreach (var childRelation in childRelations)
+                {
+                    relationList.Add(new
+                    {
+                        Id = childRelation.TargetWorkItem.Id,
+                        RelationType = "Child",
+                        RelationTypeText = "🔻 Alt İş",
+                        Title = childRelation.TargetWorkItem.Title,
+                        Status = childRelation.TargetWorkItem.Status,
+                        CreatedAt = childRelation.CreatedAt,
+                        CreatedBy = childRelation.CreatedBy
+                    });
+                }
+
+                // Sibling ilişkileri
+                var siblingRelations = relations.Where(r => r.RelationType == WorkItemRelationTypes.Sibling);
+                var siblingWorkItemIds = siblingRelations
+                    .Where(r => r.WorkItemId1 == _workItemId)
+                    .Select(r => r.WorkItemId2)
+                    .Union(siblingRelations.Where(r => r.WorkItemId2 == _workItemId).Select(r => r.WorkItemId1))
+                    .Distinct()
+                    .ToList();
+
+                foreach (var siblingId in siblingWorkItemIds)
+                {
+                    var siblingWorkItem = _context.WorkItems.Find(siblingId);
+                    if (siblingWorkItem != null)
+                    {
+                        var relation = siblingRelations.FirstOrDefault(r =>
+                            (r.WorkItemId1 == _workItemId && r.WorkItemId2 == siblingId) ||
+                            (r.WorkItemId2 == _workItemId && r.WorkItemId1 == siblingId));
+
+                        relationList.Add(new
+                        {
+                            Id = siblingWorkItem.Id,
+                            RelationType = "Sibling",
+                            RelationTypeText = "🔗 Kardeş İş",
+                            Title = siblingWorkItem.Title,
+                            Status = siblingWorkItem.Status,
+                            CreatedAt = relation?.CreatedAt ?? DateTime.MinValue,
+                            CreatedBy = relation?.CreatedBy ?? ""
+                        });
+                    }
+                }
+
+                gridRelations.DataSource = relationList;
+
+                var view = gridViewRelations;
+                view.BestFitColumns();
+
+                // Kolon başlıkları
+                if (view.Columns["RelationTypeText"] != null)
+                {
+                    view.Columns["RelationTypeText"].Caption = "İlişki Tipi";
+                    view.Columns["RelationTypeText"].Width = 120;
+                }
+                if (view.Columns["Title"] != null)
+                {
+                    view.Columns["Title"].Caption = "İş Başlığı";
+                    view.Columns["Title"].Width = 300;
+                }
+                if (view.Columns["Status"] != null)
+                {
+                    view.Columns["Status"].Caption = "Durum";
+                    view.Columns["Status"].Width = 100;
+                }
+                if (view.Columns["CreatedAt"] != null)
+                {
+                    view.Columns["CreatedAt"].Caption = "İlişki Tarihi";
+                    view.Columns["CreatedAt"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+                    view.Columns["CreatedAt"].DisplayFormat.FormatString = "dd.MM.yyyy HH:mm";
+                    view.Columns["CreatedAt"].Width = 130;
+                }
+                if (view.Columns["CreatedBy"] != null)
+                {
+                    view.Columns["CreatedBy"].Caption = "Oluşturan";
+                    view.Columns["CreatedBy"].Width = 100;
+                }
+
+                // Id kolonunu gizle
+                if (view.Columns["Id"] != null) view.Columns["Id"].Visible = false;
+                if (view.Columns["RelationType"] != null) view.Columns["RelationType"].Visible = false;
+
+                lblRelationCount.Text = $"Toplam {relationList.Count} ilişki";
+
+                view.OptionsBehavior.Editable = false;
+                view.OptionsView.ShowGroupPanel = false;
+                view.OptionsView.ShowFooter = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, "İlişkiler yüklenirken hata");
+            }
+        }
+
+        private void btnOpenRelatedWorkItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var view = gridViewRelations;
+                if (view.FocusedRowHandle < 0) return;
+
+                var relatedWorkItemId = (int)view.GetRowCellValue(view.FocusedRowHandle, "Id");
+                var relationType = view.GetRowCellValue(view.FocusedRowHandle, "RelationType")?.ToString();
+
+                if (relationType == "Parent" || relationType == "Child" || relationType == "Sibling")
+                {
+                    // İlgili işin detay formunu aç
+                    var detailForm = new WorkItemDetailForm(relatedWorkItemId);
+                    if (detailForm.ShowDialog() == DialogResult.OK)
+                    {
+                        // Form kapandıktan sonra ilişkileri yenile
+                        LoadRelations();
+                        LoadWorkItemDetails(); // Ana iş bilgilerini de güncelle
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, "İlişkili iş açılırken hata");
+                XtraMessageBox.Show("İlişkili iş açılırken bir hata oluştu.", "Hata",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnChangeSprint_Click(object sender, EventArgs e)
@@ -1189,6 +1348,104 @@ namespace work_tracker.Forms
                 Logger.Error("Günlük rapor açma hatası", ex);
             }
         }
+
+        //private void LoadRelations()
+        //{
+        //    try
+        //    {
+        //        // Parent işi bul
+        //        var parentWorkItem = _context.WorkItemRelations
+        //            .Where(r => r.WorkItemId2 == _workItemId && r.RelationType == WorkItemRelationTypes.Parent)
+        //            .Select(r => r.SourceWorkItem)
+        //            .FirstOrDefault();
+
+        //        // Sibling işleri bul
+        //        var siblingWorkItems = _context.WorkItemRelations
+        //            .Where(r => (r.WorkItemId1 == _workItemId || r.WorkItemId2 == _workItemId) &&
+        //                       r.RelationType == WorkItemRelationTypes.Sibling)
+        //            .Select(r => r.WorkItemId1 == _workItemId ? r.TargetWorkItem : r.SourceWorkItem)
+        //            .Distinct()
+        //            .ToList();
+
+        //        var relationsList = new List<object>();
+
+        //        // Parent işi ekle
+        //        if (parentWorkItem != null)
+        //        {
+        //            relationsList.Add(new
+        //            {
+        //                Id = parentWorkItem.Id,
+        //                Title = parentWorkItem.Title,
+        //                Type = "Üst İş (Parent)",
+        //                Status = parentWorkItem.Status,
+        //                Project = parentWorkItem.Project?.Name ?? "-",
+        //                RelationType = "Parent"
+        //            });
+        //        }
+
+        //        // Sibling işleri ekle
+        //        foreach (var sibling in siblingWorkItems)
+        //        {
+        //            relationsList.Add(new
+        //            {
+        //                Id = sibling.Id,
+        //                Title = sibling.Title,
+        //                Type = "Kardeş İş (Sibling)",
+        //                Status = sibling.Status,
+        //                Project = sibling.Project?.Name ?? "-",
+        //                RelationType = "Sibling"
+        //            });
+        //        }
+
+        //        gridRelations.DataSource = relationsList;
+
+        //        var view = gridViewRelations;
+        //        view.BestFitColumns();
+
+        //        // Kolon başlıkları
+        //        if (view.Columns["Id"] != null) view.Columns["Id"].Caption = "ID";
+        //        if (view.Columns["Title"] != null) view.Columns["Title"].Caption = "Başlık";
+        //        if (view.Columns["Type"] != null) view.Columns["Type"].Caption = "İlişki Tipi";
+        //        if (view.Columns["Status"] != null) view.Columns["Status"].Caption = "Durum";
+        //        if (view.Columns["Project"] != null) view.Columns["Project"].Caption = "Proje";
+        //        if (view.Columns["RelationType"] != null) view.Columns["RelationType"].Visible = false;
+
+        //        // Özet
+        //        lblRelationCount.Text = $"Toplam {relationsList.Count} ilişkili iş";
+
+        //        view.OptionsBehavior.Editable = false;
+        //        view.OptionsView.ShowGroupPanel = false;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException(ex, "İlişkiler yüklenirken hata");
+        //        XtraMessageBox.Show($"İlişkiler yüklenirken hata oluştu: {ex.Message}", "Hata",
+        //            MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
+
+        //private void btnOpenRelatedWorkItem_Click(object sender, EventArgs e)
+        //{
+        //    try
+        //    {
+        //        var view = gridViewRelations;
+        //        if (view.FocusedRowHandle < 0) return;
+
+        //        var workItemId = Convert.ToInt32(view.GetFocusedRowCellValue("Id"));
+                
+        //        // İlgili iş detay formunu aç
+        //        using (var detailForm = new WorkItemDetailForm(workItemId))
+        //        {
+        //            detailForm.ShowDialog();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogException(ex, "İlişkili iş açılırken hata");
+        //        XtraMessageBox.Show($"İş açılırken hata oluştu: {ex.Message}", "Hata",
+        //            MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         #endregion
     }

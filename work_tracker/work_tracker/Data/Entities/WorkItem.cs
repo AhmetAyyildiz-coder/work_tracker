@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace work_tracker.Data.Entities
 {
@@ -98,6 +99,56 @@ namespace work_tracker.Data.Entities
         public virtual ICollection<Tag> Tags {get;set;}
         public virtual ICollection<Person> RequestedByPersons { get; set; }
 
+        // WorkItem Relations
+        public virtual ICollection<WorkItemRelation> RelatedWorkItemsAsSource { get; set; }
+        public virtual ICollection<WorkItemRelation> RelatedWorkItemsAsTarget { get; set; }
+
+        // Helper Properties for easier access
+        [NotMapped]
+        public WorkItem ParentWorkItem
+        {
+            get
+            {
+                return RelatedWorkItemsAsTarget?
+                    .FirstOrDefault(r => r.RelationType == WorkItemRelationTypes.Parent)?
+                    .SourceWorkItem;
+            }
+        }
+
+        [NotMapped]
+        public ICollection<WorkItem> ChildWorkItems
+        {
+            get
+            {
+                return RelatedWorkItemsAsSource?
+                    .Where(r => r.RelationType == WorkItemRelationTypes.Parent)
+                    .Select(r => r.TargetWorkItem)
+                    .ToList() ?? new List<WorkItem>();
+            }
+        }
+
+        [NotMapped]
+        public ICollection<WorkItem> SiblingWorkItems
+        {
+            get
+            {
+                var siblingIds = RelatedWorkItemsAsTarget?
+                    .Where(r => r.RelationType == WorkItemRelationTypes.Sibling)
+                    .Select(r => r.SourceWorkItem.Id)
+                    .ToList() ?? new List<int>();
+
+                var targetSiblingIds = RelatedWorkItemsAsSource?
+                    .Where(r => r.RelationType == WorkItemRelationTypes.Sibling)
+                    .Select(r => r.TargetWorkItem.Id)
+                    .ToList() ?? new List<int>();
+
+                var allSiblingIds = siblingIds.Concat(targetSiblingIds).Distinct().ToList();
+
+                // Bu kısım veritabanı context'i gerektireceği için service katmanında daha iyi implemente edilebilir
+                return new List<WorkItem>();
+            }
+        }
+
         public WorkItem()
         {
             RequestedAt = DateTime.Now;
@@ -111,6 +162,8 @@ namespace work_tracker.Data.Entities
             Emails = new HashSet<WorkItemEmail>();
             Tags = new HashSet<Tag>();
             RequestedByPersons = new HashSet<Person>();
+            RelatedWorkItemsAsSource = new HashSet<WorkItemRelation>();
+            RelatedWorkItemsAsTarget = new HashSet<WorkItemRelation>();
         }
     }
 }
