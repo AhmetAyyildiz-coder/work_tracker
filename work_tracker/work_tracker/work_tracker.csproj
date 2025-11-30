@@ -212,6 +212,10 @@
     <Compile Include="Migrations\202511280530197_added_workitem_relationships.Designer.cs">
       <DependentUpon>202511280530197_added_workitem_relationships.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202511302054436_update_workitem_with_wiki.cs" />
+    <Compile Include="Migrations\202511302054436_update_workitem_with_wiki.Designer.cs">
+      <DependentUpon>202511302054436_update_workitem_with_wiki.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -432,6 +436,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511280530197_added_workitem_relationships.resx">
       <DependentUpon>202511280530197_added_workitem_relationships.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202511302054436_update_workitem_with_wiki.resx">
+      <DependentUpon>202511302054436_update_workitem_with_wiki.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

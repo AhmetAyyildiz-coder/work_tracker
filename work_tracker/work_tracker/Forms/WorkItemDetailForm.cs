@@ -1309,6 +1309,47 @@ namespace work_tracker.Forms
             }
         }
 
+        private void btnWiki_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Önce bu iş için mevcut wiki sayfası var mı kontrol et
+                var existingWiki = _context.WikiPages
+                    .FirstOrDefault(w => w.WorkItemId == _workItemId && !w.IsArchived);
+
+                if (existingWiki != null)
+                {
+                    var result = XtraMessageBox.Show(
+                        $"Bu iş için zaten bir wiki sayfası mevcut:\n\n\"{existingWiki.Title}\"\n\nYeni sayfa oluşturmak için 'Evet',\nMevcut sayfayı açmak için 'Hayır' tıklayın.",
+                        "Wiki Sayfası Mevcut",
+                        MessageBoxButtons.YesNoCancel,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Cancel)
+                        return;
+
+                    if (result == DialogResult.No) // Mevcut Aç
+                    {
+                        var wikiForm = new WikiForm();
+                        wikiForm.Show();
+                        return;
+                    }
+                    // DialogResult.Yes = Yeni Oluştur - devam et
+                }
+
+                // Wiki formunu aç ve iş bilgileriyle doldur
+                var newWikiForm = new WikiForm();
+                newWikiForm.Show();
+                newWikiForm.InitializeForWorkItem(_workItem);
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Wiki açılırken hata oluştu:\n\n{ex.Message}",
+                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Error("Wiki açma hatası", ex);
+            }
+        }
+
         //private void LoadRelations()
         //{
         //    try

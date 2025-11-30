@@ -124,6 +124,7 @@ namespace work_tracker.Forms
         private SimpleButton btnClose;
         private SimpleButton btnRefresh;
         private SimpleButton btnDailyReport;
+        private SimpleButton btnWiki;
 
         protected override void Dispose(bool disposing)
         {
@@ -1168,8 +1169,25 @@ namespace work_tracker.Forms
             this.txtNewComment.Size = new System.Drawing.Size(1050, 70);
             this.txtNewComment.TabIndex = 0;
             // 
+            // 
+            // btnWiki
+            // 
+            this.btnWiki = new DevExpress.XtraEditors.SimpleButton();
+            this.btnWiki.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnWiki.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnWiki.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnWiki.Appearance.Options.UseBackColor = true;
+            this.btnWiki.Appearance.Options.UseFont = true;
+            this.btnWiki.Location = new System.Drawing.Point(10, 10);
+            this.btnWiki.Name = "btnWiki";
+            this.btnWiki.Size = new System.Drawing.Size(100, 30);
+            this.btnWiki.TabIndex = 3;
+            this.btnWiki.Text = "📚 Wiki'ye Ekle";
+            this.btnWiki.Click += new System.EventHandler(this.btnWiki_Click);
+            // 
             // panelBottom
             // 
+            this.panelBottom.Controls.Add(this.btnWiki);
             this.panelBottom.Controls.Add(this.btnDailyReport);
             this.panelBottom.Controls.Add(this.btnRefresh);
             this.panelBottom.Controls.Add(this.btnClose);

@@ -45,6 +45,14 @@ namespace work_tracker.Data.Entities
 
         public bool IsArchived { get; set; }
 
+        /// <summary>
+        /// İlişkili iş öğesi (opsiyonel)
+        /// </summary>
+        public int? WorkItemId { get; set; }
+
+        [ForeignKey("WorkItemId")]
+        public virtual WorkItem WorkItem { get; set; }
+
         public WikiPage()
         {
             CreatedAt = DateTime.Now;

@@ -16,10 +16,62 @@ namespace work_tracker.Forms
         private int? _selectedPageId;
         private bool _isEditing = false;
 
+        private int? _linkedWorkItemId;
+
         public WikiForm()
         {
             InitializeComponent();
             _context = new WorkTrackerDbContext();
+        }
+
+        /// <summary>
+        /// İş öğesinden Wiki sayfası oluşturmak için başlangıç değerlerini ayarlar
+        /// </summary>
+        public void InitializeForWorkItem(WorkItem workItem)
+        {
+            if (workItem == null) return;
+
+            _linkedWorkItemId = workItem.Id;
+
+            // Yeni sayfa moduna geç
+            _selectedPageId = null;
+            
+            // Varsayılan başlık
+            txtTitle.Text = $"WI-{workItem.Id} - {workItem.Title}";
+            
+            // Varsayılan özet
+            txtSummary.Text = $"{workItem.Type} | {workItem.Status} | Proje: {workItem.Project?.Name ?? "-"}";
+
+            // Varsayılan içerik şablonu
+            var safeTitle = workItem.Title?.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;") ?? "";
+            var templateHtml = $@"
+<h1>WI-{workItem.Id} - {safeTitle}</h1>
+
+<table border='1' cellpadding='5' style='border-collapse: collapse; margin-bottom: 15px;'>
+  <tr><td><b>Durum</b></td><td>{workItem.Status}</td></tr>
+  <tr><td><b>Tip</b></td><td>{workItem.Type}</td></tr>
+  <tr><td><b>Proje</b></td><td>{workItem.Project?.Name ?? "-"}</td></tr>
+  <tr><td><b>Modül</b></td><td>{workItem.Module?.Name ?? "-"}</td></tr>
+  <tr><td><b>Oluşturma</b></td><td>{workItem.CreatedAt:dd.MM.yyyy}</td></tr>
+</table>
+
+<h2>Özet</h2>
+<p>(Bu işi neden yaptım? Kısa açıklama.)</p>
+
+<h2>Teknik Detaylar</h2>
+<p>(Burada gerçek çözümü, kullanılan pattern'leri, önemli kod parçalarını yaz.)</p>
+
+<h2>Sonuç / Notlar</h2>
+<p>(İleride kendime bırakmak istediğim notlar.)</p>
+";
+
+            richEditContent.HtmlText = templateHtml;
+            lblInfo.Text = "";
+
+            // Düzenleme modunu aç
+            LoadParentPages();
+            SetEditMode(true);
+            txtTitle.Focus();
         }
 
         private void WikiForm_Load(object sender, EventArgs e)
@@ -215,12 +267,14 @@ namespace work_tracker.Forms
                         Summary = txtSummary.Text?.Trim(),
                         ContentHtml = richEditContent.HtmlText,
                         ParentPageId = cmbParentPage.EditValue as int?,
+                        WorkItemId = _linkedWorkItemId,
                         CreatedBy = Environment.UserName,
                         CreatedAt = DateTime.Now
                     };
                     _context.WikiPages.Add(newPage);
                     _context.SaveChanges();
                     _selectedPageId = newPage.Id;
+                    _linkedWorkItemId = null; // Reset after save
                 }
 
                 _context.SaveChanges();
