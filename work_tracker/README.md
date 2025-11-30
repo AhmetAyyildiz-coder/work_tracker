@@ -1,113 +1,168 @@
-# Kaos Kontrol - İş Akışı Yönetim Aracı
+# Work Tracker - Kişisel İş Yönetim Aracı
 
-**Dinamik İş Akışı Yönetim Aracı (v1.2)**  
-🆕 **Loglama Sistemi & Minimal Tasarım Güncellemesi!**
+**Sürüm 3.0** • Son Güncelleme: 30 Kasım 2025
 
-Planlı işler (Scrum) ve plansız/acil işleri (Kanban) birbirinden ayırarak yöneten hibrit (Scrumban) iş akışı yönetim uygulaması.
+Hibrit iş yönetimi (Scrum + Kanban), ilişkili işler, otomatik zaman takibi ve kurumsal bilgi yönetimi için tasarlanmış kapsamlı masaüstü uygulaması.
 
-## Teknoloji Stack
+---
 
-- **.NET Framework 4.7.2**
-- **WinForms** (Desktop Uygulama)
-- **DevExpress 21.2** (UI Bileşenleri)
-- **Entity Framework 6.4.4** (ORM)
-- **SQL Server LocalDB** (Veritabanı)
+## 🎯 Uygulama Felsefesi
 
-## Özellikler (MVP)
+Work Tracker, **kişisel iş yönetimi** için tasarlanmış kapsamlı bir araçtır:
 
-### ✅ Modül 1: Gelen Kutusu (Inbox)
-- Tüm iş taleplerinin merkezi olarak toplandığı yer
-- Talep oluşturma, düzenleme, silme
-- Triage'e yönlendirme
+- **Hibrit İş Yönetimi:** Planlı işler (Scrum) ve acil işler (Kanban) ayrı yönetilir
+- **İlişkisel Yapı:** İşler birbirine bağlanabilir (üst-alt, kardeş ilişkileri)
+- **Otomatik Zaman Takibi:** Geliştirme süresi durum değişikliklerinden otomatik hesaplanır
+- **Bilgi Yönetimi:** Wiki ile kurumsal bilgi birikimi oluşturulur
+- **Günlük Hatırlatıcı:** 17:30'da aktif işleriniz için sistem bildirimi
 
-### ✅ Modül 2: Triage (Sınıflandırma)
-- İş tiplerini belirleme (AcilArge, Bug, YeniÖzellik vb.)
+---
+
+## 🛠️ Teknoloji Stack
+
+| Teknoloji | Sürüm | Kullanım Alanı |
+|-----------|-------|----------------|
+| .NET Framework | 4.7.2 | Ana platform |
+| WinForms | - | Desktop UI |
+| DevExpress | 21.2 | UI Bileşenleri (Ribbon, Grid, Diagram, RichEdit) |
+| Entity Framework | 6.4.4 | ORM / Veritabanı erişimi |
+| SQL Server LocalDB | - | Yerel veritabanı |
+| Microsoft Outlook Interop | 15.0 | E-posta entegrasyonu |
+
+---
+
+## ✨ Özellikler
+
+### 📥 Gelen Kutusu & Sınıflandırma
+- Tüm iş taleplerinin merkezi toplama noktası
+- İş tipi belirleme (AcilArge, Bug, YeniÖzellik, İyileştirme)
 - Aciliyet seviyesi (Kritik, Yüksek, Normal, Düşük)
-- Tahmini efor girişi
+- Tahmini efor girişi (gün cinsinden)
 - Scrum veya Kanban panosuna yönlendirme
 
-### ✅ Modül 4: Kanban Panosu (Acil İşler)
+### 📋 Kanban Panosu (Acil İşler)
 - Sürükle-bırak ile iş kartı taşıma
-- WIP (Work In Progress) limiti kontrolü
-- Kanban sütunları:
-  - Gelen Acil İşler
-  - Sırada
-  - Müdahale Ediliyor (WIP Limit: 3)
-  - Doğrulama Bekliyor
-  - Çözüldü
+- WIP (Work In Progress) limiti kontrolü (max 3)
+- Sütunlar: Gelen → Sırada → Müdahale Ediliyor → Doğrulama → Çözüldü
+- Renk kodlu aciliyet göstergeleri
 
-### ✅ Modül 5: Ayarlar (Proje & Modül Yönetimi)
-- Proje tanımlama ve yönetimi
+### 🏃 Scrum Panosu (Planlı İşler)
+- Sprint bazlı iş yönetimi
+- Sütunlar: Sprint Backlog → Geliştirmede → Testte → Tamamlandı
+- Sprint seçimi ve filtreleme
+- Toplantıdan gelen işler için özel ikon (📅)
+
+### 🔗 İlişkili İşler (YENİ!)
+- **Üst-Alt İlişkisi:** Büyük işleri alt görevlere bölme
+- **Kardeş İlişkisi:** Bağımlı veya ilgili işleri eşleştirme
+- İş detayında "İlişkiler" sekmesi
+- İlişki açıklaması ekleme
+
+### 📊 Çalışma Özeti (YENİ!)
+- Günlük/haftalık/aylık performans görüntüleme
+- **Otomatik Zaman Hesaplama:** "Geliştirmede" veya "Müdahale Ediliyor" durumunda geçen süre
+- Tamamlanan iş sayısı ve günlük ortalama
+- Zaman dağılımı grafiği
+- Panoya kopyalama özelliği
+
+### 🔗 İş Hiyerarşisi Diyagramı (YENİ!)
+- İlişkilerin görsel diyagram olarak gösterimi
+- Otomatik ağaç yerleşimi
+- Renk kodları: Gri(Bekliyor), Mavi(Backlog), Sarı(Geliştirmede), Yeşil(Tamamlandı)
+- PNG olarak dışa aktarma
+
+### 📅 Toplantı Yönetimi
+- Zengin metin editörü (resim, tablo, link desteği)
+- Seçili metni iş talebine dönüştürme
+- Toplantı-iş ilişkilendirme
+- Toplantıdan gelen işlerin listesi
+
+### 📚 Wiki (YENİ!)
+- Proje bazlı bilgi bankası
+- Teknik dokümantasyon
+- Zengin içerik desteği (resim, tablo, link)
+- Hızlı arama
+
+### ⏱️ Zaman Kayıtları
+- Manuel zaman girişi (toplantılar, araştırma vb.)
+- Kişi bazlı kayıt
+- İş ile ilişkilendirme
+
+### 🔔 Günlük Hatırlatıcı
+- Her gün 17:30'da otomatik bildirim
+- Aktif iş sayısı ve detayları
+- Tray menüsünden manuel tetikleme
+- Arka planda çalışma desteği
+
+### 📧 Outlook Entegrasyonu
+- E-posta bağlama (son 7 gün)
+- Otomatik arama
+- İçerik ve ek dosya aktarımı
+
+### 📎 Dosya Yönetimi
+- SQL, PDF, DOCX, XLSX, PNG, ZIP desteği
+- Çoklu dosya ekleme
+- GUID bazlı organize depolama
+- Aktivite timeline'da izlenebilirlik
+
+### 📈 Raporlar
+- Kapasite dağılımı (Scrum vs Kanban)
+- Proje ve modül bazında iş dağılımı
+- Sprint performans metrikleri
+
+### 🔄 Sprint Yönetimi
+- Sprint oluşturma ve hedef belirleme
+- Başlatma/tamamlama işlemleri
+- Aktif sprint kontrolü
+
+### 📁 Proje & Modül Yönetimi
+- Proje tanımlama
 - Modül tanımlama (SQL, Ekran, API, Rapor vb.)
 - Proje-modül ilişkilendirme
 
-### ✅ Modül 7: Toplantı Kaydı
-- Toplantı konusu, tarih, katılımcılar
-- Zengin metin editörü ile toplantı notları (RichEdit)
-- **İş Talebine Dönüştür**: Toplantı notlarından seçilen metni otomatik olarak iş talebine çevirir
-- Toplantı-iş talebi ilişkilendirme ve izlenebilirlik
-- Toplantıdan gelen iş taleplerinin listesi ve durumları
+### 📋 Tüm İşler
+- Tüm işlerin listesi
+- Gelişmiş filtreleme ve arama
+- Toplu işlem desteği
 
-### ✅ 🆕 Modül 8: Outlook Entegrasyonu
-- **E-posta Bağlama**: Outlook'tan gelen e-postaları doğrudan iş taleplerine bağlama
-- **Otomatik Arama**: Konu başlığına göre ilgili e-postaları bulma
-- **Akıllı Filtreleme**: Performans için sadece son 7 güne ait e-postaları listeleme
-- **İçerik Aktarımı**: E-posta içeriğini iş açıklamasına veya yorumlara ekleme
-- **Ek Dosya Desteği**: E-posta eklerini iş talebine dosya olarak kaydetme
+### 🆕 Loglama Sistemi
+- Günlük log dosyaları
+- Otomatik 30 günlük temizlik
+- Thread-safe yazma
+- Log klasörü erişimi
 
-### ✅ 🆕 İş Detayı & Aktivite Takibi
-- **Geliştirilmiş İş Kartları**: Modern, interaktif tasarım
-  - 🎨 Hover efektleri ile animasyonlu gölgeler
-  - 🔍 Clickable info ikonu (detayları görmek için)
-  - 📌 Sol kenarda aciliyet göstergesi (renkli çubuk)
-  - 🖱️ **TEK tıklama** ile detay ekranı açılır
-  - 📅 Tarih, aktivite ve dosya sayısı göstergeleri
-- **İş Detay Ekranı**: Kanban/Scrum kartlarına tıklayarak açılır
-  - Kartın **tüm alanlarına** tıklama çalışır (child kontroller dahil)
-  - Başlık, etiketler, ikonlar - her yere tıklanabilir!
-- **Aktivite Timeline**: Tüm iş geçmişi kronolojik sırada
-  - 💬 Yorumlar
-  - 📊 Durum değişiklikleri
-  - 📎 Dosya işlemleri
-  - ✏️ Alan güncellemeleri
-- **Yorum Sistemi**: İş üzerine not ekleme
-- **Durum Güncelleme**: Test modundaki işleri yönetme
-- **Kart Göstergeleri**: Aktivite/dosya sayısı görünür
+---
 
-### ✅ 🆕 Dosya Yönetimi
-- **Dosya Ekleme**: SQL scriptleri, dokümanlar, ekran görüntüleri
-- **Desteklenen Tipler**: .sql, .pdf, .docx, .xlsx, .png, .zip ve daha fazlası
-- **Dosya İşlemleri**:
-  - 📁 Dosya Ekle (çoklu seçim destekli)
-  - 💾 İndir
-  - 📂 Aç (varsayılan uygulama ile)
-  - 🗑️ Sil
-- **Organize Depolama**: Her iş için ayrı klasör yapısı
-- **Güvenlik**: GUID bazlı unique dosya adları
-- **İzlenebilirlik**: Tüm dosya işlemleri aktivite timeline'da
+## 🖥️ Uygulama Modülleri
 
-### ✅ 🆕 Loglama & Hata Yönetimi
-- **Global Exception Handling**: Tüm yakalanmamış hatalar otomatik loglanır
-- **Dosya Bazlı Loglama**: Günlük log dosyaları (`Logs/WorkTracker_yyyy-MM-dd.log`)
-- **Loglama Seviyeleri**:
-  - 📘 INFO - Bilgi mesajları
-  - ⚠️ WARNING - Uyarılar
-  - ❌ ERROR - Hatalar (stack trace ile)
-  - 🔍 DEBUG - Geliştirme logları
-- **Otomatik Temizlik**: 30 günden eski loglar otomatik silinir
-- **Detaylı Hata Kayıtları**: Exception, stack trace ve inner exception
-- **Kullanıcı Dostu Hata Dialog'ları**: Log dosyası yolu ile birlikte
-- **Log Klasörü Erişimi**: Ribbon menüden log klasörünü açma
-- **Thread-Safe**: Çoklu thread'den güvenli loglama
-- **Performanslı**: Lock mekanizması ile hızlı yazma
+| Modül | Açıklama | Grup |
+|-------|----------|------|
+| 📥 Gelen Kutusu | Yeni iş talepleri + Sınıflandırma | İş Akışı |
+| 📋 Kanban Panosu | Acil işler için WIP limitli akış | İş Akışı |
+| 🏃 Scrum Panosu | Sprint bazlı planlı işler | İş Akışı |
+| 📅 Toplantılar | Toplantı kayıtları ve aksiyon takibi | İş Akışı |
+| 📋 Tüm İşler | Tüm işlerin listesi ve arama | İş Akışı |
+| ⏱️ Zaman Kayıtları | Manuel zaman girişleri | İş Akışı |
+| 📊 Çalışma Özeti | Günlük/haftalık/aylık performans | İş Akışı |
+| 🔗 İş Hiyerarşisi | İlişki diyagramı görselleştirme | İş Akışı |
+| 📁 Projeler | Proje tanımlama | Ayarlar |
+| 📦 Modüller | Proje altı modüller | Ayarlar |
+| 🔄 Sprint Yönetimi | Sprint oluştur/başlat/tamamla | Ayarlar |
+| 📚 Wiki | Bilgi bankası ve dokümantasyon | Ayarlar |
+| 📈 Raporlar | Kapasite ve performans analizleri | Ayarlar |
+| ❓ Nasıl Kullanılır? | Kapsamlı kullanım kılavuzu | Yardım |
+| 🔔 Şimdi Hatırlat | Manuel hatırlatma tetikleme | Yardım |
 
-## Kurulum ve Çalıştırma
+---
+
+## 🚀 Kurulum
 
 ### Ön Gereksinimler
 1. Visual Studio 2019 veya üzeri
 2. .NET Framework 4.7.2 SDK
 3. DevExpress 21.2 (lisanslı kurulum gerekli)
 4. SQL Server LocalDB
+5. Microsoft Outlook (e-posta entegrasyonu için)
 
 ### Adımlar
 
@@ -117,91 +172,123 @@ Planlı işler (Scrum) ve plansız/acil işleri (Kanban) birbirinden ayırarak y
    ```
 
 2. **NuGet paketlerini geri yükleyin:**
-   - Visual Studio'da: Solution'a sağ tıklayın → "Restore NuGet Packages"
+   ```
+   Solution → Sağ tık → Restore NuGet Packages
+   ```
 
 3. **Veritabanını oluşturun:**
-   Visual Studio'da **Package Manager Console**'u açın (Tools → NuGet Package Manager → Package Manager Console)
-   
    ```powershell
+   # Package Manager Console'da
    Update-Database
    ```
 
 4. **Uygulamayı çalıştırın:**
-   - F5 tuşuna basın veya "Start" butonuna tıklayın
+   - F5 veya Start butonuna tıklayın
 
-### İlk Çalıştırma
+---
 
-Uygulama ilk açıldığında otomatik olarak:
-- Demo proje ve modüller oluşturulur
-- Kanban sütunları tanımlanır
-- Seed data yüklenir
-
-## Veritabanı Bağlantısı
-
-LocalDB bağlantı dizgisi (App.config):
-```
-Data Source=(localdb)\MSSQLLocalDB;
-Initial Catalog=work_tracker;
-Integrated Security=True;
-Connect Timeout=30;
-Encrypt=False;
-Trust Server Certificate=False;
-Application Intent=ReadWrite;
-Multi Subnet Failover=False
-```
-
-## Ana Formlar
-
-1. **MainForm**: Ana Ribbon menü ile tüm modüllere erişim
-2. **InboxForm**: Gelen kutusu - Yeni talepler
-3. **TriageForm**: Sınıflandırma ekranı
-4. **KanbanBoardForm**: Acil işler panosu (sürükle-bırak)
-5. **MeetingForm**: Toplantı yönetimi ve aksiyona dönüştürme
-6. **ProjectManagementForm**: Proje yönetimi
-7. **ModuleManagementForm**: Modül yönetimi
-
-## Proje Yapısı
+## 📁 Proje Yapısı
 
 ```
 work_tracker/
 ├── Data/
 │   ├── Entities/              # Entity sınıfları
 │   │   ├── Project.cs
-│   │   ├── ProjectModule.cs
-│   │   ├── Meeting.cs
 │   │   ├── WorkItem.cs
-│   │   └── KanbanColumnSetting.cs
+│   │   ├── WorkItemRelation.cs
+│   │   ├── WorkItemActivity.cs
+│   │   ├── TimeEntry.cs
+│   │   ├── WikiPage.cs
+│   │   └── ...
 │   └── WorkTrackerDbContext.cs
-├── Migrations/                # EF6 Migrations
-│   ├── Configuration.cs
-│   └── 202411111200_InitialCreate.cs
-├── Forms/                     # Tüm UI formları
+├── Forms/                     # UI formları
 │   ├── MainForm.cs
 │   ├── InboxForm.cs
-│   ├── TriageForm.cs
 │   ├── KanbanBoardForm.cs
-│   ├── MeetingForm.cs
+│   ├── ScrumBoardForm.cs
+│   ├── WorkItemDetailForm.cs
+│   ├── WorkSummaryForm.cs
+│   ├── WorkItemHierarchyForm.cs
+│   ├── WikiForm.cs
 │   └── ...
-├── Program.cs                 # Uygulama başlangıcı
-└── App.config                 # Yapılandırma dosyası
+├── Helpers/
+│   ├── DevelopmentTimeHelper.cs
+│   ├── FileStorageHelper.cs
+│   ├── Logger.cs
+│   └── OutlookHelper.cs
+├── Services/
+│   ├── WorkItemRelationService.cs
+│   └── WorkReminderService.cs
+├── Migrations/                # EF6 Migrations
+└── App.config
 ```
 
-## Gelecek Özellikler (MVP Sonrası)
+---
 
-- **Modül 3**: Scrum Panosu (Sprint yönetimi)
-- **Modül 6**: Raporlama ve Analitik
-  - Kapasite dağılım raporu (Scrum vs Kanban)
-  - İş dağılım raporu (Proje/Modül bazlı)
-- Kullanıcı yönetimi ve atama sistemi
-- Sprint planlama ve izleme
-- Burndown chart'lar
+## 💡 Kullanım İpuçları
 
-## Lisans
+### Verimli Çalışma
+- İşe başlarken kartı **Geliştirmede**'ye taşıyın - süre otomatik başlar
+- Ara verirken **Sprint Backlog**'a geri taşıyın - süre durur
+- Her gün 17:30 hatırlatmasıyla açık işlerinizi kontrol edin
 
-Bu proje özel kullanım içindir.
+### İlişkileri Kullanın
+- Büyük işleri alt görevlere bölün (üst-alt ilişkisi)
+- Bağımlı işleri kardeş olarak işaretleyin
+- Hiyerarşi diyagramı ile büyük resmi görün
 
-## İletişim
+### Bilgi Yönetimi
+- Sık kullanılan SQL sorgularını Wiki'ye kaydedin
+- Proje dökümanlarını Wiki'de tutun
+- Toplantı notlarından aksiyon çıkarın
 
-Proje sahibi: [Ekip Lideri / Product Owner]  
-Tarih: 11 Kasım 2025
+---
+
+## ⌨️ Klavye Kısayolları
+
+| Kısayol | İşlev |
+|---------|-------|
+| F5 | Yenile |
+| Ctrl+B | Kalın yazı |
+| Ctrl+I | İtalik yazı |
+| Ctrl+U | Altı çizili |
+| Ctrl+K | Hyperlink ekle |
+| Ctrl+V | Resim yapıştır |
+| Çift Tık | Kart detayı aç |
+
+---
+
+## 📝 Sürüm Geçmişi
+
+### v3.0 (30 Kasım 2025)
+- 🆕 İlişkili işler (üst-alt, kardeş)
+- 🆕 Çalışma özeti (otomatik zaman takibi)
+- 🆕 İş hiyerarşisi diyagramı (DiagramControl)
+- 🆕 Wiki (bilgi bankası)
+- 🆕 Günlük hatırlatıcı (17:30)
+- 🆕 Tray'e küçültme desteği
+
+### v2.0 (12 Kasım 2025)
+- Scrum panosu ve sprint yönetimi
+- Zaman kayıtları
+- Gelişmiş raporlama
+- Outlook entegrasyonu
+
+### v1.0 (11 Kasım 2025)
+- Gelen kutusu ve sınıflandırma
+- Kanban panosu
+- Toplantı yönetimi
+- Proje/modül yönetimi
+- Dosya yönetimi
+- Loglama sistemi
+
+---
+
+## 📄 Lisans
+
+Bu proje kişisel kullanım içindir.
+
+---
+
+**Work Tracker v3.0** • Hibrit İş Yönetimi • İlişkili İşler • Otomatik Zaman Takibi • Wiki • Günlük Hatırlatıcı
 

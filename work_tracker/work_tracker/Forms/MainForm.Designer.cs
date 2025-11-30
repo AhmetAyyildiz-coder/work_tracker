@@ -18,7 +18,6 @@ namespace work_tracker
         private System.Windows.Forms.ToolStripSeparator trayMenuSeparator;
         private System.Windows.Forms.ToolStripMenuItem trayMenuExit;
         private BarButtonItem btnInbox;
-        private BarButtonItem btnTriage;
         private BarButtonItem btnKanban;
         private BarButtonItem btnScrum;
         private BarButtonItem btnMeetings;
@@ -31,6 +30,8 @@ namespace work_tracker
         private BarButtonItem btnWiki;
         private BarButtonItem btnTimeEntry;
         private BarButtonItem btnReminder;
+        private BarButtonItem btnWorkSummary;
+        private BarButtonItem btnHierarchy;
 
         protected override void Dispose(bool disposing)
         {
@@ -53,7 +54,6 @@ namespace work_tracker
             this.trayMenuExit = new System.Windows.Forms.ToolStripMenuItem();
             this.trayContextMenu.SuspendLayout();
             this.btnInbox = new DevExpress.XtraBars.BarButtonItem();
-            this.btnTriage = new DevExpress.XtraBars.BarButtonItem();
             this.btnKanban = new DevExpress.XtraBars.BarButtonItem();
             this.btnScrum = new DevExpress.XtraBars.BarButtonItem();
             this.btnMeetings = new DevExpress.XtraBars.BarButtonItem();
@@ -66,6 +66,8 @@ namespace work_tracker
             this.btnWiki = new DevExpress.XtraBars.BarButtonItem();
             this.btnTimeEntry = new DevExpress.XtraBars.BarButtonItem();
             this.btnReminder = new DevExpress.XtraBars.BarButtonItem();
+            this.btnWorkSummary = new DevExpress.XtraBars.BarButtonItem();
+            this.btnHierarchy = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPageHome = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroupWorkflow = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupSettings = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -79,7 +81,6 @@ namespace work_tracker
             this.ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbonControl1.ExpandCollapseItem,
             this.btnInbox,
-            this.btnTriage,
             this.btnKanban,
             this.btnScrum,
             this.btnMeetings,
@@ -91,7 +92,9 @@ namespace work_tracker
             this.btnAllWorkItems,
             this.btnWiki,
             this.btnTimeEntry,
-            this.btnReminder});
+            this.btnReminder,
+            this.btnWorkSummary,
+            this.btnHierarchy});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
             this.ribbonControl1.MaxItemId = 14;
             this.ribbonControl1.Name = "ribbonControl1";
@@ -101,91 +104,84 @@ namespace work_tracker
             // 
             // btnInbox
             // 
-            this.btnInbox.Caption = "Gelen Kutusu";
+            this.btnInbox.Caption = "📥 Gelen Kutusu";
             this.btnInbox.Id = 1;
             this.btnInbox.Name = "btnInbox";
             this.btnInbox.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnInbox_ItemClick);
             // 
-            // btnTriage
-            // 
-            this.btnTriage.Caption = "Sınıflandırma";
-            this.btnTriage.Id = 2;
-            this.btnTriage.Name = "btnTriage";
-            this.btnTriage.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnTriage_ItemClick);
-            // 
             // btnKanban
             // 
-            this.btnKanban.Caption = "Kanban Panosu";
+            this.btnKanban.Caption = "📋 Kanban Panosu";
             this.btnKanban.Id = 3;
             this.btnKanban.Name = "btnKanban";
             this.btnKanban.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnKanban_ItemClick);
             // 
             // btnScrum
             // 
-            this.btnScrum.Caption = "Scrum Panosu";
+            this.btnScrum.Caption = "🏃 Scrum Panosu";
             this.btnScrum.Id = 8;
             this.btnScrum.Name = "btnScrum";
             this.btnScrum.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnScrum_ItemClick);
             // 
             // btnMeetings
             // 
-            this.btnMeetings.Caption = "Toplantılar";
+            this.btnMeetings.Caption = "📅 Toplantılar";
             this.btnMeetings.Id = 4;
             this.btnMeetings.Name = "btnMeetings";
             this.btnMeetings.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnMeetings_ItemClick);
             // 
             // btnProjects
             // 
-            this.btnProjects.Caption = "Projeler";
+            this.btnProjects.Caption = "📁 Projeler";
             this.btnProjects.Id = 5;
             this.btnProjects.Name = "btnProjects";
             this.btnProjects.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnProjects_ItemClick);
             // 
             // btnModules
             // 
-            this.btnModules.Caption = "Modüller";
+            this.btnModules.Caption = "📦 Modüller";
             this.btnModules.Id = 6;
             this.btnModules.Name = "btnModules";
             this.btnModules.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnModules_ItemClick);
             // 
             // btnSprints
             // 
-            this.btnSprints.Caption = "Sprint Yönetimi";
+            this.btnSprints.Caption = "🔄 Sprint Yönetimi";
             this.btnSprints.Id = 9;
             this.btnSprints.Name = "btnSprints";
             this.btnSprints.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnSprints_ItemClick);
             // 
             // btnReports
             // 
-            this.btnReports.Caption = "Raporlar";
+            this.btnReports.Caption = "📈 Raporlar";
             this.btnReports.Id = 10;
             this.btnReports.Name = "btnReports";
             this.btnReports.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnReports_ItemClick);
             // 
             // btnHelp
             // 
-            this.btnHelp.Caption = "Nasıl Kullanılır?";
+            this.btnHelp.Caption = "❓ Nasıl Kullanılır?";
             this.btnHelp.Id = 7;
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnHelp_ItemClick);
             // 
             // btnAllWorkItems
             // 
-            this.btnAllWorkItems.Caption = "Tüm İşler";
+            this.btnAllWorkItems.Caption = "📋 Tüm İşler";
             this.btnAllWorkItems.Id = 11;
             this.btnAllWorkItems.Name = "btnAllWorkItems";
             this.btnAllWorkItems.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnAllWorkItems_ItemClick);
             // 
             // btnWiki
             // 
-            this.btnWiki.Caption = "Wiki";
+            this.btnWiki.Caption = "📚 Wiki";
             this.btnWiki.Id = 12;
             this.btnWiki.Name = "btnWiki";
             this.btnWiki.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnWiki_ItemClick);
             //
             // btnTimeEntry
             //
-            this.btnTimeEntry.Caption = "Zaman Kayıtları";
+            this.btnTimeEntry.Caption = "⏱️ Zaman Kayıtları";
             this.btnTimeEntry.Id = 13;
             this.btnTimeEntry.Name = "btnTimeEntry";
             this.btnTimeEntry.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnTimeEntry_ItemClick);
@@ -196,6 +192,20 @@ namespace work_tracker
             this.btnReminder.Id = 14;
             this.btnReminder.Name = "btnReminder";
             this.btnReminder.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnReminder_ItemClick);
+            //
+            // btnWorkSummary
+            //
+            this.btnWorkSummary.Caption = "📊 Çalışma Özeti";
+            this.btnWorkSummary.Id = 15;
+            this.btnWorkSummary.Name = "btnWorkSummary";
+            this.btnWorkSummary.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnWorkSummary_ItemClick);
+            //
+            // btnHierarchy
+            //
+            this.btnHierarchy.Caption = "🔗 İş Hiyerarşisi";
+            this.btnHierarchy.Id = 16;
+            this.btnHierarchy.Name = "btnHierarchy";
+            this.btnHierarchy.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnHierarchy_ItemClick);
             // 
             // ribbonPageHome
             // 
@@ -209,12 +219,13 @@ namespace work_tracker
             // ribbonPageGroupWorkflow
             // 
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnInbox);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnTriage);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnKanban);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnScrum);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnMeetings);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnAllWorkItems);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnTimeEntry);
+            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnWorkSummary);
+            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnHierarchy);
             this.ribbonPageGroupWorkflow.Name = "ribbonPageGroupWorkflow";
             this.ribbonPageGroupWorkflow.Text = "İş Akışı";
             // 

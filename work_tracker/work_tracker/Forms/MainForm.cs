@@ -14,7 +14,6 @@ namespace work_tracker
     {
         // Form instance'larını saklamak için
         private InboxForm inboxForm;
-        private TriageForm triageForm;
         private KanbanBoardForm kanbanForm;
         private ScrumBoardForm scrumForm;
         private MeetingForm meetingForm;
@@ -26,6 +25,8 @@ namespace work_tracker
         private AllWorkItemsForm allWorkItemsForm;
         private WikiForm wikiForm;
         private TimeEntryForm timeEntryForm;
+        private WorkSummaryForm workSummaryForm;
+        private WorkItemHierarchyForm hierarchyForm;
 
         // Günlük hatırlatıcı servisi
         private WorkReminderService _reminderService;
@@ -44,11 +45,6 @@ namespace work_tracker
         private void btnInbox_ItemClick(object sender, ItemClickEventArgs e)
         {
             inboxForm = OpenOrActivateForm(inboxForm, () => new InboxForm(), f => inboxForm = f);
-        }
-
-        private void btnTriage_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            triageForm = OpenOrActivateForm(triageForm, () => new TriageForm(), f => triageForm = f);
         }
 
         private void btnKanban_ItemClick(object sender, ItemClickEventArgs e)
@@ -104,6 +100,16 @@ namespace work_tracker
         private void btnTimeEntry_ItemClick(object sender, ItemClickEventArgs e)
         {
             timeEntryForm = OpenOrActivateForm(timeEntryForm, () => new TimeEntryForm(), f => timeEntryForm = f);
+        }
+
+        private void btnWorkSummary_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            workSummaryForm = OpenOrActivateForm(workSummaryForm, () => new WorkSummaryForm(), f => workSummaryForm = f);
+        }
+
+        private void btnHierarchy_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            hierarchyForm = OpenOrActivateForm(hierarchyForm, () => new WorkItemHierarchyForm(), f => hierarchyForm = f);
         }
 
         /// <summary>
