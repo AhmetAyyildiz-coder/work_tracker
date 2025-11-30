@@ -31,13 +31,13 @@ namespace work_tracker.Forms
             this.gridDailyReport = new DevExpress.XtraGrid.GridControl();
             this.gridViewDailyReport = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.panelControl1 = new DevExpress.XtraEditors.PanelControl();
+            this.lblTotalWork = new DevExpress.XtraEditors.LabelControl();
+            this.lblTotalMudahale = new DevExpress.XtraEditors.LabelControl();
+            this.lblTotalPhone = new DevExpress.XtraEditors.LabelControl();
             this.lblWorkItemTitle = new DevExpress.XtraEditors.LabelControl();
             this.panelControl2 = new DevExpress.XtraEditors.PanelControl();
             this.btnRefresh = new DevExpress.XtraEditors.SimpleButton();
             this.btnClose = new DevExpress.XtraEditors.SimpleButton();
-            this.lblTotalPhone = new DevExpress.XtraEditors.LabelControl();
-            this.lblTotalMudahale = new DevExpress.XtraEditors.LabelControl();
-            this.lblTotalWork = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.gridDailyReport)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewDailyReport)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelControl1)).BeginInit();
@@ -76,13 +76,37 @@ namespace work_tracker.Forms
             this.panelControl1.Size = new System.Drawing.Size(1000, 60);
             this.panelControl1.TabIndex = 1;
             // 
+            // lblTotalWork
+            // 
+            this.lblTotalWork.Location = new System.Drawing.Point(450, 36);
+            this.lblTotalWork.Name = "lblTotalWork";
+            this.lblTotalWork.Size = new System.Drawing.Size(100, 13);
+            this.lblTotalWork.TabIndex = 3;
+            this.lblTotalWork.Text = "Toplam Çalışma: 0 dk";
+            // 
+            // lblTotalMudahale
+            // 
+            this.lblTotalMudahale.Location = new System.Drawing.Point(200, 36);
+            this.lblTotalMudahale.Name = "lblTotalMudahale";
+            this.lblTotalMudahale.Size = new System.Drawing.Size(155, 13);
+            this.lblTotalMudahale.TabIndex = 2;
+            this.lblTotalMudahale.Text = "Toplam Müdahale Bekliyor: 0 kez";
+            // 
+            // lblTotalPhone
+            // 
+            this.lblTotalPhone.Location = new System.Drawing.Point(12, 36);
+            this.lblTotalPhone.Name = "lblTotalPhone";
+            this.lblTotalPhone.Size = new System.Drawing.Size(100, 13);
+            this.lblTotalPhone.TabIndex = 1;
+            this.lblTotalPhone.Text = "Toplam Telefon: 0 dk";
+            // 
             // lblWorkItemTitle
             // 
             this.lblWorkItemTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
             this.lblWorkItemTitle.Appearance.Options.UseFont = true;
             this.lblWorkItemTitle.Location = new System.Drawing.Point(12, 12);
             this.lblWorkItemTitle.Name = "lblWorkItemTitle";
-            this.lblWorkItemTitle.Size = new System.Drawing.Size(102, 16);
+            this.lblWorkItemTitle.Size = new System.Drawing.Size(95, 16);
             this.lblWorkItemTitle.TabIndex = 0;
             this.lblWorkItemTitle.Text = "İş Öğesi Başlığı";
             // 
@@ -114,30 +138,6 @@ namespace work_tracker.Forms
             this.btnClose.TabIndex = 0;
             this.btnClose.Text = "Kapat";
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // lblTotalPhone
-            // 
-            this.lblTotalPhone.Location = new System.Drawing.Point(12, 36);
-            this.lblTotalPhone.Name = "lblTotalPhone";
-            this.lblTotalPhone.Size = new System.Drawing.Size(105, 13);
-            this.lblTotalPhone.TabIndex = 1;
-            this.lblTotalPhone.Text = "Toplam Telefon: 0 dk";
-            // 
-            // lblTotalMudahale
-            // 
-            this.lblTotalMudahale.Location = new System.Drawing.Point(200, 36);
-            this.lblTotalMudahale.Name = "lblTotalMudahale";
-            this.lblTotalMudahale.Size = new System.Drawing.Size(164, 13);
-            this.lblTotalMudahale.TabIndex = 2;
-            this.lblTotalMudahale.Text = "Toplam Müdahale Bekliyor: 0 kez";
-            // 
-            // lblTotalWork
-            // 
-            this.lblTotalWork.Location = new System.Drawing.Point(450, 36);
-            this.lblTotalWork.Name = "lblTotalWork";
-            this.lblTotalWork.Size = new System.Drawing.Size(115, 13);
-            this.lblTotalWork.TabIndex = 3;
-            this.lblTotalWork.Text = "Toplam Çalışma: 0 dk";
             // 
             // DailyActivityReportForm
             // 

@@ -144,18 +144,25 @@ namespace work_tracker.Forms
                 area.AxisX.LabelStyle.Angle = -45;
                 area.AxisX.LabelStyle.IsStaggered = true;
                 area.AxisY.Title = "Süre (dakika)";
+                area.BackColor = Color.WhiteSmoke;
                 chartEffort.ChartAreas.Add(area);
 
                 var legend = new Legend("Legend");
+                legend.Docking = Docking.Top;
+                legend.Alignment = System.Drawing.StringAlignment.Center;
                 chartEffort.Legends.Add(legend);
+
+                chartEffort.BackColor = Color.White;
 
                 var seriesPlanned = new Series("Planlanan");
                 seriesPlanned.ChartType = SeriesChartType.Column;
                 seriesPlanned.ChartArea = "MainArea";
+                seriesPlanned.Color = Color.FromArgb(52, 152, 219);
 
                 var seriesActual = new Series("Gerçekleşen");
                 seriesActual.ChartType = SeriesChartType.Column;
                 seriesActual.ChartArea = "MainArea";
+                seriesActual.Color = Color.FromArgb(230, 126, 34);
 
                 foreach (var item in list)
                 {
@@ -262,7 +269,7 @@ namespace work_tracker.Forms
         }
 
         /// <summary>
-        /// Günlük efor raporu - Her gün için geliştirme süreleri, iş bazında detay
+        /// Günlük efor raporu - Sol panelde günlük özet, sağ panelde seçilen güne göre iş detayı
         /// </summary>
         private void LoadDailyEffortReport()
         {
@@ -403,8 +410,11 @@ namespace work_tracker.Forms
                 var timeEntries = timeEntriesQuery
                     .Where(t => t.WorkItemId.HasValue) // Only include time entries linked to work items
                     .ToList()
-                    .GroupBy(t => new { t.WorkItemId.Value, Date = t.EntryDate.Date })
-                    .ToDictionary(g => (g.Key.WorkItemId, g.Key.Date), g => g.Sum(t => t.DurationMinutes));
+                    .GroupBy(t => new { WorkItemId = t.WorkItemId.Value, Date = t.EntryDate.Date })
+                    .ToDictionary(
+                        g => g.Key, 
+                        g => g.Sum(t => t.DurationMinutes)
+                    );
 
                 // Add time entries to existing work item records or create new ones
                 foreach (var timeEntryGroup in timeEntries)
@@ -448,77 +458,130 @@ namespace work_tracker.Forms
                     }
                 }
 
+                // Store daily entries for later use in row selection event
+                _dailyEntriesCache = dailyEntries;
+
+                // Load daily summary grid (left panel)
                 var dailyData = dailyEntries
                     .GroupBy(e => e.Date)
                     .Select(g => new
                     {
                         Tarih = g.Key,
-                        ToplamSüre = Math.Round(g.Sum(e => e.Minutes), 2),
-                        KartSayisi = g.Select(e => e.WorkItemId).Distinct().Count(),
-                        OrtalamaKartSuresi = g.Select(e => e.WorkItemId).Distinct().Any()
-                            ? Math.Round(g.Sum(e => e.Minutes) / g.Select(e => e.WorkItemId).Distinct().Count(), 2)
-                            : 0
+                        TarihStr = g.Key.ToString("dd.MM.yyyy (dddd)"),
+                        ToplamDk = Math.Round(g.Sum(e => e.Minutes), 0),
+                        ToplamSure = FormatDuration((int)g.Sum(e => e.Minutes)),
+                        KartSayisi = g.Select(e => e.WorkItemId).Distinct().Count()
                     })
                     .OrderByDescending(g => g.Tarih)
                     .ToList();
 
-                gridDailyEffort.DataSource = dailyData;
+                gridDailySummary.DataSource = dailyData;
 
-                var view = gridViewDailyEffort;
+                var view = gridViewDailySummary;
                 view.BestFitColumns();
 
                 // Kolon başlıkları
-                if (view.Columns["Tarih"] != null) view.Columns["Tarih"].Caption = "Tarih";
-                if (view.Columns["ToplamSüre"] != null) view.Columns["ToplamSüre"].Caption = "Toplam Çalışma Süresi (dk)";
-                if (view.Columns["KartSayisi"] != null) view.Columns["KartSayisi"].Caption = "Kart Sayısı";
-                if (view.Columns["OrtalamaKartSuresi"] != null) view.Columns["OrtalamaKartSuresi"].Caption = "Ort. Kart Süresi (dk)";
+                if (view.Columns["Tarih"] != null) view.Columns["Tarih"].Visible = false;
+                if (view.Columns["TarihStr"] != null) view.Columns["TarihStr"].Caption = "Tarih";
+                if (view.Columns["ToplamDk"] != null) view.Columns["ToplamDk"].Visible = false;
+                if (view.Columns["ToplamSure"] != null) view.Columns["ToplamSure"].Caption = "Toplam Süre";
+                if (view.Columns["KartSayisi"] != null) view.Columns["KartSayisi"].Caption = "İş Sayısı";
 
                 // Özetler
-                view.Columns["ToplamSüre"].Summary.Clear();
-                view.Columns["ToplamSüre"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamSüre", "Toplam: {0} dk");
+                view.Columns["ToplamDk"].Summary.Clear();
+                view.Columns["ToplamDk"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamDk", "Toplam: {0} dk");
 
-                if (view.Columns["KartSayisi"] != null)
-                {
-                    view.Columns["KartSayisi"].Summary.Clear();
-                    view.Columns["KartSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "KartSayisi", "Toplam Kart: {0}");
-                }
+                view.Columns["KartSayisi"].Summary.Clear();
+                view.Columns["KartSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "KartSayisi", "Toplam: {0}");
 
-                // Gruplama için kullanıcıya alan bırakalım
-                view.OptionsView.ShowGroupPanel = true;
+                // Update summary cards
+                var totalMinutes = dailyData.Sum(d => d.ToplamDk);
+                var activeDays = dailyData.Count;
+                var avgDaily = activeDays > 0 ? totalMinutes / activeDays : 0;
 
-                // İş bazında detay
-                var workItemData = dailyEntries
-                    .GroupBy(e => new { e.WorkItemId, e.Title, e.ProjectName })
-                    .Select(g => new
-                    {
-                        IsId = g.Key.WorkItemId,
-                        IsBaslik = g.Key.Title,
-                        Proje = g.Key.ProjectName,
-                        ToplamSüre = Math.Round(g.Sum(e => e.Minutes), 2),
-                        GunSayisi = g.Select(e => e.Date).Distinct().Count()
-                    })
-                    .OrderByDescending(g => g.ToplamSüre)
-                    .ToList();
+                lblTotalHoursValue.Text = FormatDuration((int)totalMinutes);
+                lblAvgDailyValue.Text = FormatDuration((int)avgDaily);
+                lblActiveDaysValue.Text = activeDays.ToString();
 
-                gridWorkItemEffort.DataSource = workItemData;
-
-                var workItemView = gridViewWorkItemEffort;
-                workItemView.BestFitColumns();
-
-                if (workItemView.Columns["IsId"] != null) workItemView.Columns["IsId"].Caption = "İş ID";
-                if (workItemView.Columns["IsBaslik"] != null) workItemView.Columns["IsBaslik"].Caption = "İş Başlığı";
-                if (workItemView.Columns["Proje"] != null) workItemView.Columns["Proje"].Caption = "Proje";
-                if (workItemView.Columns["ToplamSüre"] != null) workItemView.Columns["ToplamSüre"].Caption = "Toplam Çalışma Süresi (dk)";
-                if (workItemView.Columns["GunSayisi"] != null) workItemView.Columns["GunSayisi"].Caption = "Aktif Gün Sayısı";
-
-                workItemView.Columns["ToplamSüre"].Summary.Clear();
-                workItemView.Columns["ToplamSüre"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamSüre", "Toplam: {0} dk");
+                // Clear right panel initially
+                gridWorkItemDetails.DataSource = null;
             }
             catch (Exception ex)
             {
                 XtraMessageBox.Show($"Günlük efor raporu yüklenirken hata oluştu:\n\n{ex.Message}", "Rapor Hatası",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private List<DevelopmentDayRecord> _dailyEntriesCache;
+
+        /// <summary>
+        /// Sol panelde bir tarih seçildiğinde sağ paneli doldur
+        /// </summary>
+        private void gridViewDailySummary_FocusedRowChanged(object sender, DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventArgs e)
+        {
+            try
+            {
+                if (e.FocusedRowHandle < 0 || _dailyEntriesCache == null)
+                {
+                    gridWorkItemDetails.DataSource = null;
+                    return;
+                }
+
+                var row = gridViewDailySummary.GetRow(e.FocusedRowHandle);
+                if (row == null) return;
+
+                var selectedDate = (DateTime)row.GetType().GetProperty("Tarih").GetValue(row);
+
+                // Filter daily entries for this date
+                var workItemsForDate = _dailyEntriesCache
+                    .Where(x => x.Date == selectedDate)
+                    .GroupBy(x => new { x.WorkItemId, x.Title, x.ProjectName })
+                    .Select(g => new
+                    {
+                        IsId = g.Key.WorkItemId,
+                        IsBaslik = g.Key.Title,
+                        Proje = g.Key.ProjectName,
+                        ToplamDk = Math.Round(g.Sum(y => y.Minutes), 0),
+                        ToplamSure = FormatDuration((int)g.Sum(y => y.Minutes))
+                    })
+                    .OrderByDescending(i => i.ToplamDk)
+                    .ToList();
+
+                gridWorkItemDetails.DataSource = workItemsForDate;
+
+                var detailView = gridViewWorkItemDetails;
+                detailView.BestFitColumns();
+
+                if (detailView.Columns["IsId"] != null) detailView.Columns["IsId"].Caption = "İş ID";
+                if (detailView.Columns["IsBaslik"] != null) detailView.Columns["IsBaslik"].Caption = "İş Başlığı";
+                if (detailView.Columns["Proje"] != null) detailView.Columns["Proje"].Caption = "Proje";
+                if (detailView.Columns["ToplamDk"] != null) detailView.Columns["ToplamDk"].Visible = false;
+                if (detailView.Columns["ToplamSure"] != null) detailView.Columns["ToplamSure"].Caption = "Süre";
+
+                detailView.Columns["ToplamDk"].Summary.Clear();
+                detailView.Columns["ToplamDk"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamDk", "Toplam: {0} dk");
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"İş detayları yüklenirken hata oluştu:\n\n{ex.Message}", "Hata",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private string FormatDuration(int minutes)
+        {
+            if (minutes == 0) return "-";
+
+            var hours = minutes / 60;
+            var mins = minutes % 60;
+
+            if (hours > 0 && mins > 0)
+                return $"{hours} sa {mins} dk";
+            else if (hours > 0)
+                return $"{hours} sa";
+            else
+                return $"{mins} dk";
         }
 
         /// <summary>

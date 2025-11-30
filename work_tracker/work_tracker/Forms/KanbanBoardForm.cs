@@ -13,6 +13,7 @@ namespace work_tracker.Forms
     public partial class KanbanBoardForm : XtraForm
     {
         private WorkTrackerDbContext _context;
+        private string _currentSearch;
 
         public KanbanBoardForm()
         {
@@ -134,10 +135,26 @@ namespace work_tracker.Forms
             headerPanel.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
 
             // İş kartlarını yükle
-            // İş kartlarını yükle
             var query = _context.WorkItems
                 .Include(w => w.Activities)
                 .Where(w => w.Board == "Kanban" && w.Status == columnSetting.ColumnName);
+
+            // Arama filtresi uygula (ID veya başlık)
+            if (!string.IsNullOrWhiteSpace(_currentSearch))
+            {
+                var search = _currentSearch.Trim();
+                int id;
+                bool isId = int.TryParse(search.TrimStart('#'), out id);
+
+                if (isId)
+                {
+                    query = query.Where(w => w.Id == id);
+                }
+                else
+                {
+                    query = query.Where(w => w.Title.Contains(search));
+                }
+            }
 
             // Filtre: Çözüldü sütununda 2 haftadan eski işleri gizle
             if (columnSetting.ColumnName == "Cozuldu")
@@ -671,6 +688,30 @@ namespace work_tracker.Forms
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadKanbanBoard();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            _currentSearch = txtSearch.Text?.Trim();
+            LoadKanbanBoard();
+        }
+
+        private void btnClearSearch_Click(object sender, EventArgs e)
+        {
+            txtSearch.Text = "";
+            _currentSearch = null;
+            LoadKanbanBoard();
+        }
+
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                _currentSearch = txtSearch.Text?.Trim();
+                LoadKanbanBoard();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
 
         /// <summary>

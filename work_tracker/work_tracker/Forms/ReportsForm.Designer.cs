@@ -21,12 +21,18 @@ namespace work_tracker.Forms
         private LabelControl lblTo;
         private DevExpress.XtraGrid.GridControl gridDetailed;
         private DevExpress.XtraGrid.Views.Grid.GridView viewDetailed;
-        private DevExpress.XtraGrid.GridControl gridDailyEffort;
-        private DevExpress.XtraGrid.Views.Grid.GridView gridViewDailyEffort;
-        private DevExpress.XtraGrid.GridControl gridWorkItemEffort;
-        private DevExpress.XtraGrid.Views.Grid.GridView gridViewWorkItemEffort;
-        private LabelControl lblDailyEffortTitle;
-        private LabelControl lblWorkItemEffortTitle;
+        private PanelControl panelSummaryCards;
+        private LabelControl lblTotalHoursTitle;
+        private LabelControl lblTotalHoursValue;
+        private LabelControl lblAvgDailyTitle;
+        private LabelControl lblAvgDailyValue;
+        private LabelControl lblActiveDaysTitle;
+        private LabelControl lblActiveDaysValue;
+        private System.Windows.Forms.SplitContainer splitContainerMain;
+        private DevExpress.XtraGrid.GridControl gridDailySummary;
+        private DevExpress.XtraGrid.Views.Grid.GridView gridViewDailySummary;
+        private DevExpress.XtraGrid.GridControl gridWorkItemDetails;
+        private DevExpress.XtraGrid.Views.Grid.GridView gridViewWorkItemDetails;
 
         private void InitializeComponent()
         {
@@ -37,12 +43,18 @@ namespace work_tracker.Forms
             this.gridDetailed = new DevExpress.XtraGrid.GridControl();
             this.viewDetailed = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.tabDailyEffort = new DevExpress.XtraTab.XtraTabPage();
-            this.gridDailyEffort = new DevExpress.XtraGrid.GridControl();
-            this.gridViewDailyEffort = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.gridWorkItemEffort = new DevExpress.XtraGrid.GridControl();
-            this.gridViewWorkItemEffort = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.lblDailyEffortTitle = new DevExpress.XtraEditors.LabelControl();
-            this.lblWorkItemEffortTitle = new DevExpress.XtraEditors.LabelControl();
+            this.panelSummaryCards = new DevExpress.XtraEditors.PanelControl();
+            this.lblTotalHoursTitle = new DevExpress.XtraEditors.LabelControl();
+            this.lblTotalHoursValue = new DevExpress.XtraEditors.LabelControl();
+            this.lblAvgDailyTitle = new DevExpress.XtraEditors.LabelControl();
+            this.lblAvgDailyValue = new DevExpress.XtraEditors.LabelControl();
+            this.lblActiveDaysTitle = new DevExpress.XtraEditors.LabelControl();
+            this.lblActiveDaysValue = new DevExpress.XtraEditors.LabelControl();
+            this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.gridDailySummary = new DevExpress.XtraGrid.GridControl();
+            this.gridViewDailySummary = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.gridWorkItemDetails = new DevExpress.XtraGrid.GridControl();
+            this.gridViewWorkItemDetails = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.panelControl1 = new DevExpress.XtraEditors.PanelControl();
             this.lblFrom = new DevExpress.XtraEditors.LabelControl();
             this.dtFrom = new DevExpress.XtraEditors.DateEdit();
@@ -57,10 +69,16 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.gridDetailed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.viewDetailed)).BeginInit();
             this.tabDailyEffort.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.gridDailyEffort)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewDailyEffort)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridWorkItemEffort)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewWorkItemEffort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.panelSummaryCards)).BeginInit();
+            this.panelSummaryCards.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
+            this.splitContainerMain.Panel1.SuspendLayout();
+            this.splitContainerMain.Panel2.SuspendLayout();
+            this.splitContainerMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridDailySummary)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewDailySummary)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridWorkItemDetails)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewWorkItemDetails)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelControl1)).BeginInit();
             this.panelControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dtFrom.Properties.CalendarTimeProperties)).BeginInit();
@@ -173,16 +191,6 @@ namespace work_tracker.Forms
             this.tabDetailed.Name = "tabDetailed";
             this.tabDetailed.Size = new System.Drawing.Size(1194, 622);
             this.tabDetailed.Text = "Detaylı İş Raporu";
-            //
-            // tabDailyEffort
-            //
-            this.tabDailyEffort.Controls.Add(this.lblWorkItemEffortTitle);
-            this.tabDailyEffort.Controls.Add(this.gridWorkItemEffort);
-            this.tabDailyEffort.Controls.Add(this.lblDailyEffortTitle);
-            this.tabDailyEffort.Controls.Add(this.gridDailyEffort);
-            this.tabDailyEffort.Name = "tabDailyEffort";
-            this.tabDailyEffort.Size = new System.Drawing.Size(1194, 622);
-            this.tabDailyEffort.Text = "Günlük Efor Raporu";
             // 
             // gridDetailed
             // 
@@ -202,62 +210,144 @@ namespace work_tracker.Forms
             this.viewDetailed.OptionsBehavior.Editable = false;
             this.viewDetailed.OptionsView.ShowGroupPanel = false;
             this.viewDetailed.OptionsView.ShowFooter = true;
-            //
-            // gridDailyEffort
-            //
-            this.gridDailyEffort.Dock = System.Windows.Forms.DockStyle.Top;
-            this.gridDailyEffort.Location = new System.Drawing.Point(0, 30);
-            this.gridDailyEffort.MainView = this.gridViewDailyEffort;
-            this.gridDailyEffort.Name = "gridDailyEffort";
-            this.gridDailyEffort.Size = new System.Drawing.Size(1194, 300);
-            this.gridDailyEffort.TabIndex = 0;
-            this.gridDailyEffort.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.gridViewDailyEffort});
-            //
-            // gridViewDailyEffort
-            //
-            this.gridViewDailyEffort.GridControl = this.gridDailyEffort;
-            this.gridViewDailyEffort.Name = "gridViewDailyEffort";
-            this.gridViewDailyEffort.OptionsBehavior.Editable = false;
-            this.gridViewDailyEffort.OptionsView.ShowGroupPanel = true;
-            this.gridViewDailyEffort.OptionsView.ShowFooter = true;
-            //
-            // gridWorkItemEffort
-            //
-            this.gridWorkItemEffort.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridWorkItemEffort.Location = new System.Drawing.Point(0, 345);
-            this.gridWorkItemEffort.MainView = this.gridViewWorkItemEffort;
-            this.gridWorkItemEffort.Name = "gridWorkItemEffort";
-            this.gridWorkItemEffort.Size = new System.Drawing.Size(1194, 277);
-            this.gridWorkItemEffort.TabIndex = 1;
-            this.gridWorkItemEffort.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
-            this.gridViewWorkItemEffort});
-            //
-            // gridViewWorkItemEffort
-            //
-            this.gridViewWorkItemEffort.GridControl = this.gridWorkItemEffort;
-            this.gridViewWorkItemEffort.Name = "gridViewWorkItemEffort";
-            this.gridViewWorkItemEffort.OptionsBehavior.Editable = false;
-            this.gridViewWorkItemEffort.OptionsView.ShowGroupPanel = true;
-            this.gridViewWorkItemEffort.OptionsView.ShowFooter = true;
-            //
-            // lblDailyEffortTitle
-            //
-            this.lblDailyEffortTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.lblDailyEffortTitle.Location = new System.Drawing.Point(12, 5);
-            this.lblDailyEffortTitle.Name = "lblDailyEffortTitle";
-            this.lblDailyEffortTitle.Size = new System.Drawing.Size(200, 18);
-            this.lblDailyEffortTitle.TabIndex = 2;
-            this.lblDailyEffortTitle.Text = "Günlük Efor Dağılımı";
-            //
-            // lblWorkItemEffortTitle
-            //
-            this.lblWorkItemEffortTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
-            this.lblWorkItemEffortTitle.Location = new System.Drawing.Point(12, 335);
-            this.lblWorkItemEffortTitle.Name = "lblWorkItemEffortTitle";
-            this.lblWorkItemEffortTitle.Size = new System.Drawing.Size(200, 18);
-            this.lblWorkItemEffortTitle.TabIndex = 3;
-            this.lblWorkItemEffortTitle.Text = "İş Bazında Efor Dağılımı";
+            // 
+            // tabDailyEffort
+            // 
+            this.tabDailyEffort.Controls.Add(this.splitContainerMain);
+            this.tabDailyEffort.Controls.Add(this.panelSummaryCards);
+            this.tabDailyEffort.Name = "tabDailyEffort";
+            this.tabDailyEffort.Size = new System.Drawing.Size(1194, 622);
+            this.tabDailyEffort.Text = "Günlük Efor Raporu";
+            // 
+            // panelSummaryCards
+            // 
+            this.panelSummaryCards.Controls.Add(this.lblTotalHoursTitle);
+            this.panelSummaryCards.Controls.Add(this.lblTotalHoursValue);
+            this.panelSummaryCards.Controls.Add(this.lblAvgDailyTitle);
+            this.panelSummaryCards.Controls.Add(this.lblAvgDailyValue);
+            this.panelSummaryCards.Controls.Add(this.lblActiveDaysTitle);
+            this.panelSummaryCards.Controls.Add(this.lblActiveDaysValue);
+            this.panelSummaryCards.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelSummaryCards.Location = new System.Drawing.Point(0, 0);
+            this.panelSummaryCards.Name = "panelSummaryCards";
+            this.panelSummaryCards.Size = new System.Drawing.Size(1194, 80);
+            this.panelSummaryCards.TabIndex = 0;
+            // 
+            // lblTotalHoursTitle
+            // 
+            this.lblTotalHoursTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblTotalHoursTitle.Appearance.ForeColor = System.Drawing.Color.Gray;
+            this.lblTotalHoursTitle.Location = new System.Drawing.Point(20, 15);
+            this.lblTotalHoursTitle.Name = "lblTotalHoursTitle";
+            this.lblTotalHoursTitle.Size = new System.Drawing.Size(80, 14);
+            this.lblTotalHoursTitle.TabIndex = 0;
+            this.lblTotalHoursTitle.Text = "Toplam Süre";
+            // 
+            // lblTotalHoursValue
+            // 
+            this.lblTotalHoursValue.Appearance.Font = new System.Drawing.Font("Tahoma", 18F, System.Drawing.FontStyle.Bold);
+            this.lblTotalHoursValue.Appearance.ForeColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.lblTotalHoursValue.Location = new System.Drawing.Point(20, 35);
+            this.lblTotalHoursValue.Name = "lblTotalHoursValue";
+            this.lblTotalHoursValue.Size = new System.Drawing.Size(60, 29);
+            this.lblTotalHoursValue.TabIndex = 1;
+            this.lblTotalHoursValue.Text = "0 sa";
+            // 
+            // lblAvgDailyTitle
+            // 
+            this.lblAvgDailyTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblAvgDailyTitle.Appearance.ForeColor = System.Drawing.Color.Gray;
+            this.lblAvgDailyTitle.Location = new System.Drawing.Point(250, 15);
+            this.lblAvgDailyTitle.Name = "lblAvgDailyTitle";
+            this.lblAvgDailyTitle.Size = new System.Drawing.Size(110, 14);
+            this.lblAvgDailyTitle.TabIndex = 2;
+            this.lblAvgDailyTitle.Text = "Günlük Ortalama";
+            // 
+            // lblAvgDailyValue
+            // 
+            this.lblAvgDailyValue.Appearance.Font = new System.Drawing.Font("Tahoma", 18F, System.Drawing.FontStyle.Bold);
+            this.lblAvgDailyValue.Appearance.ForeColor = System.Drawing.Color.FromArgb(0, 153, 79);
+            this.lblAvgDailyValue.Location = new System.Drawing.Point(250, 35);
+            this.lblAvgDailyValue.Name = "lblAvgDailyValue";
+            this.lblAvgDailyValue.Size = new System.Drawing.Size(60, 29);
+            this.lblAvgDailyValue.TabIndex = 3;
+            this.lblAvgDailyValue.Text = "0 sa";
+            // 
+            // lblActiveDaysTitle
+            // 
+            this.lblActiveDaysTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblActiveDaysTitle.Appearance.ForeColor = System.Drawing.Color.Gray;
+            this.lblActiveDaysTitle.Location = new System.Drawing.Point(480, 15);
+            this.lblActiveDaysTitle.Name = "lblActiveDaysTitle";
+            this.lblActiveDaysTitle.Size = new System.Drawing.Size(80, 14);
+            this.lblActiveDaysTitle.TabIndex = 4;
+            this.lblActiveDaysTitle.Text = "Aktif Gün";
+            // 
+            // lblActiveDaysValue
+            // 
+            this.lblActiveDaysValue.Appearance.Font = new System.Drawing.Font("Tahoma", 18F, System.Drawing.FontStyle.Bold);
+            this.lblActiveDaysValue.Appearance.ForeColor = System.Drawing.Color.FromArgb(255, 142, 0);
+            this.lblActiveDaysValue.Location = new System.Drawing.Point(480, 35);
+            this.lblActiveDaysValue.Name = "lblActiveDaysValue";
+            this.lblActiveDaysValue.Size = new System.Drawing.Size(30, 29);
+            this.lblActiveDaysValue.TabIndex = 5;
+            this.lblActiveDaysValue.Text = "0";
+            // 
+            // splitContainerMain
+            // 
+            this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainerMain.Location = new System.Drawing.Point(0, 80);
+            this.splitContainerMain.Name = "splitContainerMain";
+            this.splitContainerMain.Size = new System.Drawing.Size(1194, 542);
+            this.splitContainerMain.SplitterDistance = 400;
+            this.splitContainerMain.TabIndex = 1;
+            // 
+            // splitContainerMain.Panel1
+            // 
+            this.splitContainerMain.Panel1.Controls.Add(this.gridDailySummary);
+            // 
+            // splitContainerMain.Panel2
+            // 
+            this.splitContainerMain.Panel2.Controls.Add(this.gridWorkItemDetails);
+            // 
+            // gridDailySummary
+            // 
+            this.gridDailySummary.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridDailySummary.Location = new System.Drawing.Point(0, 0);
+            this.gridDailySummary.MainView = this.gridViewDailySummary;
+            this.gridDailySummary.Name = "gridDailySummary";
+            this.gridDailySummary.Size = new System.Drawing.Size(400, 542);
+            this.gridDailySummary.TabIndex = 0;
+            this.gridDailySummary.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gridViewDailySummary});
+            // 
+            // gridViewDailySummary
+            // 
+            this.gridViewDailySummary.GridControl = this.gridDailySummary;
+            this.gridViewDailySummary.Name = "gridViewDailySummary";
+            this.gridViewDailySummary.OptionsBehavior.Editable = false;
+            this.gridViewDailySummary.OptionsView.ShowGroupPanel = false;
+            this.gridViewDailySummary.OptionsView.ShowFooter = true;
+            this.gridViewDailySummary.FocusedRowChanged += new DevExpress.XtraGrid.Views.Base.FocusedRowChangedEventHandler(this.gridViewDailySummary_FocusedRowChanged);
+            // 
+            // gridWorkItemDetails
+            // 
+            this.gridWorkItemDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridWorkItemDetails.Location = new System.Drawing.Point(0, 0);
+            this.gridWorkItemDetails.MainView = this.gridViewWorkItemDetails;
+            this.gridWorkItemDetails.Name = "gridWorkItemDetails";
+            this.gridWorkItemDetails.Size = new System.Drawing.Size(790, 542);
+            this.gridWorkItemDetails.TabIndex = 0;
+            this.gridWorkItemDetails.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gridViewWorkItemDetails});
+            // 
+            // gridViewWorkItemDetails
+            // 
+            this.gridViewWorkItemDetails.GridControl = this.gridWorkItemDetails;
+            this.gridViewWorkItemDetails.Name = "gridViewWorkItemDetails";
+            this.gridViewWorkItemDetails.OptionsBehavior.Editable = false;
+            this.gridViewWorkItemDetails.OptionsView.ShowGroupPanel = false;
+            this.gridViewWorkItemDetails.OptionsView.ShowFooter = true;
             // 
             // ReportsForm
             // 
@@ -271,9 +361,23 @@ namespace work_tracker.Forms
             this.Load += new System.EventHandler(this.ReportsForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.tabControl1)).EndInit();
             this.tabControl1.ResumeLayout(false);
+            this.tabChart.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.chartEffort)).EndInit();
             this.tabDetailed.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gridDetailed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.viewDetailed)).EndInit();
             this.tabDailyEffort.ResumeLayout(false);
-            this.tabDailyEffort.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.panelSummaryCards)).EndInit();
+            this.panelSummaryCards.ResumeLayout(false);
+            this.panelSummaryCards.PerformLayout();
+            this.splitContainerMain.Panel1.ResumeLayout(false);
+            this.splitContainerMain.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
+            this.splitContainerMain.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gridDailySummary)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewDailySummary)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridWorkItemDetails)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewWorkItemDetails)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelControl1)).EndInit();
             this.panelControl1.ResumeLayout(false);
             this.panelControl1.PerformLayout();
@@ -281,14 +385,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.dtFrom.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtTo.Properties.CalendarTimeProperties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtTo.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridDetailed)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.viewDetailed)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridDailyEffort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewDailyEffort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridWorkItemEffort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewWorkItemEffort)).EndInit();
             this.ResumeLayout(false);
         }
     }
 }
-

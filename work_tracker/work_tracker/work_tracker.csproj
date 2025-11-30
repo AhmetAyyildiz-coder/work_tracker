@@ -321,6 +321,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\DailyActivityReportForm.resx">
+      <DependentUpon>DailyActivityReportForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -338,6 +341,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\InboxForm.resx">
       <DependentUpon>InboxForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ReportsForm.resx">
+      <DependentUpon>ReportsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\TimeEntryForm.resx">
       <DependentUpon>TimeEntryForm.cs</DependentUpon>
