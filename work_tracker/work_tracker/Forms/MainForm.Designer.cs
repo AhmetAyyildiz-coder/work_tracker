@@ -11,6 +11,12 @@ namespace work_tracker
         private RibbonPageGroup ribbonPageGroupWorkflow;
         private RibbonPageGroup ribbonPageGroupSettings;
         private RibbonPageGroup ribbonPageGroupHelp;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.ContextMenuStrip trayContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem trayMenuOpen;
+        private System.Windows.Forms.ToolStripMenuItem trayMenuReminder;
+        private System.Windows.Forms.ToolStripSeparator trayMenuSeparator;
+        private System.Windows.Forms.ToolStripMenuItem trayMenuExit;
         private BarButtonItem btnInbox;
         private BarButtonItem btnTriage;
         private BarButtonItem btnKanban;
@@ -24,6 +30,7 @@ namespace work_tracker
         private BarButtonItem btnAllWorkItems;
         private BarButtonItem btnWiki;
         private BarButtonItem btnTimeEntry;
+        private BarButtonItem btnReminder;
 
         protected override void Dispose(bool disposing)
         {
@@ -36,7 +43,15 @@ namespace work_tracker
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.trayContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.trayMenuOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayMenuReminder = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayMenuSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.trayMenuExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayContextMenu.SuspendLayout();
             this.btnInbox = new DevExpress.XtraBars.BarButtonItem();
             this.btnTriage = new DevExpress.XtraBars.BarButtonItem();
             this.btnKanban = new DevExpress.XtraBars.BarButtonItem();
@@ -50,6 +65,7 @@ namespace work_tracker
             this.btnAllWorkItems = new DevExpress.XtraBars.BarButtonItem();
             this.btnWiki = new DevExpress.XtraBars.BarButtonItem();
             this.btnTimeEntry = new DevExpress.XtraBars.BarButtonItem();
+            this.btnReminder = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPageHome = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroupWorkflow = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupSettings = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -74,7 +90,8 @@ namespace work_tracker
             this.btnHelp,
             this.btnAllWorkItems,
             this.btnWiki,
-            this.btnTimeEntry});
+            this.btnTimeEntry,
+            this.btnReminder});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
             this.ribbonControl1.MaxItemId = 14;
             this.ribbonControl1.Name = "ribbonControl1";
@@ -172,6 +189,13 @@ namespace work_tracker
             this.btnTimeEntry.Id = 13;
             this.btnTimeEntry.Name = "btnTimeEntry";
             this.btnTimeEntry.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnTimeEntry_ItemClick);
+            //
+            // btnReminder
+            //
+            this.btnReminder.Caption = "🔔 Şimdi Hatırlat";
+            this.btnReminder.Id = 14;
+            this.btnReminder.Name = "btnReminder";
+            this.btnReminder.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnReminder_ItemClick);
             // 
             // ribbonPageHome
             // 
@@ -207,8 +231,54 @@ namespace work_tracker
             // ribbonPageGroupHelp
             // 
             this.ribbonPageGroupHelp.ItemLinks.Add(this.btnHelp);
+            this.ribbonPageGroupHelp.ItemLinks.Add(this.btnReminder);
             this.ribbonPageGroupHelp.Name = "ribbonPageGroupHelp";
             this.ribbonPageGroupHelp.Text = "Yardım";
+            // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.ContextMenuStrip = this.trayContextMenu;
+            this.notifyIcon1.Icon = System.Drawing.SystemIcons.Application;
+            this.notifyIcon1.Text = "Work Tracker";
+            this.notifyIcon1.Visible = true;
+            this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
+            // 
+            // trayContextMenu
+            // 
+            this.trayContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.trayMenuOpen,
+            this.trayMenuReminder,
+            this.trayMenuSeparator,
+            this.trayMenuExit});
+            this.trayContextMenu.Name = "trayContextMenu";
+            this.trayContextMenu.Size = new System.Drawing.Size(200, 76);
+            // 
+            // trayMenuOpen
+            // 
+            this.trayMenuOpen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.trayMenuOpen.Name = "trayMenuOpen";
+            this.trayMenuOpen.Size = new System.Drawing.Size(199, 22);
+            this.trayMenuOpen.Text = "Work Tracker'ı Aç";
+            this.trayMenuOpen.Click += new System.EventHandler(this.trayMenuOpen_Click);
+            // 
+            // trayMenuReminder
+            // 
+            this.trayMenuReminder.Name = "trayMenuReminder";
+            this.trayMenuReminder.Size = new System.Drawing.Size(199, 22);
+            this.trayMenuReminder.Text = "Şimdi Hatırlat";
+            this.trayMenuReminder.Click += new System.EventHandler(this.trayMenuReminder_Click);
+            // 
+            // trayMenuSeparator
+            // 
+            this.trayMenuSeparator.Name = "trayMenuSeparator";
+            this.trayMenuSeparator.Size = new System.Drawing.Size(196, 6);
+            // 
+            // trayMenuExit
+            // 
+            this.trayMenuExit.Name = "trayMenuExit";
+            this.trayMenuExit.Size = new System.Drawing.Size(199, 22);
+            this.trayMenuExit.Text = "Çıkış";
+            this.trayMenuExit.Click += new System.EventHandler(this.trayMenuExit_Click);
             // 
             // MainForm
             // 
@@ -223,6 +293,7 @@ namespace work_tracker
             this.Text = "İş Akışı Yönetim Aracı";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.trayContextMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

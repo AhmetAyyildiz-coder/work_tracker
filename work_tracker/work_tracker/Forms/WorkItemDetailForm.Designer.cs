@@ -1223,12 +1223,6 @@ namespace work_tracker.Forms
             this.Controls.Add(this.groupAddComment);
             this.Controls.Add(this.groupWorkItemInfo);
             this.Controls.Add(this.panelBottom);
-            this.tabControl.Controls.Add(this.tabPageActivities);
-            this.tabControl.Controls.Add(this.tabPageComments);
-            this.tabControl.Controls.Add(this.tabPageAttachments);
-            this.tabControl.Controls.Add(this.tabPageEmails);
-            this.tabControl.Controls.Add(this.tabPageTimeEntries);
-            this.tabControl.Controls.Add(this.tabPageRelations);
             this.Name = "WorkItemDetailForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "İş Detayı";
@@ -1274,6 +1268,12 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.gridTimeEntries)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTimeEntries)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtSearchEmail.Properties)).EndInit();
+            this.tabPageRelations.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.groupRelations)).EndInit();
+            this.groupRelations.ResumeLayout(false);
+            this.groupRelations.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridRelations)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewRelations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupAddComment)).EndInit();
             this.groupAddComment.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.txtNewComment.Properties)).EndInit();

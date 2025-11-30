@@ -6,6 +6,7 @@ using DevExpress.XtraBars.Ribbon;
 using DevExpress.XtraEditors;
 using work_tracker.Forms;
 using work_tracker.Helpers;
+using work_tracker.Services;
 
 namespace work_tracker
 {
@@ -25,6 +26,9 @@ namespace work_tracker
         private AllWorkItemsForm allWorkItemsForm;
         private WikiForm wikiForm;
         private TimeEntryForm timeEntryForm;
+
+        // Günlük hatırlatıcı servisi
+        private WorkReminderService _reminderService;
 
         public MainForm()
         {
@@ -178,6 +182,10 @@ namespace work_tracker
                     var projectCount = db.Projects.Count();
                     Logger.Info($"Veritabanı bağlantısı başarılı. {projectCount} proje bulundu.");
                 }
+
+                // Günlük hatırlatıcı servisini başlat (17:30'da)
+                _reminderService = new WorkReminderService(notifyIcon1, 17, 30);
+                Logger.Info("Günlük hatırlatıcı servisi başlatıldı (17:30)");
             }
             catch (Exception ex)
             {
@@ -195,6 +203,70 @@ namespace work_tracker
                     MessageBoxIcon.Error);
             }
         }
+
+        #region Tray Icon Events
+
+        private void notifyIcon1_DoubleClick(object sender, EventArgs e)
+        {
+            ShowMainForm();
+        }
+
+        private void trayMenuOpen_Click(object sender, EventArgs e)
+        {
+            ShowMainForm();
+        }
+
+        private void trayMenuReminder_Click(object sender, EventArgs e)
+        {
+            // Manuel hatırlatma tetikle
+            _reminderService?.TriggerReminderNow();
+        }
+
+        private void btnReminder_ItemClick(object sender, DevExpress.XtraBars.ItemClickEventArgs e)
+        {
+            // Ribbon'dan manuel hatırlatma tetikle
+            _reminderService?.TriggerReminderNow();
+        }
+
+        private void trayMenuExit_Click(object sender, EventArgs e)
+        {
+            // Uygulamayı tamamen kapat
+            _reminderService?.Dispose();
+            notifyIcon1.Visible = false;
+            Application.Exit();
+        }
+
+        private void ShowMainForm()
+        {
+            this.Show();
+            this.WindowState = FormWindowState.Maximized;
+            this.Activate();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // X'e basıldığında uygulamayı kapatma, tray'e küçült
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                this.Hide();
+                notifyIcon1.ShowBalloonTip(
+                    3000,
+                    "Work Tracker",
+                    "Uygulama arka planda çalışmaya devam ediyor.\n17:30'da aktif işleriniz için hatırlatma alacaksınız.",
+                    ToolTipIcon.Info
+                );
+            }
+            else
+            {
+                _reminderService?.Dispose();
+                notifyIcon1.Visible = false;
+            }
+
+            base.OnFormClosing(e);
+        }
+
+        #endregion
     }
 }
 

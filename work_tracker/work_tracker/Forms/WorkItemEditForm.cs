@@ -486,12 +486,17 @@ namespace work_tracker.Forms
             {
                 var currentUser = Environment.UserName;
                 
-                // Mevcut ilişkileri temizle
-                var existingRelations = _context.WorkItemRelations
-                    .Where(r => r.WorkItemId1 == workItemId || r.WorkItemId2 == workItemId)
+                // Mevcut ilişkileri temizle - SADECE bu işin parent ve sibling ilişkilerini sil
+                // Child ilişkilerini (bu işin parent olduğu ilişkiler) KORUYORUZ!
+                var relationsToRemove = _context.WorkItemRelations
+                    .Where(r => 
+                        // Bu işin parent ilişkisini sil (bu iş child olduğu ilişki)
+                        (r.WorkItemId2 == workItemId && r.RelationType == WorkItemRelationTypes.Parent) ||
+                        // Bu işin sibling ilişkilerini sil (her iki yönde)
+                        ((r.WorkItemId1 == workItemId || r.WorkItemId2 == workItemId) && r.RelationType == WorkItemRelationTypes.Sibling))
                     .ToList();
 
-                _context.WorkItemRelations.RemoveRange(existingRelations);
+                _context.WorkItemRelations.RemoveRange(relationsToRemove);
 
                 // Parent ilişkisi kaydet
                 if (cmbParentWorkItem.EditValue != null)

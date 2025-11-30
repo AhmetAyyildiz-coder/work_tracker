@@ -321,6 +321,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\WorkItemRelationService.cs" />
+    <Compile Include="Services\WorkReminderService.cs" />
     <EmbeddedResource Include="Forms\DailyActivityReportForm.resx">
       <DependentUpon>DailyActivityReportForm.cs</DependentUpon>
     </EmbeddedResource>
