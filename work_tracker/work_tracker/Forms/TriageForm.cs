@@ -49,7 +49,7 @@ namespace work_tracker.Forms
 
             // İş Tipleri
             cmbType.Properties.Items.Clear();
-            cmbType.Properties.Items.AddRange(new[] { "AcilArge", "Bug", "YeniÖzellik", "İyileştirme", "Diğer" });
+            cmbType.Properties.Items.AddRange(new[] { "AcilArge", "Bug", "YeniÖzellik", "İyileştirme", "Diğer","Arge" });
 
             // Aciliyet
             cmbUrgency.Properties.Items.Clear();
