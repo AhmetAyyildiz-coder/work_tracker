@@ -144,7 +144,17 @@ namespace work_tracker.Forms
                     .Include(a => a.WorkItem)
                     .ToList();
 
-                // 6. Tamamlanan işleri al
+                // 6. TimeEntry'leri al (telefon görüşmeleri, toplantılar vb.)
+                var timeEntries = _context.TimeEntries
+                    .Where(t => t.CreatedBy == _currentUser &&
+                               t.EntryDate >= _startDate &&
+                               t.EntryDate <= _endDate)
+                    .Include(t => t.WorkItem)
+                    .Include(t => t.Project)
+                    .Include(t => t.Person)
+                    .ToList();
+
+                // 7. Tamamlanan işleri al
                 var completedWorkItems = _context.WorkItems
                     .Include(w => w.Project)
                     .Where(w => w.CompletedAt >= _startDate &&
@@ -152,11 +162,12 @@ namespace work_tracker.Forms
                     .ToList();
 
                 // Özet kartlarını güncelle
-                UpdateSummaryCards(developmentTimes, activities, completedWorkItems);
+                UpdateSummaryCards(developmentTimes, activities, timeEntries, completedWorkItems);
 
                 // Grid'leri doldur
                 LoadTimeDistribution(developmentTimes);
                 LoadActivities(activities);
+                LoadTimeEntries(timeEntries);
                 LoadCompletedItems(completedWorkItems);
             }
             catch (Exception ex)
@@ -205,8 +216,8 @@ namespace work_tracker.Forms
             return result.OrderByDescending(x => x.TotalMinutes).ToList();
         }
 
-        private void UpdateSummaryCards(List<WorkItemDevelopmentTime> developmentTimes, 
-            List<WorkItemActivity> activities, List<WorkItem> completedWorkItems)
+        private void UpdateSummaryCards(List<WorkItemDevelopmentTime> developmentTimes,
+            List<WorkItemActivity> activities, List<TimeEntry> timeEntries, List<WorkItem> completedWorkItems)
         {
             // Toplam geliştirme süresi
             var totalMinutes = developmentTimes.Sum(t => t.TotalMinutes);
@@ -224,6 +235,14 @@ namespace work_tracker.Forms
             // Aktivite sayısı (yorumlar + durum değişiklikleri)
             var activityCount = activities.Count;
             lblActivityCount.Text = activityCount.ToString();
+
+            // Zaman kayıtları süresi
+            var totalTimeEntryMinutes = timeEntries.Sum(t => t.DurationMinutes);
+            var timeEntryHours = totalTimeEntryMinutes / 60;
+            var timeEntryMinutes = totalTimeEntryMinutes % 60;
+            
+            // Zaman kayıtları sayısını göstermek için yeni bir label kullanabiliriz
+            // Veya mevcut label'ları güncelleyebiliriz
         }
 
         private void LoadTimeDistribution(List<WorkItemDevelopmentTime> developmentTimes)
@@ -279,6 +298,54 @@ namespace work_tracker.Forms
             if (view.Columns["Title"] != null) view.Columns["Title"].Caption = "İş Başlığı";
             if (view.Columns["ActivityType"] != null) view.Columns["ActivityType"].Caption = "Aktivite Tipi";
             if (view.Columns["Description"] != null) view.Columns["Description"].Caption = "Açıklama";
+        }
+
+        private void LoadTimeEntries(List<TimeEntry> timeEntries)
+        {
+            var timeEntryList = timeEntries
+                .Select(t => new
+                {
+                    t.Id,
+                    Tarih = t.EntryDate.ToString("dd.MM.yyyy HH:mm"),
+                    t.Subject,
+                    t.ActivityType,
+                    Simge = GetActivityTypeIcon(t.ActivityType),
+                    Süre = FormatDuration(t.DurationMinutes),
+                    İlgiliİş = t.WorkItem?.Title ?? "-",
+                    Proje = t.Project?.Name ?? "-",
+                    Kişi = t.Person?.Name ?? t.ContactName ?? "-",
+                    t.Description
+                })
+                .OrderByDescending(t => t.Tarih)
+                .ToList();
+
+            gridTimeEntries.DataSource = timeEntryList;
+
+            var view = gridViewTimeEntries;
+            view.BestFitColumns();
+
+            if (view.Columns["Id"] != null) view.Columns["Id"].Visible = false;
+            if (view.Columns["Tarih"] != null) view.Columns["Tarih"].Caption = "Tarih/Saat";
+            if (view.Columns["Subject"] != null) view.Columns["Subject"].Caption = "Konu";
+            if (view.Columns["ActivityType"] != null) view.Columns["ActivityType"].Caption = "Tip";
+            if (view.Columns["GetActivityTypeIcon"] != null) view.Columns["GetActivityTypeIcon"].Caption = "";
+            if (view.Columns["Süre"] != null) view.Columns["Süre"].Caption = "Süre";
+            if (view.Columns["İlgiliİş"] != null) view.Columns["İlgiliİş"].Caption = "İlgili İş";
+            if (view.Columns["Proje"] != null) view.Columns["Proje"].Caption = "Proje";
+            if (view.Columns["Kişi"] != null) view.Columns["Kişi"].Caption = "Kişi";
+            if (view.Columns["Description"] != null) view.Columns["Description"].Caption = "Açıklama";
+        }
+
+        private string GetActivityTypeIcon(string activityType)
+        {
+            switch (activityType)
+            {
+                case "PhoneCall": return "📞";
+                case "Work": return "💼";
+                case "Meeting": return "👥";
+                case "Other": return "📝";
+                default: return "📝";
+            }
         }
 
         private void LoadCompletedItems(List<WorkItem> completedWorkItems)
@@ -398,6 +465,21 @@ namespace work_tracker.Forms
                     var süre = view.GetRowCellValue(i, "Süre");
                     var status = view.GetRowCellValue(i, "Status");
                     sb.AppendLine($"  • [#{workItemId}] {title} ({status}) - {süre}");
+                }
+
+                sb.AppendLine();
+                sb.AppendLine("⏱️ Zaman Kayıtları:");
+                sb.AppendLine("-------------------");
+                
+                var timeEntryView = gridViewTimeEntries;
+                for (int i = 0; i < timeEntryView.RowCount; i++)
+                {
+                    var tarih = timeEntryView.GetRowCellValue(i, "Tarih");
+                    var konu = timeEntryView.GetRowCellValue(i, "Subject");
+                    var süre = timeEntryView.GetRowCellValue(i, "Süre");
+                    var tip = timeEntryView.GetRowCellValue(i, "GetActivityTypeIcon");
+                    var kişi = timeEntryView.GetRowCellValue(i, "Kişi");
+                    sb.AppendLine($"  • {tip} {tarih} - {konu} ({kişi}) - {süre}");
                 }
 
                 sb.AppendLine();

@@ -220,6 +220,10 @@
     <Compile Include="Migrations\202512010636390_fixed_outlook_integration.Designer.cs">
       <DependentUpon>202512010636390_fixed_outlook_integration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512010658490_fix_bilmiyorum.cs" />
+    <Compile Include="Migrations\202512010658490_fix_bilmiyorum.Designer.cs">
+      <DependentUpon>202512010658490_fix_bilmiyorum.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -446,6 +450,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512010636390_fixed_outlook_integration.resx">
       <DependentUpon>202512010636390_fixed_outlook_integration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512010658490_fix_bilmiyorum.resx">
+      <DependentUpon>202512010658490_fix_bilmiyorum.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

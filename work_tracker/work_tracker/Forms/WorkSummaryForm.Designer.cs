@@ -41,6 +41,7 @@ namespace work_tracker.Forms
         private XtraTabControl tabControl;
         private XtraTabPage tabTimeDistribution;
         private XtraTabPage tabActivities;
+        private XtraTabPage tabTimeEntries;
         private XtraTabPage tabCompleted;
 
         // Grid'ler
@@ -48,6 +49,8 @@ namespace work_tracker.Forms
         private GridView gridViewTimeDistribution;
         private GridControl gridActivities;
         private GridView gridViewActivities;
+        private GridControl gridTimeEntries;
+        private GridView gridViewTimeEntries;
         private GridControl gridCompleted;
         private GridView gridViewCompleted;
 
@@ -86,12 +89,15 @@ namespace work_tracker.Forms
             this.tabControl = new DevExpress.XtraTab.XtraTabControl();
             this.tabTimeDistribution = new DevExpress.XtraTab.XtraTabPage();
             this.tabActivities = new DevExpress.XtraTab.XtraTabPage();
+            this.tabTimeEntries = new DevExpress.XtraTab.XtraTabPage();
             this.tabCompleted = new DevExpress.XtraTab.XtraTabPage();
 
             this.gridTimeDistribution = new DevExpress.XtraGrid.GridControl();
             this.gridViewTimeDistribution = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridActivities = new DevExpress.XtraGrid.GridControl();
             this.gridViewActivities = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.gridTimeEntries = new DevExpress.XtraGrid.GridControl();
+            this.gridViewTimeEntries = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.gridCompleted = new DevExpress.XtraGrid.GridControl();
             this.gridViewCompleted = new DevExpress.XtraGrid.Views.Grid.GridView();
 
@@ -120,11 +126,14 @@ namespace work_tracker.Forms
             this.tabControl.SuspendLayout();
             this.tabTimeDistribution.SuspendLayout();
             this.tabActivities.SuspendLayout();
+            this.tabTimeEntries.SuspendLayout();
             this.tabCompleted.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridTimeDistribution)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTimeDistribution)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridActivities)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewActivities)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridTimeEntries)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewTimeEntries)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridCompleted)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewCompleted)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelBottom)).BeginInit();
@@ -393,6 +402,7 @@ namespace work_tracker.Forms
             this.tabControl.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
             this.tabTimeDistribution,
             this.tabActivities,
+            this.tabTimeEntries,
             this.tabCompleted});
             // 
             // tabTimeDistribution
@@ -444,9 +454,34 @@ namespace work_tracker.Forms
             this.gridViewActivities.Name = "gridViewActivities";
             this.gridViewActivities.OptionsBehavior.Editable = false;
             this.gridViewActivities.OptionsView.ShowGroupPanel = false;
-            // 
+            //
+            // tabTimeEntries
+            //
+            this.tabTimeEntries.Controls.Add(this.gridTimeEntries);
+            this.tabTimeEntries.Name = "tabTimeEntries";
+            this.tabTimeEntries.Size = new System.Drawing.Size(998, 315);
+            this.tabTimeEntries.Text = "📞 Zaman Kayıtları";
+            //
+            // gridTimeEntries
+            //
+            this.gridTimeEntries.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridTimeEntries.Location = new System.Drawing.Point(0, 0);
+            this.gridTimeEntries.MainView = this.gridViewTimeEntries;
+            this.gridTimeEntries.Name = "gridTimeEntries";
+            this.gridTimeEntries.Size = new System.Drawing.Size(998, 315);
+            this.gridTimeEntries.TabIndex = 0;
+            this.gridTimeEntries.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gridViewTimeEntries});
+            //
+            // gridViewTimeEntries
+            //
+            this.gridViewTimeEntries.GridControl = this.gridTimeEntries;
+            this.gridViewTimeEntries.Name = "gridViewTimeEntries";
+            this.gridViewTimeEntries.OptionsBehavior.Editable = false;
+            this.gridViewTimeEntries.OptionsView.ShowGroupPanel = false;
+            //
             // tabCompleted
-            // 
+            //
             this.tabCompleted.Controls.Add(this.gridCompleted);
             this.tabCompleted.Name = "tabCompleted";
             this.tabCompleted.Size = new System.Drawing.Size(998, 315);
@@ -565,6 +600,9 @@ namespace work_tracker.Forms
             this.tabActivities.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridActivities)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewActivities)).EndInit();
+            this.tabTimeEntries.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gridTimeEntries)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewTimeEntries)).EndInit();
             this.tabCompleted.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.gridCompleted)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewCompleted)).EndInit();
