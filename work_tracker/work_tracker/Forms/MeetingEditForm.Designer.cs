@@ -21,6 +21,9 @@ namespace work_tracker.Forms
         private SimpleButton btnNoteBulletList;
         private SimpleButton btnNoteItalic;
         private SimpleButton btnNoteBold;
+        private SimpleButton btnH1;
+        private SimpleButton btnH2;
+        private SimpleButton btnH3;
 
         protected override void Dispose(bool disposing)
         {
@@ -53,6 +56,9 @@ namespace work_tracker.Forms
             this.btnNoteBulletList = new DevExpress.XtraEditors.SimpleButton();
             this.btnNoteItalic = new DevExpress.XtraEditors.SimpleButton();
             this.btnNoteBold = new DevExpress.XtraEditors.SimpleButton();
+            this.btnH1 = new DevExpress.XtraEditors.SimpleButton();
+            this.btnH2 = new DevExpress.XtraEditors.SimpleButton();
+            this.btnH3 = new DevExpress.XtraEditors.SimpleButton();
             ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtMeetingDate.Properties.CalendarTimeProperties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtMeetingDate.Properties)).BeginInit();
@@ -173,6 +179,9 @@ namespace work_tracker.Forms
             this.panelNotesToolbar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelNotesToolbar.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            this.panelNotesToolbar.Controls.Add(this.btnH3);
+            this.panelNotesToolbar.Controls.Add(this.btnH2);
+            this.panelNotesToolbar.Controls.Add(this.btnH1);
             this.panelNotesToolbar.Controls.Add(this.btnNoteNumberedList);
             this.panelNotesToolbar.Controls.Add(this.btnNoteBulletList);
             this.panelNotesToolbar.Controls.Add(this.btnNoteItalic);
@@ -217,6 +226,42 @@ namespace work_tracker.Forms
             this.btnNoteBold.TabIndex = 0;
             this.btnNoteBold.Text = "B";
             this.btnNoteBold.Click += new System.EventHandler(this.btnNoteBold_Click);
+            // 
+            // btnH1
+            // 
+            this.btnH1.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnH1.Appearance.Options.UseFont = true;
+            this.btnH1.Location = new System.Drawing.Point(220, 3);
+            this.btnH1.Name = "btnH1";
+            this.btnH1.Size = new System.Drawing.Size(36, 24);
+            this.btnH1.TabIndex = 4;
+            this.btnH1.Text = "H1";
+            this.btnH1.ToolTip = "Büyük Başlık";
+            this.btnH1.Click += new System.EventHandler(this.btnH1_Click);
+            // 
+            // btnH2
+            // 
+            this.btnH2.Appearance.Font = new System.Drawing.Font("Tahoma", 8.5F, System.Drawing.FontStyle.Bold);
+            this.btnH2.Appearance.Options.UseFont = true;
+            this.btnH2.Location = new System.Drawing.Point(262, 3);
+            this.btnH2.Name = "btnH2";
+            this.btnH2.Size = new System.Drawing.Size(36, 24);
+            this.btnH2.TabIndex = 5;
+            this.btnH2.Text = "H2";
+            this.btnH2.ToolTip = "Orta Başlık";
+            this.btnH2.Click += new System.EventHandler(this.btnH2_Click);
+            // 
+            // btnH3
+            // 
+            this.btnH3.Appearance.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Bold);
+            this.btnH3.Appearance.Options.UseFont = true;
+            this.btnH3.Location = new System.Drawing.Point(304, 3);
+            this.btnH3.Name = "btnH3";
+            this.btnH3.Size = new System.Drawing.Size(36, 24);
+            this.btnH3.TabIndex = 6;
+            this.btnH3.Text = "H3";
+            this.btnH3.ToolTip = "Küçük Başlık";
+            this.btnH3.Click += new System.EventHandler(this.btnH3_Click);
             // 
             // MeetingEditForm
             // 

@@ -29,8 +29,37 @@ namespace work_tracker.Forms
 
         private void WorkSummaryForm_Load(object sender, EventArgs e)
         {
+            // Tarih kontrollerini varsayılan değerlerle ayarla
+            dtStart.EditValue = DateTime.Today.AddDays(-7); // Son 1 hafta
+            dtEnd.EditValue = DateTime.Today;
+            
+            // Tarih kontrolü event handler'larını ekle
+            dtStart.EditValueChanged += DtDate_EditValueChanged;
+            dtEnd.EditValueChanged += DtDate_EditValueChanged;
+            
             // Varsayılan olarak bugünü göster
             SetPeriod("Bugün");
+        }
+
+        private void DtDate_EditValueChanged(object sender, EventArgs e)
+        {
+            // Tarih doğrulaması yap
+            var startDate = dtStart.EditValue as DateTime?;
+            var endDate = dtEnd.EditValue as DateTime?;
+            
+            if (startDate.HasValue && endDate.HasValue && endDate.Value < startDate.Value)
+            {
+                XtraMessageBox.Show("Bitiş tarihi başlangıç tarihinden önce olamaz!", "Hata",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtEnd.EditValue = startDate.Value;
+                return;
+            }
+            
+            // Kullanıcı tarih değiştirdiğinde otomatik olarak "Özel" moduna geç
+            if (_currentPeriod != "Özel")
+            {
+                SetPeriod("Özel");
+            }
         }
 
         private void SetPeriod(string period)
@@ -55,8 +84,21 @@ namespace work_tracker.Forms
                     _endDate = _startDate.AddMonths(1).AddSeconds(-1);
                     break;
                 case "Özel":
-                    _startDate = dtStart.DateTime.Date;
-                    _endDate = dtEnd.DateTime.Date.AddDays(1).AddSeconds(-1);
+                    // Tarih kontrollerinden değerleri al
+                    var startDateValue = dtStart.EditValue as DateTime?;
+                    var endDateValue = dtEnd.EditValue as DateTime?;
+                    
+                    if (startDateValue.HasValue && endDateValue.HasValue)
+                    {
+                        _startDate = startDateValue.Value.Date;
+                        _endDate = endDateValue.Value.Date.AddDays(1).AddSeconds(-1);
+                    }
+                    else
+                    {
+                        // Eğer tarihler null ise bugünü kullan
+                        _startDate = DateTime.Today;
+                        _endDate = DateTime.Today.AddDays(1).AddSeconds(-1);
+                    }
                     break;
             }
 
@@ -83,12 +125,18 @@ namespace work_tracker.Forms
 
             btnThisMonth.Appearance.BackColor = activePeriod == "Bu Ay" ? activeColor : normalColor;
             btnThisMonth.Appearance.ForeColor = activePeriod == "Bu Ay" ? Color.White : Color.Black;
+
+            // Özel tarih aralığı butonu stilini güncelle
+            btnCustomRange.Appearance.BackColor = activePeriod == "Özel" ? activeColor : normalColor;
+            btnCustomRange.Appearance.ForeColor = activePeriod == "Özel" ? Color.White : Color.Black;
         }
 
         private void UpdateDateLabel()
         {
             if (_currentPeriod == "Bugün")
                 lblDateRange.Text = $"📅 {_startDate:dd MMMM yyyy, dddd}";
+            else if (_currentPeriod == "Özel")
+                lblDateRange.Text = $"📅 {_startDate:dd.MM.yyyy} - {_endDate:dd.MM.yyyy}";
             else
                 lblDateRange.Text = $"📅 {_startDate:dd.MM.yyyy} - {_endDate:dd.MM.yyyy}";
         }

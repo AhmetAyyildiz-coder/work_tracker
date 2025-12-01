@@ -144,6 +144,67 @@ namespace work_tracker.Forms
             }
         }
 
+        private void btnH1_Click(object sender, EventArgs e)
+        {
+            ApplyHeadingStyle(24, true); // H1: 24pt, Bold
+        }
+
+        private void btnH2_Click(object sender, EventArgs e)
+        {
+            ApplyHeadingStyle(18, true); // H2: 18pt, Bold
+        }
+
+        private void btnH3_Click(object sender, EventArgs e)
+        {
+            ApplyHeadingStyle(14, true); // H3: 14pt, Bold
+        }
+
+        /// <summary>
+        /// Seçili paragrafa veya imlecin bulunduğu paragrafa başlık stili uygular
+        /// </summary>
+        private void ApplyHeadingStyle(float fontSize, bool bold)
+        {
+            if (richEditControl1 == null)
+                return;
+
+            var doc = richEditControl1.Document;
+            var selection = doc.Selection;
+
+            // Seçili paragrafı veya imlecin bulunduğu paragrafı bul
+            DocumentRange range;
+            if (selection.Length == 0)
+            {
+                // İmleç konumundaki paragrafı al
+                var pos = doc.CaretPosition;
+                var paragraphs = doc.Paragraphs.Get(doc.CreateRange(pos, 0));
+                if (paragraphs.Count > 0)
+                {
+                    range = paragraphs[0].Range;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                range = selection;
+            }
+
+            // Karakter formatını uygula
+            var cp = doc.BeginUpdateCharacters(range);
+            try
+            {
+                cp.FontSize = fontSize;
+                cp.Bold = bold;
+                cp.ForeColor = System.Drawing.Color.DarkBlue;
+            }
+            finally
+            {
+                doc.EndUpdateCharacters(cp);
+            }
+        }
+
         #endregion
     }
 }

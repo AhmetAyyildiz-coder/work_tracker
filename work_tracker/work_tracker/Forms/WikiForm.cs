@@ -1,12 +1,15 @@
 using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
 using DevExpress.XtraGrid.Views.Grid;
 using DevExpress.XtraRichEdit;
+using DevExpress.XtraRichEdit.API.Native;
 using work_tracker.Data;
 using work_tracker.Data.Entities;
+using work_tracker.Helpers;
 
 namespace work_tracker.Forms
 {
@@ -85,6 +88,9 @@ namespace work_tracker.Forms
                 richEditContent.ActiveViewType = RichEditViewType.PrintLayout;
                 richEditContent.ActiveView.ZoomFactor = 1.1f;
                 richEditContent.Options.HorizontalRuler.Visibility = DevExpress.XtraRichEdit.RichEditRulerVisibility.Hidden;
+                
+                // Hyperlink tıklama olayını bağla
+                richEditContent.HyperlinkClick += RichEditContent_HyperlinkClick;
             }
         }
 
@@ -403,6 +409,196 @@ namespace work_tracker.Forms
                 "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        private void btnInsertWorkItemLink_Click(object sender, EventArgs e)
+        {
+            InsertWorkItemLink();
+        }
+
+        private void btnInsertWikiLink_Click(object sender, EventArgs e)
+        {
+            InsertWikiLink();
+        }
+
+        private void btnInsertUrlLink_Click(object sender, EventArgs e)
+        {
+            InsertUrlLink();
+        }
+
+        #endregion
+
+        #region Hyperlink İşlemleri
+
+        /// <summary>
+        /// RichEdit içindeki hyperlink'e tıklandığında çağrılır
+        /// </summary>
+        private void RichEditContent_HyperlinkClick(object sender, HyperlinkClickEventArgs e)
+        {
+            var uri = e.Hyperlink.NavigateUri;
+            
+            if (string.IsNullOrEmpty(uri))
+                return;
+
+            // HyperlinkHelper ile işle
+            bool handled = HyperlinkHelper.HandleLinkClick(uri, this);
+            
+            if (handled)
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Seçili metni İş Öğesi linkine çevirir (#123 formatı)
+        /// </summary>
+        public void InsertWorkItemLink()
+        {
+            if (richEditContent == null || richEditContent.ReadOnly)
+                return;
+
+            // Kullanıcıdan iş ID'si al
+            string input = XtraInputBox.Show("İş öğesi numarasını girin:", "İş Öğesi Linki Ekle", "");
+            
+            if (string.IsNullOrWhiteSpace(input))
+                return;
+
+            if (!int.TryParse(input.Replace("#", ""), out int workItemId))
+            {
+                XtraMessageBox.Show("Geçerli bir numara girin!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // İş öğesinin var olup olmadığını kontrol et
+            var workItem = _context.WorkItems.Find(workItemId);
+            if (workItem == null)
+            {
+                XtraMessageBox.Show($"#{workItemId} numaralı iş öğesi bulunamadı!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Hyperlink ekle
+            var doc = richEditContent.Document;
+            var pos = doc.Selection.End;
+            
+            string linkText = $"#{workItemId} - {workItem.Title}";
+            string linkUri = $"workitem:{workItemId}";
+            
+            var insertedRange = doc.InsertText(pos, linkText);
+            var hyperlink = doc.Hyperlinks.Create(insertedRange);
+            hyperlink.NavigateUri = linkUri;
+            hyperlink.ToolTip = $"İş Öğesi: {workItem.Title}";
+        }
+
+        /// <summary>
+        /// Seçili metni Wiki sayfası linkine çevirir ([[Sayfa]] formatı)
+        /// </summary>
+        public void InsertWikiLink()
+        {
+            if (richEditContent == null || richEditContent.ReadOnly)
+                return;
+
+            // Mevcut wiki sayfalarını göster
+            var pages = _context.WikiPages
+                .Where(p => !p.IsArchived)
+                .OrderBy(p => p.Title)
+                .Select(p => new { p.Id, p.Title })
+                .ToList();
+
+            if (pages.Count == 0)
+            {
+                XtraMessageBox.Show("Henüz wiki sayfası bulunmuyor!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Basit seçim için ComboBox dialog
+            using (var form = new XtraForm())
+            {
+                form.Text = "Wiki Sayfası Seç";
+                form.Size = new System.Drawing.Size(400, 150);
+                form.StartPosition = FormStartPosition.CenterParent;
+                form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                form.MaximizeBox = false;
+                form.MinimizeBox = false;
+
+                var lbl = new LabelControl { Text = "Sayfa:", Location = new System.Drawing.Point(20, 25) };
+                var cmb = new LookUpEdit 
+                { 
+                    Location = new System.Drawing.Point(80, 22), 
+                    Width = 280 
+                };
+                cmb.Properties.DataSource = pages;
+                cmb.Properties.DisplayMember = "Title";
+                cmb.Properties.ValueMember = "Id";
+                cmb.Properties.NullText = "(Sayfa Seçin)";
+                cmb.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Title", "Başlık"));
+
+                var btnOk = new SimpleButton { Text = "Ekle", Location = new System.Drawing.Point(180, 70), Width = 80, DialogResult = DialogResult.OK };
+                var btnCancel = new SimpleButton { Text = "İptal", Location = new System.Drawing.Point(280, 70), Width = 80, DialogResult = DialogResult.Cancel };
+
+                form.Controls.AddRange(new Control[] { lbl, cmb, btnOk, btnCancel });
+                form.AcceptButton = btnOk;
+                form.CancelButton = btnCancel;
+
+                if (form.ShowDialog(this) == DialogResult.OK && cmb.EditValue != null)
+                {
+                    var selectedId = (int)cmb.EditValue;
+                    var selectedPage = pages.First(p => p.Id == selectedId);
+
+                    // Hyperlink ekle
+                    var doc = richEditContent.Document;
+                    var pos = doc.Selection.End;
+
+                    string linkText = $"📄 {selectedPage.Title}";
+                    string linkUri = $"wiki:{Uri.EscapeDataString(selectedPage.Title)}";
+
+                    var insertedRange = doc.InsertText(pos, linkText);
+                    var hyperlink = doc.Hyperlinks.Create(insertedRange);
+                    hyperlink.NavigateUri = linkUri;
+                    hyperlink.ToolTip = $"Wiki: {selectedPage.Title}";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Seçili metni URL linkine çevirir
+        /// </summary>
+        public void InsertUrlLink()
+        {
+            if (richEditContent == null || richEditContent.ReadOnly)
+                return;
+
+            var doc = richEditContent.Document;
+            var selection = doc.Selection;
+            string selectedText = doc.GetText(selection);
+
+            // URL'yi al
+            string url = XtraInputBox.Show("URL adresini girin:", "Link Ekle", 
+                selectedText.StartsWith("http") ? selectedText : "https://");
+
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            // URL formatını kontrol et
+            if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+                url = "https://" + url;
+
+            // Link metnini al
+            string linkText = string.IsNullOrEmpty(selectedText) 
+                ? XtraInputBox.Show("Link metni:", "Link Ekle", url) 
+                : selectedText;
+
+            if (string.IsNullOrWhiteSpace(linkText))
+                linkText = url;
+
+            // Seçili metni sil ve yeni link ekle
+            if (selection.Length > 0)
+                doc.Delete(selection);
+
+            var pos = doc.Selection.End;
+            var insertedRange = doc.InsertText(pos, linkText);
+            var hyperlink = doc.Hyperlinks.Create(insertedRange);
+            hyperlink.NavigateUri = url;
+        }
+
         #endregion
 
         protected override void Dispose(bool disposing)
@@ -412,6 +608,57 @@ namespace work_tracker.Forms
                 _context?.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Belirtilen başlıkla eşleşen wiki sayfasını arar ve gösterir.
+        /// [[Sayfa Adı]] formatındaki referanslar için kullanılır.
+        /// </summary>
+        /// <param name="searchTitle">Aranacak sayfa başlığı</param>
+        public void SearchAndNavigate(string searchTitle)
+        {
+            if (string.IsNullOrEmpty(searchTitle))
+                return;
+
+            // Form yüklendiğinde arama yap
+            this.Load += (s, e) =>
+            {
+                var view = gridControl1.MainView as GridView;
+                if (view == null) return;
+
+                // Başlığa göre ara (case-insensitive, kısmi eşleşme)
+                for (int i = 0; i < view.RowCount; i++)
+                {
+                    var title = view.GetRowCellValue(i, "Title")?.ToString();
+                    if (title != null && title.IndexOf(searchTitle, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        view.FocusedRowHandle = i;
+                        var id = (int)view.GetRowCellValue(i, "Id");
+                        LoadPageDetails(id);
+                        return;
+                    }
+                }
+
+                // Bulunamadıysa yeni sayfa oluşturma önerisi
+                var result = XtraMessageBox.Show(
+                    $"'{searchTitle}' başlıklı wiki sayfası bulunamadı.\n\nBu başlıkla yeni bir sayfa oluşturmak ister misiniz?",
+                    "Sayfa Bulunamadı",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    _selectedPageId = null;
+                    txtTitle.Text = searchTitle;
+                    txtSummary.Text = "";
+                    richEditContent.HtmlText = $"<h1>{System.Net.WebUtility.HtmlEncode(searchTitle)}</h1><p></p>";
+                    cmbParentPage.EditValue = null;
+                    lblInfo.Text = "";
+                    LoadParentPages();
+                    SetEditMode(true);
+                    txtTitle.Focus();
+                }
+            };
         }
     }
 }

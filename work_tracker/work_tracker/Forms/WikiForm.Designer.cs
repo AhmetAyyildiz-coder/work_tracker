@@ -42,6 +42,9 @@ namespace work_tracker.Forms
         private SimpleButton btnItalic;
         private SimpleButton btnBulletList;
         private SimpleButton btnNumberedList;
+        private SimpleButton btnInsertWorkItemLink;
+        private SimpleButton btnInsertWikiLink;
+        private SimpleButton btnInsertUrlLink;
 
         //protected override void Dispose(bool disposing)
         //{
@@ -79,6 +82,9 @@ namespace work_tracker.Forms
             this.btnBulletList = new DevExpress.XtraEditors.SimpleButton();
             this.btnItalic = new DevExpress.XtraEditors.SimpleButton();
             this.btnBold = new DevExpress.XtraEditors.SimpleButton();
+            this.btnInsertWorkItemLink = new DevExpress.XtraEditors.SimpleButton();
+            this.btnInsertWikiLink = new DevExpress.XtraEditors.SimpleButton();
+            this.btnInsertUrlLink = new DevExpress.XtraEditors.SimpleButton();
             this.richEditContent = new DevExpress.XtraRichEdit.RichEditControl();
             this.lblContent = new DevExpress.XtraEditors.LabelControl();
             this.cmbParentPage = new DevExpress.XtraEditors.LookUpEdit();
@@ -263,13 +269,16 @@ namespace work_tracker.Forms
             // panelToolbar
             // 
             this.panelToolbar.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            this.panelToolbar.Controls.Add(this.btnInsertUrlLink);
+            this.panelToolbar.Controls.Add(this.btnInsertWikiLink);
+            this.panelToolbar.Controls.Add(this.btnInsertWorkItemLink);
             this.panelToolbar.Controls.Add(this.btnNumberedList);
             this.panelToolbar.Controls.Add(this.btnBulletList);
             this.panelToolbar.Controls.Add(this.btnItalic);
             this.panelToolbar.Controls.Add(this.btnBold);
             this.panelToolbar.Location = new System.Drawing.Point(15, 250);
             this.panelToolbar.Name = "panelToolbar";
-            this.panelToolbar.Size = new System.Drawing.Size(300, 30);
+            this.panelToolbar.Size = new System.Drawing.Size(600, 30);
             this.panelToolbar.TabIndex = 8;
             // 
             // btnNumberedList
@@ -311,6 +320,36 @@ namespace work_tracker.Forms
             this.btnBold.TabIndex = 0;
             this.btnBold.Text = "B";
             this.btnBold.Click += new System.EventHandler(this.btnBold_Click);
+            // 
+            // btnInsertWorkItemLink
+            // 
+            this.btnInsertWorkItemLink.Location = new System.Drawing.Point(190, 3);
+            this.btnInsertWorkItemLink.Name = "btnInsertWorkItemLink";
+            this.btnInsertWorkItemLink.Size = new System.Drawing.Size(80, 24);
+            this.btnInsertWorkItemLink.TabIndex = 4;
+            this.btnInsertWorkItemLink.Text = "🔗 İş #";
+            this.btnInsertWorkItemLink.ToolTip = "İş öğesi linki ekle (#123 formatında)";
+            this.btnInsertWorkItemLink.Click += new System.EventHandler(this.btnInsertWorkItemLink_Click);
+            // 
+            // btnInsertWikiLink
+            // 
+            this.btnInsertWikiLink.Location = new System.Drawing.Point(280, 3);
+            this.btnInsertWikiLink.Name = "btnInsertWikiLink";
+            this.btnInsertWikiLink.Size = new System.Drawing.Size(90, 24);
+            this.btnInsertWikiLink.TabIndex = 5;
+            this.btnInsertWikiLink.Text = "📄 Wiki Link";
+            this.btnInsertWikiLink.ToolTip = "Wiki sayfası linki ekle";
+            this.btnInsertWikiLink.Click += new System.EventHandler(this.btnInsertWikiLink_Click);
+            // 
+            // btnInsertUrlLink
+            // 
+            this.btnInsertUrlLink.Location = new System.Drawing.Point(380, 3);
+            this.btnInsertUrlLink.Name = "btnInsertUrlLink";
+            this.btnInsertUrlLink.Size = new System.Drawing.Size(70, 24);
+            this.btnInsertUrlLink.TabIndex = 6;
+            this.btnInsertUrlLink.Text = "🌐 URL";
+            this.btnInsertUrlLink.ToolTip = "Web linki ekle";
+            this.btnInsertUrlLink.Click += new System.EventHandler(this.btnInsertUrlLink_Click);
             // 
             // richEditContent
             // 
