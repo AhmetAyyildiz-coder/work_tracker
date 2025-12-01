@@ -32,6 +32,7 @@ namespace work_tracker
         private BarButtonItem btnReminder;
         private BarButtonItem btnWorkSummary;
         private BarButtonItem btnHierarchy;
+        private BarButtonItem btnDashboard;
 
         protected override void Dispose(bool disposing)
         {
@@ -68,6 +69,7 @@ namespace work_tracker
             this.btnReminder = new DevExpress.XtraBars.BarButtonItem();
             this.btnWorkSummary = new DevExpress.XtraBars.BarButtonItem();
             this.btnHierarchy = new DevExpress.XtraBars.BarButtonItem();
+            this.btnDashboard = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPageHome = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroupWorkflow = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupSettings = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -80,6 +82,7 @@ namespace work_tracker
             this.ribbonControl1.ExpandCollapseItem.Id = 0;
             this.ribbonControl1.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbonControl1.ExpandCollapseItem,
+            this.btnDashboard,
             this.btnInbox,
             this.btnKanban,
             this.btnScrum,
@@ -206,6 +209,13 @@ namespace work_tracker
             this.btnHierarchy.Id = 16;
             this.btnHierarchy.Name = "btnHierarchy";
             this.btnHierarchy.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnHierarchy_ItemClick);
+            //
+            // btnDashboard
+            //
+            this.btnDashboard.Caption = "📊 Dashboard";
+            this.btnDashboard.Id = 17;
+            this.btnDashboard.Name = "btnDashboard";
+            this.btnDashboard.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnDashboard_ItemClick);
             // 
             // ribbonPageHome
             // 
@@ -218,6 +228,7 @@ namespace work_tracker
             // 
             // ribbonPageGroupWorkflow
             // 
+            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnDashboard);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnInbox);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnKanban);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnScrum);

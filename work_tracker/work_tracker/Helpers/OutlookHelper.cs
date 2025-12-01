@@ -458,6 +458,223 @@ namespace work_tracker.Helpers
                 // Sessizce devam et
             }
         }
+
+        #region Calendar Integration
+
+        /// <summary>
+        /// Outlook takviminden toplantıları çek
+        /// </summary>
+        /// <param name="startDate">Başlangıç tarihi</param>
+        /// <param name="endDate">Bitiş tarihi</param>
+        /// <returns>Takvim öğeleri listesi</returns>
+        public static List<OutlookCalendarItem> GetCalendarItems(DateTime startDate, DateTime endDate)
+        {
+            var items = new List<OutlookCalendarItem>();
+
+            try
+            {
+                var outlook = GetOutlookApplication();
+                var namespaceObj = outlook.GetNamespace("MAPI");
+                var calendar = namespaceObj.GetDefaultFolder(OlDefaultFolders.olFolderCalendar);
+
+                // Tarih filtrelemesi
+                string filter = $"[Start] >= '{startDate:g}' AND [Start] <= '{endDate:g}'";
+                
+                Items calendarItems = null;
+                try
+                {
+                    calendarItems = calendar.Items.Restrict(filter);
+                    calendarItems.Sort("[Start]", false);
+                    calendarItems.IncludeRecurrences = true;
+                }
+                catch (System.Exception)
+                {
+                    calendarItems = calendar.Items;
+                    calendarItems.Sort("[Start]", false);
+                }
+
+                foreach (object item in calendarItems)
+                {
+                    if (item is AppointmentItem appointment)
+                    {
+                        try
+                        {
+                            // Tarih aralığında mı kontrol et (IncludeRecurrences durumunda)
+                            if (appointment.Start >= startDate && appointment.Start <= endDate)
+                            {
+                                var calendarItem = new OutlookCalendarItem
+                                {
+                                    EntryId = appointment.EntryID,
+                                    Subject = appointment.Subject ?? "(Konusuz)",
+                                    Start = appointment.Start,
+                                    End = appointment.End,
+                                    Location = appointment.Location ?? "",
+                                    Organizer = appointment.Organizer ?? "",
+                                    RequiredAttendees = appointment.RequiredAttendees ?? "",
+                                    OptionalAttendees = appointment.OptionalAttendees ?? "",
+                                    IsAllDayEvent = appointment.AllDayEvent,
+                                    IsRecurring = appointment.IsRecurring,
+                                    Body = appointment.Body ?? "",
+                                    BusyStatus = ConvertBusyStatus(appointment.BusyStatus)
+                                };
+
+                                items.Add(calendarItem);
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Logger.Warning($"Takvim öğesi işlenirken hata: {ex.Message}");
+                        }
+                        finally
+                        {
+                            Marshal.ReleaseComObject(appointment);
+                        }
+                    }
+                    else
+                    {
+                        Marshal.ReleaseComObject(item);
+                    }
+                }
+
+                Marshal.ReleaseComObject(calendarItems);
+                Marshal.ReleaseComObject(calendar);
+                Marshal.ReleaseComObject(namespaceObj);
+
+                Logger.Info($"Outlook'tan {items.Count} takvim öğesi çekildi ({startDate:d} - {endDate:d})");
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Error("Outlook takviminden veri çekilirken hata", ex);
+                throw;
+            }
+
+            return items;
+        }
+
+        /// <summary>
+        /// Bugünün takvim öğelerini hızlıca çek
+        /// </summary>
+        public static List<OutlookCalendarItem> GetTodaysCalendarItems()
+        {
+            var today = DateTime.Today;
+            return GetCalendarItems(today, today.AddDays(1).AddSeconds(-1));
+        }
+
+        /// <summary>
+        /// Bu haftanın takvim öğelerini çek
+        /// </summary>
+        public static List<OutlookCalendarItem> GetThisWeeksCalendarItems()
+        {
+            var today = DateTime.Today;
+            var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+            var endOfWeek = startOfWeek.AddDays(7).AddSeconds(-1);
+            return GetCalendarItems(startOfWeek, endOfWeek);
+        }
+
+        /// <summary>
+        /// Bu ayın takvim öğelerini çek
+        /// </summary>
+        public static List<OutlookCalendarItem> GetThisMonthsCalendarItems()
+        {
+            var today = DateTime.Today;
+            var startOfMonth = new DateTime(today.Year, today.Month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddSeconds(-1);
+            return GetCalendarItems(startOfMonth, endOfMonth);
+        }
+
+        /// <summary>
+        /// Outlook meşguliyet durumunu string'e dönüştür
+        /// </summary>
+        private static string ConvertBusyStatus(OlBusyStatus status)
+        {
+            switch (status)
+            {
+                case OlBusyStatus.olFree: return "Müsait";
+                case OlBusyStatus.olTentative: return "Geçici";
+                case OlBusyStatus.olBusy: return "Meşgul";
+                case OlBusyStatus.olOutOfOffice: return "Ofis Dışı";
+                case OlBusyStatus.olWorkingElsewhere: return "Başka Yerde Çalışıyor";
+                default: return "Bilinmiyor";
+            }
+        }
+
+        /// <summary>
+        /// Outlook'ta takvim öğesini aç
+        /// </summary>
+        public static void OpenCalendarItemInOutlook(string entryId)
+        {
+            try
+            {
+                var outlook = GetOutlookApplication();
+                var namespaceObj = outlook.GetNamespace("MAPI");
+                var appointment = namespaceObj.GetItemFromID(entryId) as AppointmentItem;
+
+                if (appointment != null)
+                {
+                    appointment.Display(false);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Error("Outlook'ta takvim öğesi açılırken hata", ex);
+                throw;
+            }
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Outlook takvim öğesi modeli
+    /// </summary>
+    public class OutlookCalendarItem
+    {
+        public string EntryId { get; set; }
+        public string Subject { get; set; }
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public string Location { get; set; }
+        public string Organizer { get; set; }
+        public string RequiredAttendees { get; set; }
+        public string OptionalAttendees { get; set; }
+        public bool IsAllDayEvent { get; set; }
+        public bool IsRecurring { get; set; }
+        public string Body { get; set; }
+        public string BusyStatus { get; set; }
+
+        /// <summary>
+        /// Toplantı süresini dakika cinsinden hesapla
+        /// </summary>
+        public int DurationMinutes => (int)(End - Start).TotalMinutes;
+
+        /// <summary>
+        /// Süreyi okunabilir formatta döndür
+        /// </summary>
+        public string DurationDisplay
+        {
+            get
+            {
+                var duration = End - Start;
+                if (duration.TotalHours >= 1)
+                {
+                    return $"{(int)duration.TotalHours} saat {duration.Minutes} dk";
+                }
+                return $"{(int)duration.TotalMinutes} dk";
+            }
+        }
+
+        /// <summary>
+        /// Zaman aralığını okunabilir formatta döndür
+        /// </summary>
+        public string TimeRangeDisplay
+        {
+            get
+            {
+                if (IsAllDayEvent)
+                    return "Tüm Gün";
+                return $"{Start:HH:mm} - {End:HH:mm}";
+            }
+        }
     }
 }
 

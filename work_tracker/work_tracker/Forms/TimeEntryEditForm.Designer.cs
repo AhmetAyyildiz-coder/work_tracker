@@ -38,6 +38,10 @@ namespace work_tracker.Forms
             this.lblWorkItem = new DevExpress.XtraEditors.LabelControl();
             this.cmbWorkItem = new DevExpress.XtraEditors.LookUpEdit();
             
+            // Row 3.5: Meeting
+            this.lblMeeting = new DevExpress.XtraEditors.LabelControl();
+            this.cmbMeeting = new DevExpress.XtraEditors.LookUpEdit();
+            
             // Row 4: Person, Phone
             this.lblContactName = new DevExpress.XtraEditors.LabelControl();
             this.cmbPerson = new DevExpress.XtraEditors.LookUpEdit();
@@ -60,6 +64,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbWorkItem.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbPerson.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPhoneNumber.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.memDescription.Properties)).BeginInit();
@@ -86,6 +91,8 @@ namespace work_tracker.Forms
             this.panelMain.Controls.Add(this.cmbProject);
             this.panelMain.Controls.Add(this.lblWorkItem);
             this.panelMain.Controls.Add(this.cmbWorkItem);
+            this.panelMain.Controls.Add(this.lblMeeting);
+            this.panelMain.Controls.Add(this.cmbMeeting);
             this.panelMain.Controls.Add(this.lblContactName);
             this.panelMain.Controls.Add(this.cmbPerson);
             this.panelMain.Controls.Add(this.btnAddPerson);
@@ -269,11 +276,33 @@ namespace work_tracker.Forms
             this.cmbWorkItem.TabIndex = 12;
             this.cmbWorkItem.EditValueChanged += new System.EventHandler(this.cmbWorkItem_EditValueChanged);
             
+            // ============ ROW 3.5: Meeting ============
+            // 
+            // lblMeeting
+            // 
+            this.lblMeeting.Location = new System.Drawing.Point(15, 185);
+            this.lblMeeting.Name = "lblMeeting";
+            this.lblMeeting.Size = new System.Drawing.Size(50, 13);
+            this.lblMeeting.TabIndex = 50;
+            this.lblMeeting.Text = "📅 Toplantı:";
+            
+            // 
+            // cmbMeeting
+            // 
+            this.cmbMeeting.Location = new System.Drawing.Point(15, 203);
+            this.cmbMeeting.Name = "cmbMeeting";
+            this.cmbMeeting.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbMeeting.Properties.NullText = "(Toplantı Seçiniz - Opsiyonel)";
+            this.cmbMeeting.Size = new System.Drawing.Size(615, 20);
+            this.cmbMeeting.TabIndex = 51;
+            this.cmbMeeting.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            
             // ============ ROW 4: Person, Phone ============
             // 
             // lblContactName
             // 
-            this.lblContactName.Location = new System.Drawing.Point(15, 185);
+            this.lblContactName.Location = new System.Drawing.Point(15, 240);
             this.lblContactName.Name = "lblContactName";
             this.lblContactName.Size = new System.Drawing.Size(31, 13);
             this.lblContactName.TabIndex = 13;
@@ -282,7 +311,7 @@ namespace work_tracker.Forms
             // 
             // cmbPerson
             // 
-            this.cmbPerson.Location = new System.Drawing.Point(15, 203);
+            this.cmbPerson.Location = new System.Drawing.Point(15, 258);
             this.cmbPerson.Name = "cmbPerson";
             this.cmbPerson.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
@@ -294,7 +323,7 @@ namespace work_tracker.Forms
             // 
             // btnAddPerson
             // 
-            this.btnAddPerson.Location = new System.Drawing.Point(285, 203);
+            this.btnAddPerson.Location = new System.Drawing.Point(285, 258);
             this.btnAddPerson.Name = "btnAddPerson";
             this.btnAddPerson.Size = new System.Drawing.Size(30, 20);
             this.btnAddPerson.TabIndex = 15;
@@ -305,7 +334,7 @@ namespace work_tracker.Forms
             // 
             // lblPhoneNumber
             // 
-            this.lblPhoneNumber.Location = new System.Drawing.Point(330, 185);
+            this.lblPhoneNumber.Location = new System.Drawing.Point(330, 240);
             this.lblPhoneNumber.Name = "lblPhoneNumber";
             this.lblPhoneNumber.Size = new System.Drawing.Size(100, 13);
             this.lblPhoneNumber.TabIndex = 16;
@@ -315,7 +344,7 @@ namespace work_tracker.Forms
             // txtPhoneNumber
             // 
             this.txtPhoneNumber.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPhoneNumber.Location = new System.Drawing.Point(330, 203);
+            this.txtPhoneNumber.Location = new System.Drawing.Point(330, 258);
             this.txtPhoneNumber.Name = "txtPhoneNumber";
             this.txtPhoneNumber.Properties.NullValuePrompt = "(Opsiyonel)";
             this.txtPhoneNumber.Properties.NullValuePromptShowForEmptyValue = true;
@@ -326,7 +355,7 @@ namespace work_tracker.Forms
             // 
             // lblDescription
             // 
-            this.lblDescription.Location = new System.Drawing.Point(15, 240);
+            this.lblDescription.Location = new System.Drawing.Point(15, 295);
             this.lblDescription.Name = "lblDescription";
             this.lblDescription.Size = new System.Drawing.Size(52, 13);
             this.lblDescription.TabIndex = 18;
@@ -336,11 +365,11 @@ namespace work_tracker.Forms
             // memDescription
             // 
             this.memDescription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.memDescription.Location = new System.Drawing.Point(15, 258);
+            this.memDescription.Location = new System.Drawing.Point(15, 313);
             this.memDescription.Name = "memDescription";
             this.memDescription.Properties.NullValuePrompt = "Detaylı açıklama girin (opsiyonel)...";
             this.memDescription.Properties.NullValuePromptShowForEmptyValue = true;
-            this.memDescription.Size = new System.Drawing.Size(615, 160);
+            this.memDescription.Size = new System.Drawing.Size(615, 105);
             this.memDescription.TabIndex = 19;
             
             // 
@@ -367,6 +396,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbWorkItem.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbPerson.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtPhoneNumber.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.memDescription.Properties)).EndInit();
@@ -391,6 +421,8 @@ namespace work_tracker.Forms
         private DevExpress.XtraEditors.LookUpEdit cmbProject;
         private DevExpress.XtraEditors.LabelControl lblWorkItem;
         private DevExpress.XtraEditors.LookUpEdit cmbWorkItem;
+        private DevExpress.XtraEditors.LabelControl lblMeeting;
+        private DevExpress.XtraEditors.LookUpEdit cmbMeeting;
         private DevExpress.XtraEditors.LabelControl lblContactName;
         private DevExpress.XtraEditors.LookUpEdit cmbPerson;
         private DevExpress.XtraEditors.SimpleButton btnAddPerson;

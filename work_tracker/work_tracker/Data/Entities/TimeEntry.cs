@@ -44,6 +44,11 @@ namespace work_tracker.Data.Entities
         public int? ProjectId { get; set; }
 
         /// <summary>
+        /// İlgili toplantı (opsiyonel)
+        /// </summary>
+        public int? MeetingId { get; set; }
+
+        /// <summary>
         /// İlgili kişi (opsiyonel)
         /// </summary>
         public int? PersonId { get; set; }
@@ -96,6 +101,9 @@ namespace work_tracker.Data.Entities
 
         [ForeignKey("ProjectId")]
         public virtual Project Project { get; set; }
+
+        [ForeignKey("MeetingId")]
+        public virtual Meeting Meeting { get; set; }
 
         [ForeignKey("PersonId")]
         public virtual Person Person { get; set; }

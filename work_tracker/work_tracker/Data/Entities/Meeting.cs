@@ -28,12 +28,14 @@ namespace work_tracker.Data.Entities
 
         // Navigation Properties
         public virtual ICollection<WorkItem> WorkItems { get; set; }
+        public virtual ICollection<TimeEntry> TimeEntries { get; set; }
 
         public Meeting()
         {
             MeetingDate = DateTime.Now;
             CreatedAt = DateTime.Now;
             WorkItems = new HashSet<WorkItem>();
+            TimeEntries = new HashSet<TimeEntry>();
         }
     }
 }

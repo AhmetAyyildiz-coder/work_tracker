@@ -75,6 +75,7 @@ namespace work_tracker.Forms
             // WorkItem ve Project ID'lerini al (eğer düzenleme modundaysa)
             int? workItemId = null;
             int? projectId = null;
+            int? meetingId = null;
             
             if (_timeEntryId.HasValue)
             {
@@ -84,6 +85,7 @@ namespace work_tracker.Forms
                 {
                     workItemId = timeEntry.WorkItemId;
                     projectId = timeEntry.ProjectId;
+                    meetingId = timeEntry.MeetingId;
                 }
             }
             
@@ -92,6 +94,9 @@ namespace work_tracker.Forms
             
             // Project'leri yükle (seçili olanı da ekle)
             LoadProjects(projectId);
+            
+            // Meeting'leri yükle (seçili olanı da ekle)
+            LoadMeetings(meetingId);
         }
 
         private void LoadWorkItems(int? selectedWorkItemId = null)
@@ -172,6 +177,7 @@ namespace work_tracker.Forms
             _timeEntry = _context.TimeEntries
                 .Include(t => t.WorkItem)
                 .Include(t => t.Project)
+                .Include(t => t.Meeting)
                 .Include(t => t.Person)
                 .FirstOrDefault(t => t.Id == _timeEntryId.Value);
 
@@ -181,9 +187,10 @@ namespace work_tracker.Forms
                 spinDurationMinutes.EditValue = _timeEntry.DurationMinutes;
                 cmbActivityType.SelectedItem = _timeEntry.ActivityType;
                 
-                // WorkItem ve Project'i yeniden yükle (seçili olanları da ekle)
+                // WorkItem, Project ve Meeting'i yeniden yükle (seçili olanları da ekle)
                 LoadWorkItems(_timeEntry.WorkItemId);
                 LoadProjects(_timeEntry.ProjectId);
+                LoadMeetings(_timeEntry.MeetingId);
                 
                 // WorkItem seç
                 if (_timeEntry.WorkItemId.HasValue)
@@ -201,6 +208,12 @@ namespace work_tracker.Forms
                 if (_timeEntry.ProjectId.HasValue)
                 {
                     cmbProject.EditValue = _timeEntry.ProjectId.Value;
+                }
+                
+                // Meeting seç
+                if (_timeEntry.MeetingId.HasValue)
+                {
+                    cmbMeeting.EditValue = _timeEntry.MeetingId.Value;
                 }
                 
                 txtSubject.Text = _timeEntry.Subject ?? string.Empty;
@@ -274,6 +287,9 @@ namespace work_tracker.Forms
                     
                     var projectId = cmbProject.EditValue as int?;
                     _timeEntry.ProjectId = projectId.HasValue && projectId.Value > 0 ? projectId : null;
+                    
+                    var meetingId = cmbMeeting.EditValue as int?;
+                    _timeEntry.MeetingId = meetingId.HasValue && meetingId.Value > 0 ? meetingId : null;
 
                     _timeEntry.Subject = txtSubject.Text.Trim();
                     
@@ -307,6 +323,9 @@ namespace work_tracker.Forms
                         
                         ProjectId = (cmbProject.EditValue as int?).HasValue && (cmbProject.EditValue as int?).Value > 0 
                             ? cmbProject.EditValue as int? : null,
+                        
+                        MeetingId = (cmbMeeting.EditValue as int?).HasValue && (cmbMeeting.EditValue as int?).Value > 0 
+                            ? cmbMeeting.EditValue as int? : null,
 
                         Subject = txtSubject.Text.Trim(),
                         
@@ -408,6 +427,39 @@ namespace work_tracker.Forms
             cmbPerson.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Name", "Ad"));
             cmbPerson.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Email", "E-posta"));
             cmbPerson.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("PhoneNumber", "Telefon"));
+        }
+
+        private void LoadMeetings(int? selectedMeetingId = null)
+        {
+            // Son 60 günün toplantılarını yükle
+            var cutoffDate = DateTime.Now.AddDays(-60);
+            var meetings = _context.Meetings
+                .Where(m => m.MeetingDate >= cutoffDate)
+                .OrderByDescending(m => m.MeetingDate)
+                .Take(100)
+                .ToList();
+
+            // Eğer seçili Meeting listede yoksa ekle
+            if (selectedMeetingId.HasValue && !meetings.Any(m => m.Id == selectedMeetingId.Value))
+            {
+                var selectedMeeting = _context.Meetings.FirstOrDefault(m => m.Id == selectedMeetingId.Value);
+                if (selectedMeeting != null)
+                {
+                    meetings.Insert(0, selectedMeeting);
+                }
+            }
+
+            cmbMeeting.Properties.DataSource = meetings;
+            cmbMeeting.Properties.DisplayMember = "Subject";
+            cmbMeeting.Properties.ValueMember = "Id";
+            cmbMeeting.Properties.NullText = "(Toplantı Seçiniz - Opsiyonel)";
+            
+            // LookUpEdit için kolonları ayarla
+            cmbMeeting.Properties.Columns.Clear();
+            cmbMeeting.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("Subject", "Konu") { Width = 300 });
+            cmbMeeting.Properties.Columns.Add(new DevExpress.XtraEditors.Controls.LookUpColumnInfo("MeetingDate", "Tarih") { Width = 120 });
+            
+            cmbMeeting.EditValue = null;
         }
 
         private void cmbPerson_EditValueChanged(object sender, EventArgs e)

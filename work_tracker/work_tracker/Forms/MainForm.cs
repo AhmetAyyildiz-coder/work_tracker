@@ -27,6 +27,7 @@ namespace work_tracker
         private TimeEntryForm timeEntryForm;
         private WorkSummaryForm workSummaryForm;
         private WorkItemHierarchyForm hierarchyForm;
+        private DashboardForm dashboardForm;
 
         // Günlük hatırlatıcı servisi
         private WorkReminderService _reminderService;
@@ -110,6 +111,11 @@ namespace work_tracker
         private void btnHierarchy_ItemClick(object sender, ItemClickEventArgs e)
         {
             hierarchyForm = OpenOrActivateForm(hierarchyForm, () => new WorkItemHierarchyForm(), f => hierarchyForm = f);
+        }
+
+        private void btnDashboard_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            dashboardForm = OpenOrActivateForm(dashboardForm, () => new DashboardForm(), f => dashboardForm = f);
         }
 
         /// <summary>
