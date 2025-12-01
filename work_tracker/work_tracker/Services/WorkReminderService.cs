@@ -10,6 +10,7 @@ namespace work_tracker.Services
     /// <summary>
     /// Günlük iş hatırlatıcı servisi
     /// Her gün belirlenen saatte aktif işleri kontrol eder ve bildirim gösterir
+    /// Yemek saatlerinde (11:00-11:30) geliştirmedeki işleri hatırlatır
     /// </summary>
     public class WorkReminderService : IDisposable
     {
@@ -17,7 +18,17 @@ namespace work_tracker.Services
         private readonly NotifyIcon _notifyIcon;
         private readonly TimeSpan _reminderTime;
         private DateTime _lastReminderDate;
+        private DateTime _lastLunchReminderTime;
         private bool _disposed;
+
+        // Yemek saati hatırlatma zamanları (11:00, 11:10, 11:20, 11:30)
+        private readonly TimeSpan[] _lunchReminderTimes = new[]
+        {
+            new TimeSpan(11, 0, 0),
+            new TimeSpan(11, 10, 0),
+            new TimeSpan(11, 20, 0),
+            new TimeSpan(11, 30, 0)
+        };
 
         /// <summary>
         /// WorkReminderService oluşturur
@@ -42,6 +53,11 @@ namespace work_tracker.Services
             try
             {
                 var now = DateTime.Now;
+                
+                // Yemek saati hatırlatması (hafta içi 11:00-11:30)
+                CheckLunchTimeReminder(now);
+                
+                // Günlük hatırlatma (17:30)
                 var todayReminderTime = now.Date.Add(_reminderTime);
 
                 // Bugün zaten hatırlatma yapıldı mı?
@@ -59,6 +75,118 @@ namespace work_tracker.Services
             {
                 Logger.LogException(ex, "WorkReminderService.CheckReminder hatası");
             }
+        }
+
+        /// <summary>
+        /// Yemek saati hatırlatması - Hafta içi 11:00, 11:10, 11:20, 11:30'da kontrol
+        /// </summary>
+        private void CheckLunchTimeReminder(DateTime now)
+        {
+            try
+            {
+                // Sadece hafta içi
+                if (now.DayOfWeek == DayOfWeek.Saturday || now.DayOfWeek == DayOfWeek.Sunday)
+                    return;
+
+                var currentTime = now.TimeOfDay;
+
+                // Yemek saatlerinden birinde miyiz?
+                foreach (var lunchTime in _lunchReminderTimes)
+                {
+                    // ±1 dakika tolerans
+                    if (currentTime >= lunchTime && currentTime < lunchTime.Add(TimeSpan.FromMinutes(1)))
+                    {
+                        // Bu dakikada zaten hatırlatma yaptık mı?
+                        if (_lastLunchReminderTime.Date == now.Date && 
+                            _lastLunchReminderTime.Hour == now.Hour && 
+                            _lastLunchReminderTime.Minute == now.Minute)
+                            return;
+
+                        _lastLunchReminderTime = now;
+                        CheckInProgressWorkItems(lunchTime);
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, "CheckLunchTimeReminder hatası");
+            }
+        }
+
+        /// <summary>
+        /// Geliştirmede olan işleri kontrol et ve uyarı göster
+        /// </summary>
+        private void CheckInProgressWorkItems(TimeSpan reminderTime)
+        {
+            try
+            {
+                using (var context = new WorkTrackerDbContext())
+                {
+                    // Geliştirmede veya MudahaleEdiliyor durumundaki işler
+                    var inProgressItems = context.WorkItems
+                        .Where(w => !w.IsArchived && 
+                                   (w.Status == "Gelistirmede" || 
+                                    w.Status == "MudahaleEdiliyor" ||
+                                    w.Status == "Testte"))
+                        .Select(w => new { w.Id, w.Title, w.Status })
+                        .ToList();
+
+                    if (inProgressItems.Count > 0)
+                    {
+                        ShowLunchReminder(inProgressItems.Count, reminderTime, 
+                            inProgressItems.Select(x => $"#{x.Id} - {x.Title}").Take(3).ToList());
+                        
+                        Logger.Info($"Yemek hatırlatması ({reminderTime}): {inProgressItems.Count} iş geliştirmede");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogException(ex, "CheckInProgressWorkItems hatası");
+            }
+        }
+
+        /// <summary>
+        /// Yemek saati uyarısını göster
+        /// </summary>
+        private void ShowLunchReminder(int count, TimeSpan time, System.Collections.Generic.List<string> topItems)
+        {
+            if (_notifyIcon.ContextMenuStrip?.InvokeRequired == true)
+            {
+                _notifyIcon.ContextMenuStrip.Invoke(new Action(() => 
+                    ShowLunchReminderInternal(count, time, topItems)));
+            }
+            else
+            {
+                ShowLunchReminderInternal(count, time, topItems);
+            }
+        }
+
+        private void ShowLunchReminderInternal(int count, TimeSpan time, System.Collections.Generic.List<string> topItems)
+        {
+            string timeStr = $"{time.Hours:D2}:{time.Minutes:D2}";
+            string urgency = time.Hours == 11 && time.Minutes >= 20 ? "⚠️ " : "";
+            
+            var message = $"{urgency}Yemek vakti yaklaşıyor! ({timeStr})\n\n";
+            message += $"🔧 {count} iş hala geliştirmede:\n";
+            
+            foreach (var item in topItems)
+            {
+                message += $"  • {item}\n";
+            }
+            
+            if (count > 3)
+                message += $"  ... ve {count - 3} iş daha\n";
+            
+            message += "\n💡 Yemeğe çıkmadan önce işleri 'Beklemede' durumuna al!";
+
+            _notifyIcon.ShowBalloonTip(
+                8000, // 8 saniye göster
+                "🍽️ Work Tracker - Yemek Hatırlatması",
+                message,
+                ToolTipIcon.Warning
+            );
         }
 
         private void CheckActiveWorkItems()
@@ -169,6 +297,14 @@ namespace work_tracker.Services
         public void TriggerReminderNow()
         {
             CheckActiveWorkItems();
+        }
+
+        /// <summary>
+        /// Manuel olarak yemek hatırlatmasını tetikle (test için)
+        /// </summary>
+        public void TriggerLunchReminderNow()
+        {
+            CheckInProgressWorkItems(new TimeSpan(11, 0, 0));
         }
 
         public void Dispose()
