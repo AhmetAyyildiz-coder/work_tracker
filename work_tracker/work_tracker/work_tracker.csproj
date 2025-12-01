@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.22</MinimumRequiredVersion>
-    <ApplicationRevision>23</ApplicationRevision>
+    <ApplicationRevision>24</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -215,6 +215,10 @@
     <Compile Include="Migrations\202511302054436_update_workitem_with_wiki.cs" />
     <Compile Include="Migrations\202511302054436_update_workitem_with_wiki.Designer.cs">
       <DependentUpon>202511302054436_update_workitem_with_wiki.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512010636390_fixed_outlook_integration.cs" />
+    <Compile Include="Migrations\202512010636390_fixed_outlook_integration.Designer.cs">
+      <DependentUpon>202512010636390_fixed_outlook_integration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -439,6 +443,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202511302054436_update_workitem_with_wiki.resx">
       <DependentUpon>202511302054436_update_workitem_with_wiki.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512010636390_fixed_outlook_integration.resx">
+      <DependentUpon>202512010636390_fixed_outlook_integration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

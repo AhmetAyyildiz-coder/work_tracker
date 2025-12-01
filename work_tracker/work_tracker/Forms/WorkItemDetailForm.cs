@@ -1227,7 +1227,7 @@ namespace work_tracker.Forms
             }
 
             var email = lstEmails.SelectedItems[0].Tag as WorkItemEmail;
-            if (email == null || string.IsNullOrEmpty(email.OutlookEntryId))
+            if (email == null || (string.IsNullOrEmpty(email.OutlookEntryId) && string.IsNullOrEmpty(email.ConversationId)))
             {
                 XtraMessageBox.Show("Bu email Outlook'ta bulunamadı.", "Uyarı", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1236,7 +1236,8 @@ namespace work_tracker.Forms
 
             try
             {
-                OutlookHelper.OpenEmailInOutlook(email.OutlookEntryId);
+                // ConversationId ile de arama yapabilir (mail taşınmış olsa bile bulur)
+                OutlookHelper.OpenEmailInOutlook(email.OutlookEntryId, email.ConversationId);
             }
             catch (Exception ex)
             {

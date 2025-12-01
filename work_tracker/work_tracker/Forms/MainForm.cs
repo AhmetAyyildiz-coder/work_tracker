@@ -187,6 +187,9 @@ namespace work_tracker
                     // Veritabanı bağlantısını test et
                     var projectCount = db.Projects.Count();
                     Logger.Info($"Veritabanı bağlantısı başarılı. {projectCount} proje bulundu.");
+
+                    // Mevcut email kayıtlarını migrate et (ConversationId eksik olanlar için)
+                    MigrateExistingEmailsIfNeeded(db);
                 }
 
                 // Günlük hatırlatıcı servisini başlat (17:30'da)
@@ -207,6 +210,40 @@ namespace work_tracker
                     "Veritabanı Hatası",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Eski email kayıtlarına ConversationId ekle (bir kerelik migration)
+        /// </summary>
+        private void MigrateExistingEmailsIfNeeded(Data.WorkTrackerDbContext db)
+        {
+            try
+            {
+                // ConversationId'si olmayan emailleri bul
+                var emailsToMigrate = db.WorkItemEmails
+                    .Where(e => e.ConversationId == null && e.OutlookEntryId != null)
+                    .ToList();
+
+                if (emailsToMigrate.Count == 0)
+                    return;
+
+                Logger.Info($"Email migration başlıyor: {emailsToMigrate.Count} kayıt güncellenecek");
+
+                // Outlook'tan ConversationId'leri çek
+                int updatedCount = OutlookHelper.MigrateExistingEmails(emailsToMigrate);
+
+                // Değişiklikleri kaydet
+                if (updatedCount > 0)
+                {
+                    db.SaveChanges();
+                    Logger.Info($"Email migration tamamlandı: {updatedCount}/{emailsToMigrate.Count} kayıt güncellendi");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Migration hatası kritik değil, sessizce logla
+                Logger.Warning($"Email migration sırasında hata (kritik değil): {ex.Message}");
             }
         }
 

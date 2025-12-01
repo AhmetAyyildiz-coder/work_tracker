@@ -13,9 +13,23 @@ namespace work_tracker.Data.Entities
 
         /// <summary>
         /// Outlook'tan gelen unique Entry ID (Outlook'ta email'i tekrar bulmak için)
+        /// NOT: Bu ID mail başka klasöre taşındığında değişir!
         /// </summary>
         [MaxLength(500)]
         public string OutlookEntryId { get; set; }
+
+        /// <summary>
+        /// Outlook Conversation ID - mail nereye taşınırsa taşınsın sabit kalır
+        /// Bu sayede mail farklı klasöre taşınsa bile bulunabilir
+        /// </summary>
+        [MaxLength(500)]
+        public string ConversationId { get; set; }
+
+        /// <summary>
+        /// Son bilinen klasör yolu (debug/bilgi amaçlı)
+        /// </summary>
+        [MaxLength(500)]
+        public string LastKnownFolder { get; set; }
 
         /// <summary>
         /// Email konusu
