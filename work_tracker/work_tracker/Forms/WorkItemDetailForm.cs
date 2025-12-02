@@ -43,6 +43,21 @@ namespace work_tracker.Forms
             
             // Yorum listesi çift tıklama event'i
             lstComments.DoubleClick += LstComments_DoubleClick;
+            
+            // Yorum kutusunda Enter ile yorum ekleme (Shift+Enter alt satıra geçer)
+            txtNewComment.KeyDown += TxtNewComment_KeyDown;
+        }
+
+        private void TxtNewComment_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Enter tuşuna basıldığında (Shift basılı değilse) yorum ekle
+            if (e.KeyCode == Keys.Enter && !e.Shift)
+            {
+                e.SuppressKeyPress = true; // Enter'ın yeni satır eklemesini engelle
+                e.Handled = true;
+                btnAddComment_Click(sender, e);
+            }
+            // Shift+Enter ile normal alt satıra geçiş (varsayılan davranış)
         }
 
         private void LoadSprints()

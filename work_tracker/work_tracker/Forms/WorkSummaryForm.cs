@@ -268,7 +268,13 @@ namespace work_tracker.Forms
             List<WorkItemActivity> activities, List<TimeEntry> timeEntries, List<WorkItem> completedWorkItems)
         {
             // Toplam geliştirme süresi
-            var totalMinutes = developmentTimes.Sum(t => t.TotalMinutes);
+            var developmentMinutes = developmentTimes.Sum(t => t.TotalMinutes);
+            
+            // Zaman kayıtları süresi (telefon görüşmeleri, toplantılar vb.)
+            var timeEntryMinutes = timeEntries.Sum(t => t.DurationMinutes);
+            
+            // Toplam çalışma süresi = Geliştirme süresi + Zaman kayıtları süresi
+            var totalMinutes = developmentMinutes + timeEntryMinutes;
             var hours = totalMinutes / 60;
             var minutes = totalMinutes % 60;
             lblTotalTime.Text = $"{hours}s {minutes}dk";
@@ -283,14 +289,6 @@ namespace work_tracker.Forms
             // Aktivite sayısı (yorumlar + durum değişiklikleri)
             var activityCount = activities.Count;
             lblActivityCount.Text = activityCount.ToString();
-
-            // Zaman kayıtları süresi
-            var totalTimeEntryMinutes = timeEntries.Sum(t => t.DurationMinutes);
-            var timeEntryHours = totalTimeEntryMinutes / 60;
-            var timeEntryMinutes = totalTimeEntryMinutes % 60;
-            
-            // Zaman kayıtları sayısını göstermek için yeni bir label kullanabiliriz
-            // Veya mevcut label'ları güncelleyebiliriz
         }
 
         private void LoadTimeDistribution(List<WorkItemDevelopmentTime> developmentTimes)
