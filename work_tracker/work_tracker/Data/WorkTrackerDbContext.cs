@@ -24,6 +24,7 @@ namespace work_tracker.Data
         public virtual DbSet<TimeEntry> TimeEntries { get; set; }
         public virtual DbSet<Person> Persons { get; set; }
         public virtual DbSet<WorkItemRelation> WorkItemRelations { get; set; }
+        public virtual DbSet<WorkItemReminder> WorkItemReminders { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -98,6 +99,13 @@ namespace work_tracker.Data
                 .WithOptional(e => e.WorkItem)
                 .HasForeignKey(e => e.WorkItemId)
                 .WillCascadeOnDelete(true); // İş silindiğinde email bağlantıları da sil
+
+            // WorkItem - Reminders ilişkisi
+            modelBuilder.Entity<WorkItem>()
+                .HasMany(w => w.Reminders)
+                .WithRequired(r => r.WorkItem)
+                .HasForeignKey(r => r.WorkItemId)
+                .WillCascadeOnDelete(true); // İş silindiğinde hatırlatıcıları da sil
 
             // WikiPage - Parent/Children ilişkisi
             modelBuilder.Entity<WikiPage>()

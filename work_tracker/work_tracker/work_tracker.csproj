@@ -115,6 +115,7 @@
     <Compile Include="Data\Entities\WorkItemAttachment.cs" />
     <Compile Include="Data\Entities\WorkItemEmail.cs" />
     <Compile Include="Data\Entities\WorkItemRelation.cs" />
+    <Compile Include="Data\Entities\WorkItemReminder.cs" />
     <Compile Include="Data\WorkTrackerDbContext.cs" />
     <Compile Include="Forms\DailyActivityReportForm.cs">
       <SubType>Form</SubType>
@@ -127,6 +128,9 @@
     </Compile>
     <Compile Include="Forms\DashboardForm.Designer.cs">
       <DependentUpon>DashboardForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ReminderPopupForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\TimeEntryEditForm.cs">
       <SubType>Form</SubType>
@@ -145,6 +149,12 @@
     </Compile>
     <Compile Include="Forms\WikiForm.Designer.cs">
       <DependentUpon>WikiForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\WorkItemRelationTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\WorkItemRelationTestForm.Designer.cs">
+      <DependentUpon>WorkItemRelationTestForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\WorkSummaryForm.cs">
       <SubType>Form</SubType>
@@ -234,6 +244,14 @@
     <Compile Include="Migrations\202512011128235_updated_timeentry_added_meeting_join.cs" />
     <Compile Include="Migrations\202512011128235_updated_timeentry_added_meeting_join.Designer.cs">
       <DependentUpon>202512011128235_updated_timeentry_added_meeting_join.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512021428294_added_update_date_work_item_activity.cs" />
+    <Compile Include="Migrations\202512021428294_added_update_date_work_item_activity.Designer.cs">
+      <DependentUpon>202512021428294_added_update_date_work_item_activity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512021451104_AddWorkItemReminders.cs" />
+    <Compile Include="Migrations\202512021451104_AddWorkItemReminders.Designer.cs">
+      <DependentUpon>202512021451104_AddWorkItemReminders.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -359,6 +377,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\WorkItemRelationService.cs" />
+    <Compile Include="Services\WorkItemReminderService.cs" />
     <Compile Include="Services\WorkReminderService.cs" />
     <EmbeddedResource Include="Forms\DailyActivityReportForm.resx">
       <DependentUpon>DailyActivityReportForm.cs</DependentUpon>
@@ -467,6 +486,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512011128235_updated_timeentry_added_meeting_join.resx">
       <DependentUpon>202512011128235_updated_timeentry_added_meeting_join.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512021428294_added_update_date_work_item_activity.resx">
+      <DependentUpon>202512021428294_added_update_date_work_item_activity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512021451104_AddWorkItemReminders.resx">
+      <DependentUpon>202512021451104_AddWorkItemReminders.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -99,6 +99,7 @@ namespace work_tracker.Data.Entities
         public virtual ICollection<WorkItemActivity> Activities { get; set; }
         public virtual ICollection<WorkItemAttachment> Attachments { get; set; }
         public virtual ICollection<WorkItemEmail> Emails { get; set; }
+        public virtual ICollection<WorkItemReminder> Reminders { get; set; }
         public virtual ICollection<Tag> Tags {get;set;}
         public virtual ICollection<Person> RequestedByPersons { get; set; }
 
@@ -163,6 +164,7 @@ namespace work_tracker.Data.Entities
             Activities = new HashSet<WorkItemActivity>();
             Attachments = new HashSet<WorkItemAttachment>();
             Emails = new HashSet<WorkItemEmail>();
+            Reminders = new HashSet<WorkItemReminder>();
             Tags = new HashSet<Tag>();
             RequestedByPersons = new HashSet<Person>();
             RelatedWorkItemsAsSource = new HashSet<WorkItemRelation>();

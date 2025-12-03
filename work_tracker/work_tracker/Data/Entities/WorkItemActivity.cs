@@ -58,6 +58,17 @@ namespace work_tracker.Data.Entities
         public DateTime CreatedAt { get; set; }
 
         /// <summary>
+        /// Son güncellenme zamanı (yorum düzenleme için)
+        /// </summary>
+        public DateTime? UpdatedAt { get; set; }
+
+        /// <summary>
+        /// Son güncelleyen kişi (yorum düzenleme için)
+        /// </summary>
+        [MaxLength(200)]
+        public string UpdatedBy { get; set; }
+
+        /// <summary>
         /// İlgili iş öğesi (Navigation Property)
         /// </summary>
         [ForeignKey("WorkItemId")]

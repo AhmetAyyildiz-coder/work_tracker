@@ -32,6 +32,9 @@ namespace work_tracker
         // Günlük hatırlatıcı servisi
         private WorkReminderService _reminderService;
 
+        // İş hatırlatıcı servisi
+        private WorkItemReminderService _workItemReminderService;
+
         public MainForm()
         {
             InitializeComponent();
@@ -201,6 +204,12 @@ namespace work_tracker
                 // Günlük hatırlatıcı servisini başlat (17:30'da)
                 _reminderService = new WorkReminderService(notifyIcon1, 17, 30);
                 Logger.Info("Günlük hatırlatıcı servisi başlatıldı (17:30)");
+
+                // İş hatırlatıcı servisini başlat (60 saniyede bir kontrol)
+                _workItemReminderService = new WorkItemReminderService(notifyIcon1, 60);
+                _workItemReminderService.ReminderTriggered += WorkItemReminderService_ReminderTriggered;
+                _workItemReminderService.Start();
+                Logger.Info("İş hatırlatıcı servisi başlatıldı (60 saniye aralık)");
             }
             catch (Exception ex)
             {
@@ -281,6 +290,7 @@ namespace work_tracker
         {
             // Uygulamayı tamamen kapat
             _reminderService?.Dispose();
+            _workItemReminderService?.Dispose();
             notifyIcon1.Visible = false;
             Application.Exit();
         }
@@ -302,17 +312,51 @@ namespace work_tracker
                 notifyIcon1.ShowBalloonTip(
                     3000,
                     "Work Tracker",
-                    "Uygulama arka planda çalışmaya devam ediyor.\n17:30'da aktif işleriniz için hatırlatma alacaksınız.",
+                    "Uygulama arka planda çalışmaya devam ediyor.\nZamanı gelen hatırlatıcılar için bildirim alacaksınız.",
                     ToolTipIcon.Info
                 );
             }
             else
             {
                 _reminderService?.Dispose();
+                _workItemReminderService?.Dispose();
                 notifyIcon1.Visible = false;
             }
 
             base.OnFormClosing(e);
+        }
+
+        /// <summary>
+        /// İş hatırlatıcısı tetiklendiğinde popup göster
+        /// </summary>
+        private void WorkItemReminderService_ReminderTriggered(object sender, ReminderEventArgs e)
+        {
+            // UI thread'de çalıştır
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new Action(() => ShowReminderPopup()));
+            }
+            else
+            {
+                ShowReminderPopup();
+            }
+        }
+
+        private void ShowReminderPopup()
+        {
+            try
+            {
+                var overdueReminders = _workItemReminderService.GetOverdueReminders();
+                if (overdueReminders.Count > 0)
+                {
+                    var popupForm = new ReminderPopupForm(overdueReminders, _workItemReminderService);
+                    popupForm.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Hatırlatıcı popup gösterilirken hata", ex);
+            }
         }
 
         #endregion

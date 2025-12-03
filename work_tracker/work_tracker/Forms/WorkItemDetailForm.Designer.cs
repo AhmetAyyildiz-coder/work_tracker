@@ -125,6 +125,7 @@ namespace work_tracker.Forms
         private SimpleButton btnRefresh;
         private SimpleButton btnDailyReport;
         private SimpleButton btnWiki;
+        private SimpleButton btnReminder;
 
         protected override void Dispose(bool disposing)
         {
@@ -230,6 +231,7 @@ namespace work_tracker.Forms
             this.btnRefresh = new DevExpress.XtraEditors.SimpleButton();
             this.btnClose = new DevExpress.XtraEditors.SimpleButton();
             this.btnDailyReport = new DevExpress.XtraEditors.SimpleButton();
+            this.btnReminder = new DevExpress.XtraEditors.SimpleButton();
             this.tabPageRelations = new DevExpress.XtraTab.XtraTabPage();
             this.groupRelations = new DevExpress.XtraEditors.GroupControl();
             this.gridRelations = new DevExpress.XtraGrid.GridControl();
@@ -1187,6 +1189,7 @@ namespace work_tracker.Forms
             // 
             // panelBottom
             // 
+            this.panelBottom.Controls.Add(this.btnReminder);
             this.panelBottom.Controls.Add(this.btnWiki);
             this.panelBottom.Controls.Add(this.btnDailyReport);
             this.panelBottom.Controls.Add(this.btnRefresh);
@@ -1196,6 +1199,22 @@ namespace work_tracker.Forms
             this.panelBottom.Name = "panelBottom";
             this.panelBottom.Size = new System.Drawing.Size(1200, 50);
             this.panelBottom.TabIndex = 3;
+            // 
+            // btnReminder
+            // 
+            this.btnReminder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnReminder.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(152)))), ((int)(((byte)(0)))));
+            this.btnReminder.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnReminder.Appearance.ForeColor = System.Drawing.Color.White;
+            this.btnReminder.Appearance.Options.UseBackColor = true;
+            this.btnReminder.Appearance.Options.UseFont = true;
+            this.btnReminder.Appearance.Options.UseForeColor = true;
+            this.btnReminder.Location = new System.Drawing.Point(300, 10);
+            this.btnReminder.Name = "btnReminder";
+            this.btnReminder.Size = new System.Drawing.Size(150, 30);
+            this.btnReminder.TabIndex = 4;
+            this.btnReminder.Text = "🔔 Hatırlatıcı";
+            this.btnReminder.Click += new System.EventHandler(this.btnReminder_Click);
             // 
             // btnRefresh
             // 

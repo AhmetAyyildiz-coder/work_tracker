@@ -498,17 +498,28 @@ namespace work_tracker.Forms
                     Width = 300
                 };
 
+                // Düzenleme modu göstergesi
+                var lblEditMode = new LabelControl
+                {
+                    Text = "",
+                    Location = new Point(320, 10),
+                    AutoSizeMode = LabelAutoSizeMode.None,
+                    Width = 200
+                };
+                lblEditMode.Appearance.ForeColor = Color.Green;
+
                 infoPanel.Controls.Add(lblCreatedBy);
                 infoPanel.Controls.Add(lblCreatedAt);
+                infoPanel.Controls.Add(lblEditMode);
 
-                // Yorum içeriği (kopyalanabilir)
+                // Yorum içeriği
                 var memoComment = new MemoEdit
                 {
                     Dock = DockStyle.Fill,
                     Text = comment.Description ?? "",
                     Properties = 
                     {
-                        ReadOnly = false, // Kopyalama için readonly false
+                        ReadOnly = true, // Başlangıçta salt okunur
                         ScrollBars = ScrollBars.Both,
                         WordWrap = true
                     },
@@ -525,10 +536,73 @@ namespace work_tracker.Forms
 
                 var btnCopy = new SimpleButton
                 {
-                    Text = "Kopyala",
+                    Text = "📋 Kopyala",
                     DialogResult = DialogResult.None,
                     Location = new Point(10, 10),
                     Width = 100
+                };
+
+                var btnEdit = new SimpleButton
+                {
+                    Text = "✏️ Düzenle",
+                    DialogResult = DialogResult.None,
+                    Location = new Point(120, 10),
+                    Width = 100
+                };
+
+                var btnSave = new SimpleButton
+                {
+                    Text = "💾 Kaydet",
+                    DialogResult = DialogResult.None,
+                    Location = new Point(230, 10),
+                    Width = 100,
+                    Visible = false
+                };
+
+                var btnCancel = new SimpleButton
+                {
+                    Text = "❌ İptal",
+                    DialogResult = DialogResult.None,
+                    Location = new Point(340, 10),
+                    Width = 100,
+                    Visible = false
+                };
+
+                var btnClose = new SimpleButton
+                {
+                    Text = "Kapat",
+                    DialogResult = DialogResult.OK,
+                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                    Width = 100
+                };
+
+                // Orijinal metni sakla
+                var originalText = comment.Description ?? "";
+                var isEditMode = false;
+
+                // Düzenleme moduna geç
+                Action enterEditMode = () =>
+                {
+                    isEditMode = true;
+                    memoComment.Properties.ReadOnly = false;
+                    memoComment.BackColor = Color.FromArgb(255, 255, 240); // Hafif sarı arka plan
+                    lblEditMode.Text = "📝 Düzenleme Modu";
+                    btnEdit.Visible = false;
+                    btnSave.Visible = true;
+                    btnCancel.Visible = true;
+                    memoComment.Focus();
+                };
+
+                // Düzenleme modundan çık
+                Action exitEditMode = () =>
+                {
+                    isEditMode = false;
+                    memoComment.Properties.ReadOnly = true;
+                    memoComment.BackColor = SystemColors.Window;
+                    lblEditMode.Text = "";
+                    btnEdit.Visible = true;
+                    btnSave.Visible = false;
+                    btnCancel.Visible = false;
                 };
 
                 btnCopy.Click += (s, args) =>
@@ -541,15 +615,87 @@ namespace work_tracker.Forms
                     }
                 };
 
-                var btnClose = new SimpleButton
+                btnEdit.Click += (s, args) =>
                 {
-                    Text = "Kapat",
-                    DialogResult = DialogResult.OK,
-                    Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                    Width = 100
+                    // Sadece kendi yorumlarını düzenleyebilir
+                    if (comment.CreatedBy != _currentUser)
+                    {
+                        XtraMessageBox.Show("Sadece kendi yorumlarınızı düzenleyebilirsiniz.", "Uyarı",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    enterEditMode();
+                };
+
+                btnSave.Click += (s, args) =>
+                {
+                    var newText = memoComment.Text.Trim();
+                    if (string.IsNullOrWhiteSpace(newText))
+                    {
+                        XtraMessageBox.Show("Yorum boş olamaz.", "Uyarı",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (newText == originalText)
+                    {
+                        XtraMessageBox.Show("Yorum değiştirilmedi.", "Bilgi",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        exitEditMode();
+                        return;
+                    }
+
+                    try
+                    {
+                        // Veritabanında güncelle
+                        var dbComment = _context.WorkItemActivities.Find(comment.Id);
+                        if (dbComment != null)
+                        {
+                            dbComment.Description = newText;
+                            dbComment.UpdatedAt = DateTime.Now;
+                            dbComment.UpdatedBy = _currentUser;
+                            _context.SaveChanges();
+
+                            originalText = newText;
+                            exitEditMode();
+                            LoadComments(); // Listeyi güncelle
+
+                            XtraMessageBox.Show("Yorum başarıyla güncellendi.", "Başarılı",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        XtraMessageBox.Show($"Yorum güncellenirken hata oluştu:\n\n{ex.Message}", "Hata",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                };
+
+                btnCancel.Click += (s, args) =>
+                {
+                    memoComment.Text = originalText;
+                    exitEditMode();
+                };
+
+                // Ctrl+S ile kaydetme
+                memoComment.KeyDown += (s, args) =>
+                {
+                    if (isEditMode && args.Control && args.KeyCode == Keys.S)
+                    {
+                        args.SuppressKeyPress = true;
+                        btnSave.PerformClick();
+                    }
+                    else if (isEditMode && args.KeyCode == Keys.Escape)
+                    {
+                        args.SuppressKeyPress = true;
+                        btnCancel.PerformClick();
+                    }
                 };
 
                 buttonPanel.Controls.Add(btnCopy);
+                buttonPanel.Controls.Add(btnEdit);
+                buttonPanel.Controls.Add(btnSave);
+                buttonPanel.Controls.Add(btnCancel);
                 buttonPanel.Controls.Add(btnClose);
                 
                 // Buton konumlarını ayarla
@@ -1463,6 +1609,376 @@ namespace work_tracker.Forms
         //            MessageBoxButtons.OK, MessageBoxIcon.Error);
         //    }
         //}
+
+        #endregion
+
+        #region Hatırlatıcı
+
+        private void btnReminder_Click(object sender, EventArgs e)
+        {
+            ShowReminderDialog();
+        }
+
+        private void ShowReminderDialog()
+        {
+            using (var reminderForm = new XtraForm())
+            {
+                reminderForm.Text = "🔔 Hatırlatıcı Ekle";
+                reminderForm.Size = new Size(450, 350);
+                reminderForm.StartPosition = FormStartPosition.CenterParent;
+                reminderForm.FormBorderStyle = FormBorderStyle.FixedDialog;
+                reminderForm.MaximizeBox = false;
+                reminderForm.MinimizeBox = false;
+
+                var mainPanel = new PanelControl
+                {
+                    Dock = DockStyle.Fill,
+                    Padding = new Padding(15)
+                };
+
+                // Mevcut hatırlatıcıları göster
+                var existingReminders = _context.WorkItemReminders
+                    .Where(r => r.WorkItemId == _workItemId && !r.IsDismissed)
+                    .OrderBy(r => r.ReminderDate)
+                    .ToList();
+
+                var lblExisting = new LabelControl
+                {
+                    Text = existingReminders.Count > 0 
+                        ? $"📋 Bu iş için {existingReminders.Count} aktif hatırlatıcı var"
+                        : "📋 Bu iş için hatırlatıcı yok",
+                    Location = new Point(15, 15),
+                    AutoSizeMode = LabelAutoSizeMode.None,
+                    Width = 400
+                };
+
+                // Hızlı seçenekler
+                var lblQuick = new LabelControl
+                {
+                    Text = "⚡ Hızlı Seçenekler:",
+                    Location = new Point(15, 50),
+                    Font = new Font("Tahoma", 9, FontStyle.Bold)
+                };
+
+                var btnToday5pm = new SimpleButton
+                {
+                    Text = "Bugün 17:00",
+                    Location = new Point(15, 75),
+                    Size = new Size(100, 30)
+                };
+
+                var btnTomorrow9am = new SimpleButton
+                {
+                    Text = "Yarın 09:00",
+                    Location = new Point(125, 75),
+                    Size = new Size(100, 30)
+                };
+
+                var btnMonday9am = new SimpleButton
+                {
+                    Text = "Pazartesi 09:00",
+                    Location = new Point(235, 75),
+                    Size = new Size(110, 30)
+                };
+
+                var btn1Hour = new SimpleButton
+                {
+                    Text = "1 Saat Sonra",
+                    Location = new Point(355, 75),
+                    Size = new Size(75, 30)
+                };
+
+                // Özel tarih/saat
+                var lblCustom = new LabelControl
+                {
+                    Text = "📅 Özel Tarih/Saat:",
+                    Location = new Point(15, 120),
+                    Font = new Font("Tahoma", 9, FontStyle.Bold)
+                };
+
+                var dtReminderDate = new DateEdit
+                {
+                    Location = new Point(15, 145),
+                    Size = new Size(150, 22),
+                    EditValue = DateTime.Today.AddDays(1)
+                };
+                dtReminderDate.Properties.DisplayFormat.FormatString = "dd.MM.yyyy";
+                dtReminderDate.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+
+                var timeEdit = new TimeEdit
+                {
+                    Location = new Point(175, 145),
+                    Size = new Size(100, 22),
+                    EditValue = new DateTime(2000, 1, 1, 9, 0, 0) // Default 09:00
+                };
+
+                // Not
+                var lblNote = new LabelControl
+                {
+                    Text = "📝 Not (opsiyonel):",
+                    Location = new Point(15, 180)
+                };
+
+                var txtNote = new MemoEdit
+                {
+                    Location = new Point(15, 200),
+                    Size = new Size(400, 60)
+                };
+                txtNote.Properties.MaxLength = 500;
+
+                // Butonlar
+                var btnAdd = new SimpleButton
+                {
+                    Text = "🔔 Hatırlatıcı Ekle",
+                    Location = new Point(15, 275),
+                    Size = new Size(140, 30)
+                };
+                btnAdd.Appearance.BackColor = Color.FromArgb(16, 124, 16);
+                btnAdd.Appearance.ForeColor = Color.White;
+
+                var btnViewAll = new SimpleButton
+                {
+                    Text = "📋 Tümünü Gör",
+                    Location = new Point(165, 275),
+                    Size = new Size(120, 30),
+                    Enabled = existingReminders.Count > 0
+                };
+
+                var btnClose = new SimpleButton
+                {
+                    Text = "Kapat",
+                    Location = new Point(330, 275),
+                    Size = new Size(85, 30),
+                    DialogResult = DialogResult.Cancel
+                };
+
+                // Event handlers
+                Action<DateTime> addReminderAction = (reminderDate) =>
+                {
+                    try
+                    {
+                        var reminder = new WorkItemReminder
+                        {
+                            WorkItemId = _workItemId,
+                            ReminderDate = reminderDate,
+                            Note = txtNote.Text?.Trim(),
+                            CreatedBy = _currentUser,
+                            CreatedAt = DateTime.Now
+                        };
+
+                        _context.WorkItemReminders.Add(reminder);
+                        _context.SaveChanges();
+
+                        XtraMessageBox.Show(
+                            $"Hatırlatıcı eklendi!\n\n📅 {reminderDate:dd.MM.yyyy HH:mm}",
+                            "Başarılı",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
+                        reminderForm.DialogResult = DialogResult.OK;
+                        reminderForm.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        XtraMessageBox.Show($"Hatırlatıcı eklenirken hata:\n\n{ex.Message}",
+                            "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Logger.Error("Hatırlatıcı ekleme hatası", ex);
+                    }
+                };
+
+                btnToday5pm.Click += (s, args) =>
+                {
+                    var today5pm = DateTime.Today.AddHours(17);
+                    if (today5pm <= DateTime.Now)
+                        today5pm = DateTime.Now.AddMinutes(5); // Geçmişse 5 dk sonra
+                    addReminderAction(today5pm);
+                };
+
+                btnTomorrow9am.Click += (s, args) =>
+                {
+                    addReminderAction(DateTime.Today.AddDays(1).AddHours(9));
+                };
+
+                btnMonday9am.Click += (s, args) =>
+                {
+                    var daysUntilMonday = ((int)DayOfWeek.Monday - (int)DateTime.Today.DayOfWeek + 7) % 7;
+                    if (daysUntilMonday == 0) daysUntilMonday = 7; // Bugün pazartesiyse gelecek pazartesi
+                    addReminderAction(DateTime.Today.AddDays(daysUntilMonday).AddHours(9));
+                };
+
+                btn1Hour.Click += (s, args) =>
+                {
+                    addReminderAction(DateTime.Now.AddHours(1));
+                };
+
+                btnAdd.Click += (s, args) =>
+                {
+                    var date = (DateTime?)dtReminderDate.EditValue;
+                    var time = (DateTime?)timeEdit.EditValue;
+
+                    if (!date.HasValue)
+                    {
+                        XtraMessageBox.Show("Lütfen bir tarih seçin.", "Uyarı",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    var reminderDate = date.Value.Date;
+                    if (time.HasValue)
+                        reminderDate = reminderDate.AddHours(time.Value.Hour).AddMinutes(time.Value.Minute);
+                    else
+                        reminderDate = reminderDate.AddHours(9); // Varsayılan 09:00
+
+                    if (reminderDate <= DateTime.Now)
+                    {
+                        XtraMessageBox.Show("Hatırlatıcı tarihi geçmişte olamaz.", "Uyarı",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    addReminderAction(reminderDate);
+                };
+
+                btnViewAll.Click += (s, args) =>
+                {
+                    ShowWorkItemReminders();
+                };
+
+                // Add controls
+                mainPanel.Controls.Add(lblExisting);
+                mainPanel.Controls.Add(lblQuick);
+                mainPanel.Controls.Add(btnToday5pm);
+                mainPanel.Controls.Add(btnTomorrow9am);
+                mainPanel.Controls.Add(btnMonday9am);
+                mainPanel.Controls.Add(btn1Hour);
+                mainPanel.Controls.Add(lblCustom);
+                mainPanel.Controls.Add(dtReminderDate);
+                mainPanel.Controls.Add(timeEdit);
+                mainPanel.Controls.Add(lblNote);
+                mainPanel.Controls.Add(txtNote);
+                mainPanel.Controls.Add(btnAdd);
+                mainPanel.Controls.Add(btnViewAll);
+                mainPanel.Controls.Add(btnClose);
+
+                reminderForm.Controls.Add(mainPanel);
+                reminderForm.CancelButton = btnClose;
+
+                reminderForm.ShowDialog(this);
+            }
+        }
+
+        private void ShowWorkItemReminders()
+        {
+            using (var listForm = new XtraForm())
+            {
+                listForm.Text = $"🔔 Hatırlatıcılar - #{_workItemId}";
+                listForm.Size = new Size(600, 400);
+                listForm.StartPosition = FormStartPosition.CenterParent;
+
+                var grid = new DevExpress.XtraGrid.GridControl
+                {
+                    Dock = DockStyle.Fill
+                };
+                var gridView = new DevExpress.XtraGrid.Views.Grid.GridView(grid);
+                grid.MainView = gridView;
+
+                var reminders = _context.WorkItemReminders
+                    .Where(r => r.WorkItemId == _workItemId)
+                    .OrderByDescending(r => r.ReminderDate)
+                    .Select(r => new
+                    {
+                        r.Id,
+                        Tarih = r.ReminderDate,
+                        r.Note,
+                        Durum = r.IsDismissed ? "Kapatıldı" : (r.ReminderDate <= DateTime.Now ? "⚠️ Gecikmiş" : "⏳ Bekliyor"),
+                        Erteleme = r.SnoozeCount,
+                        Oluşturan = r.CreatedBy,
+                        OluşturmaTarihi = r.CreatedAt
+                    })
+                    .ToList();
+
+                grid.DataSource = reminders;
+                gridView.BestFitColumns();
+
+                if (gridView.Columns["Id"] != null) gridView.Columns["Id"].Visible = false;
+                if (gridView.Columns["Tarih"] != null)
+                {
+                    gridView.Columns["Tarih"].Caption = "Hatırlatma Zamanı";
+                    gridView.Columns["Tarih"].DisplayFormat.FormatString = "dd.MM.yyyy HH:mm";
+                }
+                if (gridView.Columns["Note"] != null) gridView.Columns["Note"].Caption = "Not";
+                if (gridView.Columns["Durum"] != null) gridView.Columns["Durum"].Caption = "Durum";
+                if (gridView.Columns["Erteleme"] != null) gridView.Columns["Erteleme"].Caption = "Erteleme";
+
+                gridView.OptionsBehavior.Editable = false;
+                gridView.OptionsView.ShowGroupPanel = false;
+
+                var buttonPanel = new PanelControl
+                {
+                    Dock = DockStyle.Bottom,
+                    Height = 50
+                };
+
+                var btnDelete = new SimpleButton
+                {
+                    Text = "🗑️ Seçili Hatırlatıcıyı Sil",
+                    Location = new Point(15, 10),
+                    Size = new Size(180, 30)
+                };
+                btnDelete.Click += (s, args) =>
+                {
+                    if (gridView.FocusedRowHandle < 0) return;
+
+                    var reminderId = (int)gridView.GetRowCellValue(gridView.FocusedRowHandle, "Id");
+                    var result = XtraMessageBox.Show("Hatırlatıcıyı silmek istediğinize emin misiniz?",
+                        "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        var reminder = _context.WorkItemReminders.Find(reminderId);
+                        if (reminder != null)
+                        {
+                            _context.WorkItemReminders.Remove(reminder);
+                            _context.SaveChanges();
+                            
+                            // Listeyi yenile
+                            var updatedReminders = _context.WorkItemReminders
+                                .Where(r => r.WorkItemId == _workItemId)
+                                .OrderByDescending(r => r.ReminderDate)
+                                .Select(r => new
+                                {
+                                    r.Id,
+                                    Tarih = r.ReminderDate,
+                                    r.Note,
+                                    Durum = r.IsDismissed ? "Kapatıldı" : (r.ReminderDate <= DateTime.Now ? "⚠️ Gecikmiş" : "⏳ Bekliyor"),
+                                    Erteleme = r.SnoozeCount,
+                                    Oluşturan = r.CreatedBy,
+                                    OluşturmaTarihi = r.CreatedAt
+                                })
+                                .ToList();
+                            grid.DataSource = updatedReminders;
+                        }
+                    }
+                };
+
+                var btnClose = new SimpleButton
+                {
+                    Text = "Kapat",
+                    Location = new Point(490, 10),
+                    Size = new Size(85, 30),
+                    DialogResult = DialogResult.Cancel
+                };
+
+                buttonPanel.Controls.Add(btnDelete);
+                buttonPanel.Controls.Add(btnClose);
+
+                listForm.Controls.Add(grid);
+                listForm.Controls.Add(buttonPanel);
+                listForm.CancelButton = btnClose;
+
+                listForm.ShowDialog(this);
+            }
+        }
 
         #endregion
     }

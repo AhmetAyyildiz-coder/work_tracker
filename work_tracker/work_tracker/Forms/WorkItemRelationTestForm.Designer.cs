@@ -26,17 +26,17 @@ namespace work_tracker.Forms
         private ColumnHeader colStatus;
         private LabelControl lblRelationCount;
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (components != null)
-                {
-                    components.Dispose();
-                }
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        if (components != null)
+        //        {
+        //            components.Dispose();
+        //        }
+        //    }
+        //    base.Dispose(disposing);
+        //}
 
         private void InitializeComponent()
         {
