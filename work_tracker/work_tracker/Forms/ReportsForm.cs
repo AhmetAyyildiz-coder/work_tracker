@@ -384,7 +384,8 @@ namespace work_tracker.Forms
                                     WorkItemId = workItem.Id,
                                     Title = workItem.Title,
                                     ProjectName = workItem.Project != null ? workItem.Project.Name : "",
-                                    Minutes = (effectiveEnd - effectiveStart).TotalMinutes
+                                    Minutes = (effectiveEnd - effectiveStart).TotalMinutes,
+                                    ActivityType = "Development"
                                 });
                             }
 
@@ -407,55 +408,61 @@ namespace work_tracker.Forms
                     timeEntriesQuery = timeEntriesQuery.Where(t => t.EntryDate < toExclusive.Value);
                 }
 
-                var timeEntries = timeEntriesQuery
-                    .Where(t => t.WorkItemId.HasValue) // Only include time entries linked to work items
-                    .ToList()
-                    .GroupBy(t => new { WorkItemId = t.WorkItemId.Value, Date = t.EntryDate.Date })
-                    .ToDictionary(
-                        g => g.Key, 
-                        g => g.Sum(t => t.DurationMinutes)
-                    );
+                var allTimeEntries = timeEntriesQuery.ToList();
 
-                // Add time entries to existing work item records or create new ones
-                foreach (var timeEntryGroup in timeEntries)
+                // Tüm TimeEntry kayıtlarını ayrı ayrı ekle (ActivityType'larını koruyarak)
+                foreach (var entry in allTimeEntries)
                 {
-                    var workItemId = timeEntryGroup.Key.WorkItemId;
-                    var date = timeEntryGroup.Key.Date;
-                    var timeMinutes = timeEntryGroup.Value;
+                    var date = entry.EntryDate.Date;
                     
                     // Check if the date is within our filtered range
                     if (from.HasValue && date < from.Value.Date)
                         continue;
-                    if (to.HasValue && date >= to.Value.Date)
+                    if (to.HasValue && date > to.Value.Date)
                         continue;
 
-                    // Find existing entry for this work item and date
-                    var existingEntry = dailyEntries.FirstOrDefault(e => e.WorkItemId == workItemId && e.Date == date);
-                    
-                    if (existingEntry != null)
+                    string title;
+                    string projectName = entry.Project?.Name ?? "";
+                    int recordId;
+
+                    if (entry.WorkItemId.HasValue)
                     {
-                        // Add time entry minutes to existing development time
-                        existingEntry.Minutes += timeMinutes;
-                    }
-                    else
-                    {
-                        // Get work item details for this time entry
-                        var workItem = _context.WorkItems
+                        // WorkItem'a bağlı TimeEntry
+                        var workItem = entry.WorkItem ?? _context.WorkItems
                             .Include(w => w.Project)
-                            .FirstOrDefault(w => w.Id == workItemId);
+                            .FirstOrDefault(w => w.Id == entry.WorkItemId.Value);
                         
                         if (workItem != null)
                         {
-                            dailyEntries.Add(new DevelopmentDayRecord
-                            {
-                                Date = date,
-                                WorkItemId = workItemId,
-                                Title = workItem.Title,
-                                ProjectName = workItem.Project?.Name ?? "",
-                                Minutes = timeMinutes
-                            });
+                            var activityLabel = GetActivityTypeLabel(entry.ActivityType);
+                            title = $"[{activityLabel}] {workItem.Title}";
+                            projectName = workItem.Project?.Name ?? projectName;
+                            recordId = entry.Id; // Pozitif ID - TimeEntry
+                        }
+                        else
+                        {
+                            continue;
                         }
                     }
+                    else
+                    {
+                        // Bağımsız TimeEntry (WorkItem olmadan)
+                        var activityLabel = GetActivityTypeLabel(entry.ActivityType);
+                        title = !string.IsNullOrEmpty(entry.Subject) 
+                            ? $"[{activityLabel}] {entry.Subject}" 
+                            : $"[{activityLabel}] {entry.Description?.Substring(0, Math.Min(50, entry.Description?.Length ?? 0))}";
+                        recordId = -entry.Id; // Negatif ID - standalone TimeEntry
+                    }
+
+                    dailyEntries.Add(new DevelopmentDayRecord
+                    {
+                        Date = date,
+                        WorkItemId = recordId,
+                        Title = title,
+                        ProjectName = projectName,
+                        Minutes = entry.DurationMinutes,
+                        ActivityType = entry.ActivityType
+                    });
                 }
 
                 // Store daily entries for later use in row selection event
@@ -469,8 +476,11 @@ namespace work_tracker.Forms
                         Tarih = g.Key,
                         TarihStr = g.Key.ToString("dd.MM.yyyy (dddd)"),
                         ToplamDk = Math.Round(g.Sum(e => e.Minutes), 0),
-                        ToplamSure = FormatDuration((int)g.Sum(e => e.Minutes)),
-                        KartSayisi = g.Select(e => e.WorkItemId).Distinct().Count()
+                        IsSayisi = g.Count(e => e.ActivityType == "Development"),
+                        TelefonSayisi = g.Count(e => e.ActivityType == TimeEntryActivityTypes.PhoneCall),
+                        ToplantiSayisi = g.Count(e => e.ActivityType == TimeEntryActivityTypes.Meeting),
+                        DigerSayisi = g.Count(e => e.ActivityType == TimeEntryActivityTypes.Work || e.ActivityType == TimeEntryActivityTypes.Other),
+                        ToplamSure = FormatDuration((int)g.Sum(e => e.Minutes))
                     })
                     .OrderByDescending(g => g.Tarih)
                     .ToList();
@@ -480,19 +490,40 @@ namespace work_tracker.Forms
                 var view = gridViewDailySummary;
                 view.BestFitColumns();
 
-                // Kolon başlıkları
+                // Kolon başlıkları ve sıralama
                 if (view.Columns["Tarih"] != null) view.Columns["Tarih"].Visible = false;
-                if (view.Columns["TarihStr"] != null) view.Columns["TarihStr"].Caption = "Tarih";
+                if (view.Columns["TarihStr"] != null) { view.Columns["TarihStr"].Caption = "Tarih"; view.Columns["TarihStr"].VisibleIndex = 0; }
                 if (view.Columns["ToplamDk"] != null) view.Columns["ToplamDk"].Visible = false;
-                if (view.Columns["ToplamSure"] != null) view.Columns["ToplamSure"].Caption = "Toplam Süre";
-                if (view.Columns["KartSayisi"] != null) view.Columns["KartSayisi"].Caption = "İş Sayısı";
+                if (view.Columns["IsSayisi"] != null) { view.Columns["IsSayisi"].Caption = "🖥️ İş"; view.Columns["IsSayisi"].VisibleIndex = 1; view.Columns["IsSayisi"].Width = 50; }
+                if (view.Columns["TelefonSayisi"] != null) { view.Columns["TelefonSayisi"].Caption = "📞 Tel"; view.Columns["TelefonSayisi"].VisibleIndex = 2; view.Columns["TelefonSayisi"].Width = 50; }
+                if (view.Columns["ToplantiSayisi"] != null) { view.Columns["ToplantiSayisi"].Caption = "📅 Top"; view.Columns["ToplantiSayisi"].VisibleIndex = 3; view.Columns["ToplantiSayisi"].Width = 50; }
+                if (view.Columns["DigerSayisi"] != null) { view.Columns["DigerSayisi"].Caption = "📌 Diğer"; view.Columns["DigerSayisi"].VisibleIndex = 4; view.Columns["DigerSayisi"].Width = 50; }
+                if (view.Columns["ToplamSure"] != null) { view.Columns["ToplamSure"].Caption = "⏱️ Toplam"; view.Columns["ToplamSure"].VisibleIndex = 5; }
 
                 // Özetler
                 view.Columns["ToplamDk"].Summary.Clear();
                 view.Columns["ToplamDk"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplamDk", "Toplam: {0} dk");
 
-                view.Columns["KartSayisi"].Summary.Clear();
-                view.Columns["KartSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "KartSayisi", "Toplam: {0}");
+                if (view.Columns["IsSayisi"] != null)
+                {
+                    view.Columns["IsSayisi"].Summary.Clear();
+                    view.Columns["IsSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "IsSayisi", "{0}");
+                }
+                if (view.Columns["TelefonSayisi"] != null)
+                {
+                    view.Columns["TelefonSayisi"].Summary.Clear();
+                    view.Columns["TelefonSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "TelefonSayisi", "{0}");
+                }
+                if (view.Columns["ToplantiSayisi"] != null)
+                {
+                    view.Columns["ToplantiSayisi"].Summary.Clear();
+                    view.Columns["ToplantiSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "ToplantiSayisi", "{0}");
+                }
+                if (view.Columns["DigerSayisi"] != null)
+                {
+                    view.Columns["DigerSayisi"].Summary.Clear();
+                    view.Columns["DigerSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "DigerSayisi", "{0}");
+                }
 
                 // Update summary cards
                 var totalMinutes = dailyData.Sum(d => d.ToplamDk);
@@ -676,6 +707,25 @@ namespace work_tracker.Forms
                 status.Equals(s, StringComparison.OrdinalIgnoreCase));
         }
 
+        /// <summary>
+        /// Aktivite tipini kullanıcı dostu etiketle döner
+        /// </summary>
+        private static string GetActivityTypeLabel(string activityType)
+        {
+            switch (activityType)
+            {
+                case TimeEntryActivityTypes.PhoneCall:
+                    return "Telefon";
+                case TimeEntryActivityTypes.Meeting:
+                    return "Toplantı";
+                case TimeEntryActivityTypes.Work:
+                    return "İş";
+                case TimeEntryActivityTypes.Other:
+                default:
+                    return "Diğer";
+            }
+        }
+
         private class DevelopmentDayRecord
         {
             public DateTime Date { get; set; }
@@ -683,6 +733,7 @@ namespace work_tracker.Forms
             public string Title { get; set; }
             public string ProjectName { get; set; }
             public double Minutes { get; set; }
+            public string ActivityType { get; set; } // "Development", "PhoneCall", "Meeting", "Work", "Other"
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
