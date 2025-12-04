@@ -977,9 +977,9 @@ namespace work_tracker.Forms
             this.btnUnlinkEmail.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.btnUnlinkEmail.Appearance.Options.UseBackColor = true;
             this.btnUnlinkEmail.Appearance.Options.UseFont = true;
-            this.btnUnlinkEmail.Location = new System.Drawing.Point(1101, 242);
+            this.btnUnlinkEmail.Location = new System.Drawing.Point(1055, 242);
             this.btnUnlinkEmail.Name = "btnUnlinkEmail";
-            this.btnUnlinkEmail.Size = new System.Drawing.Size(85, 28);
+            this.btnUnlinkEmail.Size = new System.Drawing.Size(130, 28);
             this.btnUnlinkEmail.TabIndex = 6;
             this.btnUnlinkEmail.Text = "🔗 Bağlantıyı Kaldır";
             this.btnUnlinkEmail.Click += new System.EventHandler(this.btnUnlinkEmail_Click);
@@ -987,11 +987,11 @@ namespace work_tracker.Forms
             // btnOpenEmail
             // 
             this.btnOpenEmail.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenEmail.Location = new System.Drawing.Point(1015, 242);
+            this.btnOpenEmail.Location = new System.Drawing.Point(935, 242);
             this.btnOpenEmail.Name = "btnOpenEmail";
-            this.btnOpenEmail.Size = new System.Drawing.Size(80, 28);
+            this.btnOpenEmail.Size = new System.Drawing.Size(115, 28);
             this.btnOpenEmail.TabIndex = 5;
-            this.btnOpenEmail.Text = "📧 Outlook\'ta Aç";
+            this.btnOpenEmail.Text = "📧 Outlook'ta Aç";
             this.btnOpenEmail.Click += new System.EventHandler(this.btnOpenEmail_Click);
             // 
             // btnLinkEmail
@@ -1001,11 +1001,11 @@ namespace work_tracker.Forms
             this.btnLinkEmail.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
             this.btnLinkEmail.Appearance.Options.UseBackColor = true;
             this.btnLinkEmail.Appearance.Options.UseFont = true;
-            this.btnLinkEmail.Location = new System.Drawing.Point(815, 242);
+            this.btnLinkEmail.Location = new System.Drawing.Point(735, 242);
             this.btnLinkEmail.Name = "btnLinkEmail";
-            this.btnLinkEmail.Size = new System.Drawing.Size(194, 28);
+            this.btnLinkEmail.Size = new System.Drawing.Size(195, 28);
             this.btnLinkEmail.TabIndex = 4;
-            this.btnLinkEmail.Text = "📧 Outlook\'tan Email Bağla";
+            this.btnLinkEmail.Text = "📧 Outlook'tan Email Bağla";
             this.btnLinkEmail.Click += new System.EventHandler(this.btnLinkEmail_Click);
             // 
             // btnRefreshEmails

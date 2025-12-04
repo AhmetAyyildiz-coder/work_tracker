@@ -478,6 +478,46 @@ namespace work_tracker.Forms
             LoadSummaryData();
         }
 
+        private void gridViewTimeDistribution_DoubleClick(object sender, EventArgs e)
+        {
+            OpenWorkItemDetail(gridViewTimeDistribution, "WorkItemId");
+        }
+
+        private void gridViewActivities_DoubleClick(object sender, EventArgs e)
+        {
+            OpenWorkItemDetail(gridViewActivities, "WorkItemId");
+        }
+
+        private void gridViewCompleted_DoubleClick(object sender, EventArgs e)
+        {
+            OpenWorkItemDetail(gridViewCompleted, "Id");
+        }
+
+        private void OpenWorkItemDetail(GridView view, string workItemIdColumn)
+        {
+            try
+            {
+                var hitInfo = view.CalcHitInfo(view.GridControl.PointToClient(Control.MousePosition));
+                if (hitInfo.InRow && hitInfo.RowHandle >= 0)
+                {
+                    var workItemIdValue = view.GetRowCellValue(hitInfo.RowHandle, workItemIdColumn);
+                    if (workItemIdValue != null && int.TryParse(workItemIdValue.ToString(), out int workItemId))
+                    {
+                        var detailForm = new WorkItemDetailForm(workItemId);
+                        detailForm.ShowDialog();
+                        
+                        // Form kapandıktan sonra verileri yenile
+                        LoadSummaryData();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"İş detayı açılırken hata oluştu: {ex.Message}",
+                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void btnCopyToClipboard_Click(object sender, EventArgs e)
         {
             try

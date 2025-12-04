@@ -241,62 +241,152 @@ namespace work_tracker.Helpers
         }
 
         /// <summary>
-        /// ConversationId ile tüm klasörlerde mail arar
+        /// ConversationId ile tüm klasörlerde mail arar (recursive)
         /// </summary>
         private static MailItem FindMailByConversationId(NameSpace namespaceObj, string conversationId)
         {
             try
             {
-                // Önce Inbox ve yaygın klasörlerde ara
-                var foldersToSearch = new List<MAPIFolder>
-                {
-                    namespaceObj.GetDefaultFolder(OlDefaultFolders.olFolderInbox),
-                    namespaceObj.GetDefaultFolder(OlDefaultFolders.olFolderSentMail),
-                    namespaceObj.GetDefaultFolder(OlDefaultFolders.olFolderDeletedItems)
-                };
-
-                // Inbox'ın alt klasörlerini de ekle
-                var inbox = namespaceObj.GetDefaultFolder(OlDefaultFolders.olFolderInbox);
-                foreach (MAPIFolder subfolder in inbox.Folders)
-                {
-                    foldersToSearch.Add(subfolder);
-                }
-
-                foreach (var folder in foldersToSearch)
+                // Tüm hesaplardaki tüm klasörlerde ara
+                foreach (Store store in namespaceObj.Stores)
                 {
                     try
                     {
-                        var items = folder.Items;
-                        // ConversationID ile filtrele
-                        string filter = $"@SQL=\"http://schemas.microsoft.com/mapi/proptag/0x00710102\" = '{conversationId}'";
-                        
-                        // Alternatif basit arama
-                        foreach (object item in items)
+                        Logger.Info($"E-posta hesabında aranıyor: {store.DisplayName}");
+                        var rootFolder = store.GetRootFolder();
+                        var result = SearchFolderRecursive(rootFolder, conversationId, 0);
+                        if (result != null)
                         {
-                            if (item is MailItem mail)
-                            {
-                                if (mail.ConversationID == conversationId)
-                                {
-                                    return mail;
-                                }
-                                Marshal.ReleaseComObject(mail);
-                            }
-                            else
-                            {
-                                Marshal.ReleaseComObject(item);
-                            }
+                            return result;
                         }
-                        Marshal.ReleaseComObject(items);
                     }
                     catch (System.Exception ex)
                     {
-                        Logger.Warning($"Klasör aramasında hata: {folder.Name} - {ex.Message}");
+                        Logger.Warning($"Store aramasında hata: {store.DisplayName} - {ex.Message}");
                     }
                 }
             }
             catch (System.Exception ex)
             {
                 Logger.Error("ConversationId ile arama hatası", ex);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Klasör ve alt klasörlerinde recursive olarak mail arar
+        /// </summary>
+        private static MailItem SearchFolderRecursive(MAPIFolder folder, string conversationId, int depth)
+        {
+            // Çok derin aramayı engelle (performans için)
+            if (depth > 10) return null;
+
+            try
+            {
+                // Önce bu klasörde ara
+                var result = SearchInFolder(folder, conversationId);
+                if (result != null)
+                {
+                    Logger.Info($"Mail bulundu: {folder.FolderPath}");
+                    return result;
+                }
+
+                // Alt klasörlerde ara
+                foreach (MAPIFolder subfolder in folder.Folders)
+                {
+                    try
+                    {
+                        result = SearchFolderRecursive(subfolder, conversationId, depth + 1);
+                        if (result != null)
+                        {
+                            return result;
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Logger.Warning($"Alt klasör aramasında hata: {subfolder.Name} - {ex.Message}");
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Warning($"Klasör aramasında hata: {folder.Name} - {ex.Message}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Tek bir klasörde ConversationId ile mail arar
+        /// </summary>
+        private static MailItem SearchInFolder(MAPIFolder folder, string conversationId)
+        {
+            try
+            {
+                var items = folder.Items;
+                
+                // Önce DASL filtresi ile hızlı arama dene
+                try
+                {
+                    string filter = $"@SQL=\"urn:schemas:httpmail:thread-index\" = '{conversationId}'";
+                    var filteredItems = items.Restrict(filter);
+                    foreach (object item in filteredItems)
+                    {
+                        if (item is MailItem mail)
+                        {
+                            if (mail.ConversationID == conversationId)
+                            {
+                                return mail;
+                            }
+                            Marshal.ReleaseComObject(mail);
+                        }
+                        else
+                        {
+                            Marshal.ReleaseComObject(item);
+                        }
+                    }
+                }
+                catch
+                {
+                    // DASL filtresi başarısız olursa, klasördeki son 100 mail'i kontrol et
+                    int count = 0;
+                    int maxItems = 100;
+                    
+                    // En yeni maillerden başla
+                    try { items.Sort("[ReceivedTime]", true); } catch { }
+                    
+                    foreach (object item in items)
+                    {
+                        if (count >= maxItems) break;
+                        count++;
+
+                        if (item is MailItem mail)
+                        {
+                            try
+                            {
+                                if (mail.ConversationID == conversationId)
+                                {
+                                    return mail;
+                                }
+                            }
+                            finally
+                            {
+                                Marshal.ReleaseComObject(mail);
+                            }
+                        }
+                        else
+                        {
+                            Marshal.ReleaseComObject(item);
+                        }
+                    }
+                }
+                
+                Marshal.ReleaseComObject(items);
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Warning($"Klasör içi aramada hata: {folder.Name} - {ex.Message}");
             }
 
             return null;

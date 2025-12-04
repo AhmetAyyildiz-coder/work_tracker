@@ -429,6 +429,7 @@ namespace work_tracker.Forms
             this.gridViewTimeDistribution.Name = "gridViewTimeDistribution";
             this.gridViewTimeDistribution.OptionsBehavior.Editable = false;
             this.gridViewTimeDistribution.OptionsView.ShowGroupPanel = false;
+            this.gridViewTimeDistribution.DoubleClick += new System.EventHandler(this.gridViewTimeDistribution_DoubleClick);
             // 
             // tabActivities
             // 
@@ -454,6 +455,7 @@ namespace work_tracker.Forms
             this.gridViewActivities.Name = "gridViewActivities";
             this.gridViewActivities.OptionsBehavior.Editable = false;
             this.gridViewActivities.OptionsView.ShowGroupPanel = false;
+            this.gridViewActivities.DoubleClick += new System.EventHandler(this.gridViewActivities_DoubleClick);
             //
             // tabTimeEntries
             //
@@ -504,6 +506,7 @@ namespace work_tracker.Forms
             this.gridViewCompleted.Name = "gridViewCompleted";
             this.gridViewCompleted.OptionsBehavior.Editable = false;
             this.gridViewCompleted.OptionsView.ShowGroupPanel = false;
+            this.gridViewCompleted.DoubleClick += new System.EventHandler(this.gridViewCompleted_DoubleClick);
             // 
             // panelBottom
             // 

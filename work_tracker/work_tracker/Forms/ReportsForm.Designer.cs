@@ -12,6 +12,7 @@ namespace work_tracker.Forms
         private XtraTabPage tabChart;
         private XtraTabPage tabDetailed;
         private XtraTabPage tabDailyEffort;
+        private XtraTabPage tabActivityTimeline;
         private Chart chartEffort;
         private SimpleButton btnRefresh;
         private PanelControl panelControl1;
@@ -33,6 +34,15 @@ namespace work_tracker.Forms
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewDailySummary;
         private DevExpress.XtraGrid.GridControl gridWorkItemDetails;
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewWorkItemDetails;
+        // Timeline controls
+        private PanelControl panelTimelineHeader;
+        private DateEdit dtTimelineDate;
+        private LabelControl lblTimelineDate;
+        private SimpleButton btnTimelinePrev;
+        private SimpleButton btnTimelineNext;
+        private LabelControl lblTimelineSummary;
+        private System.Windows.Forms.Panel panelTimelineContainer;
+        private System.Windows.Forms.FlowLayoutPanel flowTimelinePanel;
 
         private void InitializeComponent()
         {
@@ -43,6 +53,7 @@ namespace work_tracker.Forms
             this.gridDetailed = new DevExpress.XtraGrid.GridControl();
             this.viewDetailed = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.tabDailyEffort = new DevExpress.XtraTab.XtraTabPage();
+            this.tabActivityTimeline = new DevExpress.XtraTab.XtraTabPage();
             this.panelSummaryCards = new DevExpress.XtraEditors.PanelControl();
             this.lblTotalHoursTitle = new DevExpress.XtraEditors.LabelControl();
             this.lblTotalHoursValue = new DevExpress.XtraEditors.LabelControl();
@@ -61,6 +72,15 @@ namespace work_tracker.Forms
             this.lblTo = new DevExpress.XtraEditors.LabelControl();
             this.dtTo = new DevExpress.XtraEditors.DateEdit();
             this.btnRefresh = new DevExpress.XtraEditors.SimpleButton();
+            // Timeline controls
+            this.panelTimelineHeader = new DevExpress.XtraEditors.PanelControl();
+            this.dtTimelineDate = new DevExpress.XtraEditors.DateEdit();
+            this.lblTimelineDate = new DevExpress.XtraEditors.LabelControl();
+            this.btnTimelinePrev = new DevExpress.XtraEditors.SimpleButton();
+            this.btnTimelineNext = new DevExpress.XtraEditors.SimpleButton();
+            this.lblTimelineSummary = new DevExpress.XtraEditors.LabelControl();
+            this.panelTimelineContainer = new System.Windows.Forms.Panel();
+            this.flowTimelinePanel = new System.Windows.Forms.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.tabControl1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabChart.SuspendLayout();
@@ -85,6 +105,13 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.dtFrom.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtTo.Properties.CalendarTimeProperties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtTo.Properties)).BeginInit();
+            // Timeline BeginInit
+            this.tabActivityTimeline.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.panelTimelineHeader)).BeginInit();
+            this.panelTimelineHeader.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dtTimelineDate.Properties.CalendarTimeProperties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtTimelineDate.Properties)).BeginInit();
+            this.panelTimelineContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelControl1
@@ -168,7 +195,8 @@ namespace work_tracker.Forms
             this.tabControl1.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
             this.tabChart,
             this.tabDetailed,
-            this.tabDailyEffort});
+            this.tabDailyEffort,
+            this.tabActivityTimeline});
             // 
             // tabChart
             // 
@@ -349,6 +377,104 @@ namespace work_tracker.Forms
             this.gridViewWorkItemDetails.OptionsView.ShowGroupPanel = false;
             this.gridViewWorkItemDetails.OptionsView.ShowFooter = true;
             // 
+            // tabActivityTimeline
+            // 
+            this.tabActivityTimeline.Controls.Add(this.panelTimelineContainer);
+            this.tabActivityTimeline.Controls.Add(this.panelTimelineHeader);
+            this.tabActivityTimeline.Name = "tabActivityTimeline";
+            this.tabActivityTimeline.Size = new System.Drawing.Size(1194, 622);
+            this.tabActivityTimeline.Text = "📅 Günlük Aktivite Akışı";
+            // 
+            // panelTimelineHeader
+            // 
+            this.panelTimelineHeader.Controls.Add(this.btnTimelinePrev);
+            this.panelTimelineHeader.Controls.Add(this.lblTimelineDate);
+            this.panelTimelineHeader.Controls.Add(this.dtTimelineDate);
+            this.panelTimelineHeader.Controls.Add(this.btnTimelineNext);
+            this.panelTimelineHeader.Controls.Add(this.lblTimelineSummary);
+            this.panelTimelineHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTimelineHeader.Location = new System.Drawing.Point(0, 0);
+            this.panelTimelineHeader.Name = "panelTimelineHeader";
+            this.panelTimelineHeader.Size = new System.Drawing.Size(1194, 60);
+            this.panelTimelineHeader.TabIndex = 0;
+            // 
+            // btnTimelinePrev
+            // 
+            this.btnTimelinePrev.Location = new System.Drawing.Point(15, 15);
+            this.btnTimelinePrev.Name = "btnTimelinePrev";
+            this.btnTimelinePrev.Size = new System.Drawing.Size(40, 30);
+            this.btnTimelinePrev.TabIndex = 0;
+            this.btnTimelinePrev.Text = "◀";
+            this.btnTimelinePrev.Click += new System.EventHandler(this.btnTimelinePrev_Click);
+            // 
+            // lblTimelineDate
+            // 
+            this.lblTimelineDate.Location = new System.Drawing.Point(65, 22);
+            this.lblTimelineDate.Name = "lblTimelineDate";
+            this.lblTimelineDate.Size = new System.Drawing.Size(30, 13);
+            this.lblTimelineDate.TabIndex = 1;
+            this.lblTimelineDate.Text = "Tarih:";
+            // 
+            // dtTimelineDate
+            // 
+            this.dtTimelineDate.EditValue = null;
+            this.dtTimelineDate.Location = new System.Drawing.Point(100, 18);
+            this.dtTimelineDate.Name = "dtTimelineDate";
+            this.dtTimelineDate.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.dtTimelineDate.Properties.CalendarTimeProperties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.dtTimelineDate.Properties.DisplayFormat.FormatString = "dd MMMM yyyy dddd";
+            this.dtTimelineDate.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            this.dtTimelineDate.Properties.EditFormat.FormatString = "dd.MM.yyyy";
+            this.dtTimelineDate.Properties.EditFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            this.dtTimelineDate.Size = new System.Drawing.Size(200, 20);
+            this.dtTimelineDate.TabIndex = 2;
+            this.dtTimelineDate.EditValueChanged += new System.EventHandler(this.dtTimelineDate_EditValueChanged);
+            // 
+            // btnTimelineNext
+            // 
+            this.btnTimelineNext.Location = new System.Drawing.Point(310, 15);
+            this.btnTimelineNext.Name = "btnTimelineNext";
+            this.btnTimelineNext.Size = new System.Drawing.Size(40, 30);
+            this.btnTimelineNext.TabIndex = 3;
+            this.btnTimelineNext.Text = "▶";
+            this.btnTimelineNext.Click += new System.EventHandler(this.btnTimelineNext_Click);
+            // 
+            // lblTimelineSummary
+            // 
+            this.lblTimelineSummary.Appearance.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Bold);
+            this.lblTimelineSummary.Appearance.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
+            this.lblTimelineSummary.Location = new System.Drawing.Point(380, 20);
+            this.lblTimelineSummary.Name = "lblTimelineSummary";
+            this.lblTimelineSummary.Size = new System.Drawing.Size(200, 16);
+            this.lblTimelineSummary.TabIndex = 4;
+            this.lblTimelineSummary.Text = "";
+            // 
+            // panelTimelineContainer
+            // 
+            this.panelTimelineContainer.AutoScroll = true;
+            this.panelTimelineContainer.BackColor = System.Drawing.Color.FromArgb(248, 249, 250);
+            this.panelTimelineContainer.Controls.Add(this.flowTimelinePanel);
+            this.panelTimelineContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelTimelineContainer.Location = new System.Drawing.Point(0, 60);
+            this.panelTimelineContainer.Name = "panelTimelineContainer";
+            this.panelTimelineContainer.Size = new System.Drawing.Size(1194, 562);
+            this.panelTimelineContainer.TabIndex = 1;
+            // 
+            // flowTimelinePanel
+            // 
+            this.flowTimelinePanel.AutoSize = true;
+            this.flowTimelinePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.flowTimelinePanel.BackColor = System.Drawing.Color.Transparent;
+            this.flowTimelinePanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowTimelinePanel.Location = new System.Drawing.Point(20, 10);
+            this.flowTimelinePanel.MinimumSize = new System.Drawing.Size(1150, 100);
+            this.flowTimelinePanel.Name = "flowTimelinePanel";
+            this.flowTimelinePanel.Size = new System.Drawing.Size(1150, 100);
+            this.flowTimelinePanel.TabIndex = 0;
+            this.flowTimelinePanel.WrapContents = false;
+            // 
             // ReportsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -385,6 +511,15 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.dtFrom.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtTo.Properties.CalendarTimeProperties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtTo.Properties)).EndInit();
+            // Timeline EndInit
+            this.tabActivityTimeline.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.panelTimelineHeader)).EndInit();
+            this.panelTimelineHeader.ResumeLayout(false);
+            this.panelTimelineHeader.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dtTimelineDate.Properties.CalendarTimeProperties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtTimelineDate.Properties)).EndInit();
+            this.panelTimelineContainer.ResumeLayout(false);
+            this.panelTimelineContainer.PerformLayout();
             this.ResumeLayout(false);
         }
     }

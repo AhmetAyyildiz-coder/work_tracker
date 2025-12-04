@@ -29,6 +29,8 @@ namespace work_tracker.Forms
             // Varsayılan tarih aralığı: Son 30 gün
             dtTo.EditValue = DateTime.Today;
             dtFrom.EditValue = DateTime.Today.AddDays(-30);
+            // Timeline için bugünün tarihini ayarla
+            dtTimelineDate.EditValue = DateTime.Today;
             LoadAllReports();
         }
 
@@ -37,6 +39,7 @@ namespace work_tracker.Forms
             LoadEffortChartReport();
             LoadDetailedReport();
             LoadDailyEffortReport();
+            LoadActivityTimeline();
         }
 
         private Tuple<DateTime?, DateTime?> GetDateRange()
@@ -740,6 +743,425 @@ namespace work_tracker.Forms
         {
             LoadAllReports();
         }
+
+        #region Activity Timeline
+
+        private void btnTimelinePrev_Click(object sender, EventArgs e)
+        {
+            if (dtTimelineDate.EditValue is DateTime date)
+            {
+                dtTimelineDate.EditValue = date.AddDays(-1);
+            }
+        }
+
+        private void btnTimelineNext_Click(object sender, EventArgs e)
+        {
+            if (dtTimelineDate.EditValue is DateTime date)
+            {
+                dtTimelineDate.EditValue = date.AddDays(1);
+            }
+        }
+
+        private void dtTimelineDate_EditValueChanged(object sender, EventArgs e)
+        {
+            LoadActivityTimeline();
+        }
+
+        private void LoadActivityTimeline()
+        {
+            try
+            {
+                flowTimelinePanel.Controls.Clear();
+
+                if (!(dtTimelineDate.EditValue is DateTime selectedDate))
+                {
+                    lblTimelineSummary.Text = "";
+                    return;
+                }
+
+                var activities = GetDayActivities(selectedDate);
+
+                if (!activities.Any())
+                {
+                    lblTimelineSummary.Text = "Bu tarihte aktivite bulunamadı.";
+                    var emptyLabel = new Label
+                    {
+                        Text = "📭 Bu gün için aktivite kaydı yok.",
+                        Font = new Font("Segoe UI", 12, FontStyle.Italic),
+                        ForeColor = Color.Gray,
+                        AutoSize = true,
+                        Padding = new Padding(50, 30, 0, 0)
+                    };
+                    flowTimelinePanel.Controls.Add(emptyLabel);
+                    return;
+                }
+
+                // Summary oluştur
+                var workCount = activities.Count(a => a.Category == "WorkItem");
+                var phoneCount = activities.Count(a => a.Category == "Phone");
+                var meetingCount = activities.Count(a => a.Category == "Meeting");
+                var otherCount = activities.Count(a => a.Category == "Other" || a.Category == "TimeEntry");
+                var totalMinutes = activities.Where(a => a.DurationMinutes > 0).Sum(a => a.DurationMinutes);
+
+                lblTimelineSummary.Text = $"📊 {activities.Count} aktivite | 🖥️ {workCount} iş | 📞 {phoneCount} telefon | 📅 {meetingCount} toplantı | ⏱️ {FormatDuration(totalMinutes)}";
+
+                // Timeline kartlarını oluştur
+                foreach (var activity in activities.OrderBy(a => a.Time))
+                {
+                    var card = CreateTimelineCard(activity);
+                    flowTimelinePanel.Controls.Add(card);
+                }
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Aktivite akışı yüklenirken hata oluştu:\n\n{ex.Message}", "Hata",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private List<TimelineActivity> GetDayActivities(DateTime date)
+        {
+            var activities = new List<TimelineActivity>();
+            var startOfDay = date.Date;
+            var endOfDay = startOfDay.AddDays(1);
+
+            // 1. WorkItem Activities (Comment hariç - durum değişikliği, oluşturma, güncelleme vb.)
+            var workItemActivities = _context.WorkItemActivities
+                .Include(a => a.WorkItem)
+                .Include(a => a.WorkItem.Project)
+                .Where(a => a.CreatedAt >= startOfDay && a.CreatedAt < endOfDay)
+                .Where(a => a.ActivityType != WorkItemActivityTypes.Comment) // Yorumları hariç tut
+                .OrderBy(a => a.CreatedAt)
+                .ToList();
+
+            foreach (var activity in workItemActivities)
+            {
+                var (icon, color, description) = GetWorkItemActivityInfo(activity);
+                activities.Add(new TimelineActivity
+                {
+                    Time = activity.CreatedAt,
+                    Icon = icon,
+                    Color = color,
+                    Title = activity.WorkItem?.Title ?? "Bilinmeyen İş",
+                    Description = description,
+                    ProjectName = activity.WorkItem?.Project?.Name ?? "",
+                    Category = "WorkItem",
+                    WorkItemId = activity.WorkItemId,
+                    DurationMinutes = 0
+                });
+            }
+
+            // 2. TimeEntries (Telefon, Toplantı, İş, Diğer)
+            var timeEntries = _context.TimeEntries
+                .Include(t => t.WorkItem)
+                .Include(t => t.Project)
+                .Include(t => t.Meeting)
+                .Include(t => t.Person)
+                .Where(t => t.EntryDate >= startOfDay && t.EntryDate < endOfDay)
+                .OrderBy(t => t.EntryDate)
+                .ToList();
+
+            foreach (var entry in timeEntries)
+            {
+                var (icon, color, category) = GetTimeEntryInfo(entry.ActivityType);
+                var title = GetTimeEntryTitle(entry);
+                var description = GetTimeEntryDescription(entry);
+
+                activities.Add(new TimelineActivity
+                {
+                    Time = entry.EntryDate,
+                    Icon = icon,
+                    Color = color,
+                    Title = title,
+                    Description = description,
+                    ProjectName = entry.Project?.Name ?? entry.WorkItem?.Project?.Name ?? "",
+                    Category = category,
+                    WorkItemId = entry.WorkItemId,
+                    DurationMinutes = entry.DurationMinutes
+                });
+            }
+
+            // 3. Meetings (Toplantılar)
+            var meetings = _context.Meetings
+                .Where(m => m.MeetingDate >= startOfDay && m.MeetingDate < endOfDay)
+                .OrderBy(m => m.MeetingDate)
+                .ToList();
+
+            foreach (var meeting in meetings)
+            {
+                // Eğer bu toplantı zaten TimeEntry olarak eklenmişse atlayalım
+                var alreadyAdded = timeEntries.Any(t => t.MeetingId == meeting.Id);
+                if (!alreadyAdded)
+                {
+                    activities.Add(new TimelineActivity
+                    {
+                        Time = meeting.MeetingDate,
+                        Icon = "📅",
+                        Color = Color.FromArgb(156, 39, 176),
+                        Title = meeting.Subject,
+                        Description = $"Katılımcılar: {meeting.Participants}",
+                        ProjectName = "",
+                        Category = "Meeting",
+                        DurationMinutes = 0
+                    });
+                }
+            }
+
+            return activities;
+        }
+
+        private (string icon, Color color, string description) GetWorkItemActivityInfo(WorkItemActivity activity)
+        {
+            switch (activity.ActivityType)
+            {
+                case WorkItemActivityTypes.Created:
+                    return ("🆕", Color.FromArgb(76, 175, 80), "Yeni iş oluşturuldu");
+                
+                case WorkItemActivityTypes.StatusChange:
+                    var statusIcon = GetStatusChangeIcon(activity.OldValue, activity.NewValue);
+                    var statusColor = GetStatusChangeColor(activity.NewValue);
+                    return (statusIcon, statusColor, $"Durum: {activity.OldValue} → {activity.NewValue}");
+                
+                case WorkItemActivityTypes.AssignmentChange:
+                    return ("👤", Color.FromArgb(33, 150, 243), $"Atama: {activity.OldValue} → {activity.NewValue}");
+                
+                case WorkItemActivityTypes.PriorityChange:
+                    return ("⚡", Color.FromArgb(255, 152, 0), $"Öncelik: {activity.OldValue} → {activity.NewValue}");
+                
+                case WorkItemActivityTypes.EstimateChange:
+                    return ("⏰", Color.FromArgb(0, 188, 212), $"Efor: {activity.OldValue} → {activity.NewValue}");
+                
+                case WorkItemActivityTypes.FieldUpdate:
+                    return ("📝", Color.FromArgb(158, 158, 158), activity.Description ?? "Alan güncellendi");
+                
+                default:
+                    return ("📌", Color.FromArgb(158, 158, 158), activity.Description ?? "Aktivite");
+            }
+        }
+
+        private string GetStatusChangeIcon(string oldValue, string newValue)
+        {
+            if (newValue == "Gelistirmede" || newValue == "MudahaleEdiliyor")
+                return "🟢";
+            if (newValue == "Test" || newValue == "Review")
+                return "🔵";
+            if (newValue == "Tamamlandi" || newValue == "Done")
+                return "✅";
+            if (newValue == "Beklemede")
+                return "⏸️";
+            if (newValue == "Iptal")
+                return "❌";
+            return "🔄";
+        }
+
+        private Color GetStatusChangeColor(string newValue)
+        {
+            if (newValue == "Gelistirmede" || newValue == "MudahaleEdiliyor")
+                return Color.FromArgb(76, 175, 80);
+            if (newValue == "Test" || newValue == "Review")
+                return Color.FromArgb(33, 150, 243);
+            if (newValue == "Tamamlandi" || newValue == "Done")
+                return Color.FromArgb(0, 150, 136);
+            if (newValue == "Beklemede")
+                return Color.FromArgb(255, 193, 7);
+            if (newValue == "Iptal")
+                return Color.FromArgb(244, 67, 54);
+            return Color.FromArgb(158, 158, 158);
+        }
+
+        private (string icon, Color color, string category) GetTimeEntryInfo(string activityType)
+        {
+            switch (activityType)
+            {
+                case TimeEntryActivityTypes.PhoneCall:
+                    return ("📞", Color.FromArgb(255, 152, 0), "Phone");
+                case TimeEntryActivityTypes.Meeting:
+                    return ("📅", Color.FromArgb(156, 39, 176), "Meeting");
+                case TimeEntryActivityTypes.Work:
+                    return ("💼", Color.FromArgb(33, 150, 243), "TimeEntry");
+                default:
+                    return ("📌", Color.FromArgb(158, 158, 158), "Other");
+            }
+        }
+
+        private string GetTimeEntryTitle(TimeEntry entry)
+        {
+            if (!string.IsNullOrEmpty(entry.Subject))
+                return entry.Subject;
+            
+            if (entry.WorkItem != null)
+                return entry.WorkItem.Title;
+            
+            if (entry.Meeting != null)
+                return entry.Meeting.Subject;
+            
+            if (!string.IsNullOrEmpty(entry.ContactName))
+                return $"Telefon: {entry.ContactName}";
+            
+            if (entry.Person != null)
+                return $"Telefon: {entry.Person.Name}";
+            
+            return entry.ActivityType == TimeEntryActivityTypes.PhoneCall ? "Telefon Görüşmesi" : "Aktivite";
+        }
+
+        private string GetTimeEntryDescription(TimeEntry entry)
+        {
+            var parts = new List<string>();
+            
+            if (entry.DurationMinutes > 0)
+                parts.Add($"⏱️ {FormatDuration(entry.DurationMinutes)}");
+            
+            if (!string.IsNullOrEmpty(entry.Description))
+            {
+                var desc = entry.Description.Length > 100 
+                    ? entry.Description.Substring(0, 97) + "..." 
+                    : entry.Description;
+                parts.Add(desc);
+            }
+            
+            if (!string.IsNullOrEmpty(entry.PhoneNumber))
+                parts.Add($"📱 {entry.PhoneNumber}");
+            
+            return string.Join(" | ", parts);
+        }
+
+        private Panel CreateTimelineCard(TimelineActivity activity)
+        {
+            var cardPanel = new Panel
+            {
+                Width = 1100,
+                Height = 85,
+                Margin = new Padding(0, 5, 0, 5),
+                BackColor = Color.White,
+                Cursor = Cursors.Hand
+            };
+
+            // Sol taraf - Saat ve çizgi
+            var timeLabel = new Label
+            {
+                Text = activity.Time.ToString("HH:mm"),
+                Font = new Font("Consolas", 11, FontStyle.Bold),
+                ForeColor = Color.FromArgb(100, 100, 100),
+                Location = new Point(10, 10),
+                AutoSize = true
+            };
+            cardPanel.Controls.Add(timeLabel);
+
+            // Dikey çizgi
+            var linePanel = new Panel
+            {
+                BackColor = activity.Color,
+                Location = new Point(70, 0),
+                Size = new Size(4, 85)
+            };
+            cardPanel.Controls.Add(linePanel);
+
+            // İkon dairesi
+            var iconLabel = new Label
+            {
+                Text = activity.Icon,
+                Font = new Font("Segoe UI Emoji", 16),
+                Location = new Point(85, 25),
+                AutoSize = true
+            };
+            cardPanel.Controls.Add(iconLabel);
+
+            // Başlık
+            var titleLabel = new Label
+            {
+                Text = activity.Title,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                ForeColor = Color.FromArgb(33, 33, 33),
+                Location = new Point(130, 8),
+                MaximumSize = new Size(700, 0),
+                AutoSize = true
+            };
+            cardPanel.Controls.Add(titleLabel);
+
+            // WorkItem ID badge
+            if (activity.WorkItemId.HasValue)
+            {
+                var idLabel = new Label
+                {
+                    Text = $"#{activity.WorkItemId}",
+                    Font = new Font("Segoe UI", 8),
+                    ForeColor = Color.White,
+                    BackColor = activity.Color,
+                    Padding = new Padding(4, 2, 4, 2),
+                    Location = new Point(130 + titleLabel.PreferredWidth + 10, 10),
+                    AutoSize = true
+                };
+                cardPanel.Controls.Add(idLabel);
+            }
+
+            // Süre badge
+            if (activity.DurationMinutes > 0)
+            {
+                var durationLabel = new Label
+                {
+                    Text = $"⏱️ {FormatDuration(activity.DurationMinutes)}",
+                    Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(0, 122, 204),
+                    Location = new Point(850, 10),
+                    AutoSize = true
+                };
+                cardPanel.Controls.Add(durationLabel);
+            }
+
+            // Açıklama
+            var descLabel = new Label
+            {
+                Text = activity.Description,
+                Font = new Font("Segoe UI", 9),
+                ForeColor = Color.FromArgb(100, 100, 100),
+                Location = new Point(130, 35),
+                MaximumSize = new Size(800, 0),
+                AutoSize = true
+            };
+            cardPanel.Controls.Add(descLabel);
+
+            // Proje adı
+            if (!string.IsNullOrEmpty(activity.ProjectName))
+            {
+                var projectLabel = new Label
+                {
+                    Text = $"📁 {activity.ProjectName}",
+                    Font = new Font("Segoe UI", 8),
+                    ForeColor = Color.FromArgb(130, 130, 130),
+                    Location = new Point(130, 60),
+                    AutoSize = true
+                };
+                cardPanel.Controls.Add(projectLabel);
+            }
+
+            // Hover efekti
+            cardPanel.MouseEnter += (s, e) => cardPanel.BackColor = Color.FromArgb(245, 247, 250);
+            cardPanel.MouseLeave += (s, e) => cardPanel.BackColor = Color.White;
+
+            // Tüm child kontrollerine mouse event'i ekle
+            foreach (Control ctrl in cardPanel.Controls)
+            {
+                ctrl.MouseEnter += (s, e) => cardPanel.BackColor = Color.FromArgb(245, 247, 250);
+                ctrl.MouseLeave += (s, e) => cardPanel.BackColor = Color.White;
+            }
+
+            return cardPanel;
+        }
+
+        private class TimelineActivity
+        {
+            public DateTime Time { get; set; }
+            public string Icon { get; set; }
+            public Color Color { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string ProjectName { get; set; }
+            public string Category { get; set; }
+            public int? WorkItemId { get; set; }
+            public int DurationMinutes { get; set; }
+        }
+
+        #endregion
 
         protected override void Dispose(bool disposing)
         {
