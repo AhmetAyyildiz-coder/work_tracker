@@ -7,6 +7,7 @@ namespace work_tracker
     {
         private System.ComponentModel.IContainer components = null;
         private RibbonControl ribbonControl1;
+        private RibbonStatusBar ribbonStatusBar1;
         private RibbonPage ribbonPageHome;
         private RibbonPageGroup ribbonPageGroupWorkflow;
         private RibbonPageGroup ribbonPageGroupSettings;
@@ -35,6 +36,11 @@ namespace work_tracker
         private BarButtonItem btnDashboard;
         private BarButtonItem btnCommentSearch;
         private BarButtonItem btnEmailToWorkItem;
+        private BarButtonItem btnAbout;
+        private BarStaticItem barStaticVersion;
+        private BarStaticItem barStaticUser;
+        private BarStaticItem barStaticDate;
+        private BarStaticItem barStaticDbStatus;
 
         protected override void Dispose(bool disposing)
         {
@@ -49,6 +55,7 @@ namespace work_tracker
         {
             this.components = new System.ComponentModel.Container();
             this.ribbonControl1 = new DevExpress.XtraBars.Ribbon.RibbonControl();
+            this.ribbonStatusBar1 = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.trayMenuOpen = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,6 +81,11 @@ namespace work_tracker
             this.btnDashboard = new DevExpress.XtraBars.BarButtonItem();
             this.btnCommentSearch = new DevExpress.XtraBars.BarButtonItem();
             this.btnEmailToWorkItem = new DevExpress.XtraBars.BarButtonItem();
+            this.btnAbout = new DevExpress.XtraBars.BarButtonItem();
+            this.barStaticVersion = new DevExpress.XtraBars.BarStaticItem();
+            this.barStaticUser = new DevExpress.XtraBars.BarStaticItem();
+            this.barStaticDate = new DevExpress.XtraBars.BarStaticItem();
+            this.barStaticDbStatus = new DevExpress.XtraBars.BarStaticItem();
             this.ribbonPageHome = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroupWorkflow = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupSettings = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -103,13 +115,30 @@ namespace work_tracker
             this.btnWorkSummary,
             this.btnHierarchy,
             this.btnCommentSearch,
-            this.btnEmailToWorkItem});
+            this.btnEmailToWorkItem,
+            this.btnAbout,
+            this.barStaticVersion,
+            this.barStaticUser,
+            this.barStaticDate,
+            this.barStaticDbStatus});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 14;
+            this.ribbonControl1.MaxItemId = 24;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPageHome});
             this.ribbonControl1.Size = new System.Drawing.Size(1200, 158);
+            this.ribbonControl1.StatusBar = this.ribbonStatusBar1;
+            // 
+            // ribbonStatusBar1
+            // 
+            this.ribbonStatusBar1.ItemLinks.Add(this.barStaticVersion);
+            this.ribbonStatusBar1.ItemLinks.Add(this.barStaticUser);
+            this.ribbonStatusBar1.ItemLinks.Add(this.barStaticDate);
+            this.ribbonStatusBar1.ItemLinks.Add(this.barStaticDbStatus);
+            this.ribbonStatusBar1.Location = new System.Drawing.Point(0, 675);
+            this.ribbonStatusBar1.Name = "ribbonStatusBar1";
+            this.ribbonStatusBar1.Ribbon = this.ribbonControl1;
+            this.ribbonStatusBar1.Size = new System.Drawing.Size(1200, 25);
             // 
             // btnInbox
             // 
@@ -236,6 +265,41 @@ namespace work_tracker
             this.btnEmailToWorkItem.Id = 19;
             this.btnEmailToWorkItem.Name = "btnEmailToWorkItem";
             this.btnEmailToWorkItem.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnEmailToWorkItem_ItemClick);
+            //
+            // btnAbout
+            //
+            this.btnAbout.Caption = "ℹ️ Hakkında";
+            this.btnAbout.Id = 20;
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnAbout_ItemClick);
+            //
+            // barStaticVersion
+            //
+            this.barStaticVersion.Caption = "v1.2.0";
+            this.barStaticVersion.Id = 21;
+            this.barStaticVersion.Name = "barStaticVersion";
+            this.barStaticVersion.ItemAppearance.Normal.ForeColor = System.Drawing.Color.DodgerBlue;
+            this.barStaticVersion.ItemAppearance.Normal.Options.UseForeColor = true;
+            //
+            // barStaticUser
+            //
+            this.barStaticUser.Caption = "👤 Kullanıcı";
+            this.barStaticUser.Id = 22;
+            this.barStaticUser.Name = "barStaticUser";
+            //
+            // barStaticDate
+            //
+            this.barStaticDate.Caption = "📅 Tarih";
+            this.barStaticDate.Id = 23;
+            this.barStaticDate.Name = "barStaticDate";
+            //
+            // barStaticDbStatus
+            //
+            this.barStaticDbStatus.Caption = "🔌 Veritabanı";
+            this.barStaticDbStatus.Id = 24;
+            this.barStaticDbStatus.Name = "barStaticDbStatus";
+            this.barStaticDbStatus.ItemAppearance.Normal.ForeColor = System.Drawing.Color.Green;
+            this.barStaticDbStatus.ItemAppearance.Normal.Options.UseForeColor = true;
             // 
             // ribbonPageHome
             // 
@@ -276,6 +340,7 @@ namespace work_tracker
             // 
             this.ribbonPageGroupHelp.ItemLinks.Add(this.btnHelp);
             this.ribbonPageGroupHelp.ItemLinks.Add(this.btnReminder);
+            this.ribbonPageGroupHelp.ItemLinks.Add(this.btnAbout);
             this.ribbonPageGroupHelp.Name = "ribbonPageGroupHelp";
             this.ribbonPageGroupHelp.Text = "Yardım";
             // 
@@ -329,12 +394,14 @@ namespace work_tracker
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 700);
+            this.Controls.Add(this.ribbonStatusBar1);
             this.Controls.Add(this.ribbonControl1);
             this.IsMdiContainer = true;
             this.Name = "MainForm";
             this.Ribbon = this.ribbonControl1;
+            this.StatusBar = this.ribbonStatusBar1;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "İş Akışı Yönetim Aracı";
+            this.Text = "Work Tracker v1.2.0 - İş Akışı Yönetim Aracı";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.trayContextMenu.ResumeLayout(false);

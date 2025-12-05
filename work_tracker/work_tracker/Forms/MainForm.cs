@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using DevExpress.XtraBars;
 using DevExpress.XtraBars.Ribbon;
@@ -37,15 +38,75 @@ namespace work_tracker
         // İş hatırlatıcı servisi
         private WorkItemReminderService _workItemReminderService;
 
+        // Status bar güncelleme timer'ı
+        private Timer _statusBarTimer;
+
+        // Veritabanı bağlantı durumu
+        private bool _isDbConnected = false;
+
         public MainForm()
         {
             InitializeComponent();
             InitializeRibbon();
+            InitializeStatusBar();
         }
 
         private void InitializeRibbon()
         {
             // Ribbon sayfaları ve butonlar designer'da tanımlanacak
+        }
+
+        /// <summary>
+        /// Status bar'ı başlat ve güncelle
+        /// </summary>
+        private void InitializeStatusBar()
+        {
+            // Versiyon bilgisini ayarla
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            barStaticVersion.Caption = $"📦 v{version.Major}.{version.Minor}.{version.Build}";
+
+            // Kullanıcı adını ayarla
+            barStaticUser.Caption = $"👤 {Environment.UserName}";
+
+            // Tarih/saat güncelleme timer'ı
+            _statusBarTimer = new Timer();
+            _statusBarTimer.Interval = 1000; // Her saniye güncelle
+            _statusBarTimer.Tick += (s, e) => UpdateDateTime();
+            _statusBarTimer.Start();
+
+            // İlk güncelleme
+            UpdateDateTime();
+        }
+
+        /// <summary>
+        /// Tarih ve saat bilgisini güncelle
+        /// </summary>
+        private void UpdateDateTime()
+        {
+            barStaticDate.Caption = $"📅 {DateTime.Now:dd.MM.yyyy HH:mm:ss}";
+        }
+
+        /// <summary>
+        /// Veritabanı bağlantı durumunu güncelle
+        /// </summary>
+        private void UpdateDbStatus(bool isConnected, int? itemCount = null)
+        {
+            _isDbConnected = isConnected;
+            
+            if (isConnected)
+            {
+                barStaticDbStatus.Caption = itemCount.HasValue 
+                    ? $"✅ DB Bağlı ({itemCount} iş)" 
+                    : "✅ DB Bağlı";
+                barStaticDbStatus.ItemAppearance.Normal.ForeColor = System.Drawing.Color.Green;
+            }
+            else
+            {
+                barStaticDbStatus.Caption = "❌ DB Bağlantı Hatası";
+                barStaticDbStatus.ItemAppearance.Normal.ForeColor = System.Drawing.Color.Red;
+            }
+            
+            barStaticDbStatus.ItemAppearance.Normal.Options.UseForeColor = true;
         }
 
         private void btnInbox_ItemClick(object sender, ItemClickEventArgs e)
@@ -133,6 +194,50 @@ namespace work_tracker
             emailToWorkItemForm = OpenOrActivateForm(emailToWorkItemForm, () => new EmailToWorkItemForm(), f => emailToWorkItemForm = f);
         }
 
+        private void btnAbout_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            ShowAboutDialog();
+        }
+
+        /// <summary>
+        /// Hakkında dialogunu göster
+        /// </summary>
+        private void ShowAboutDialog()
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            var buildDate = System.IO.File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location);
+            
+            var message = $@"
+╔══════════════════════════════════════════╗
+║           WORK TRACKER                   ║
+║      İş Akışı Yönetim Aracı              ║
+╠══════════════════════════════════════════╣
+║                                          ║
+║  📦 Sürüm: {version.Major}.{version.Minor}.{version.Build}                         ║
+║  📅 Derleme: {buildDate:dd.MM.yyyy HH:mm}             ║
+║  🏢 Şirket: ARPAS                        ║
+║  👤 Geliştirici: Ahmet Ayyıldız          ║
+║                                          ║
+╠══════════════════════════════════════════╣
+║  ✨ Özellikler:                          ║
+║  • Kanban & Scrum Panosu                 ║
+║  • Toplantı Yönetimi                     ║
+║  • Zaman Takibi                          ║
+║  • Outlook Entegrasyonu                  ║
+║  • Hatırlatıcılar                        ║
+║  • Raporlama                             ║
+╚══════════════════════════════════════════╝
+
+© 2025 ARPAS - Tüm Hakları Saklıdır.
+".Trim();
+
+            XtraMessageBox.Show(
+                message,
+                "Work Tracker Hakkında",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
         /// <summary>
         /// Log klasörünü aç - Designer'dan bağlanacak
         /// </summary>
@@ -207,7 +312,11 @@ namespace work_tracker
                 {
                     // Veritabanı bağlantısını test et
                     var projectCount = db.Projects.Count();
-                    Logger.Info($"Veritabanı bağlantısı başarılı. {projectCount} proje bulundu.");
+                    var workItemCount = db.WorkItems.Count();
+                    Logger.Info($"Veritabanı bağlantısı başarılı. {projectCount} proje, {workItemCount} iş bulundu.");
+
+                    // Status bar'ı güncelle
+                    UpdateDbStatus(true, workItemCount);
 
                     // Mevcut email kayıtlarını migrate et (ConversationId eksik olanlar için)
                     MigrateExistingEmailsIfNeeded(db);
@@ -226,6 +335,9 @@ namespace work_tracker
             catch (Exception ex)
             {
                 Logger.LogException(ex, "Veritabanı bağlantısı kurulamadı");
+                
+                // Status bar'ı hata durumuna güncelle
+                UpdateDbStatus(false);
                 
                 XtraMessageBox.Show(
                     "Veritabanı bağlantısı kurulamadı. Lütfen önce migration çalıştırın:\n\n" +
@@ -330,6 +442,10 @@ namespace work_tracker
             }
             else
             {
+                // Timer'ı temizle
+                _statusBarTimer?.Stop();
+                _statusBarTimer?.Dispose();
+                
                 _reminderService?.Dispose();
                 _workItemReminderService?.Dispose();
                 notifyIcon1.Visible = false;
