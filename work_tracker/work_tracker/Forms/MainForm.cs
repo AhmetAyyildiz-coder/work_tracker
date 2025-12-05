@@ -28,6 +28,8 @@ namespace work_tracker
         private WorkSummaryForm workSummaryForm;
         private WorkItemHierarchyForm hierarchyForm;
         private DashboardForm dashboardForm;
+        private CommentSearchForm commentSearchForm;
+        private EmailToWorkItemForm emailToWorkItemForm;
 
         // Günlük hatırlatıcı servisi
         private WorkReminderService _reminderService;
@@ -119,6 +121,16 @@ namespace work_tracker
         private void btnDashboard_ItemClick(object sender, ItemClickEventArgs e)
         {
             dashboardForm = OpenOrActivateForm(dashboardForm, () => new DashboardForm(), f => dashboardForm = f);
+        }
+
+        private void btnCommentSearch_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            commentSearchForm = OpenOrActivateForm(commentSearchForm, () => new CommentSearchForm(), f => commentSearchForm = f);
+        }
+
+        private void btnEmailToWorkItem_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            emailToWorkItemForm = OpenOrActivateForm(emailToWorkItemForm, () => new EmailToWorkItemForm(), f => emailToWorkItemForm = f);
         }
 
         /// <summary>

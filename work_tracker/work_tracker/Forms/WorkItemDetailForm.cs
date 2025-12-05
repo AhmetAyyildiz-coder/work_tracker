@@ -1398,11 +1398,19 @@ namespace work_tracker.Forms
             try
             {
                 // ConversationId ile de arama yapabilir (mail taşınmış olsa bile bulur)
-                OutlookHelper.OpenEmailInOutlook(email.OutlookEntryId, email.ConversationId);
+                var newEntryId = OutlookHelper.OpenEmailInOutlook(email.OutlookEntryId, email.ConversationId);
+                
+                // Mail taşınmışsa EntryId'yi güncelle (bir dahaki sefere daha hızlı açılır)
+                if (!string.IsNullOrEmpty(newEntryId) && newEntryId != email.OutlookEntryId)
+                {
+                    email.OutlookEntryId = newEntryId;
+                    _context.SaveChanges();
+                    Logger.Info($"📧 Email EntryId güncellendi: {email.Subject}");
+                }
             }
             catch (Exception ex)
             {
-                XtraMessageBox.Show($"Email açılırken hata oluştu:\n\n{ex.Message}", "Hata", 
+                XtraMessageBox.Show($"Email açılırken hata oluştu:\n\n{ex.Message}\n\nİpucu: Mail silinmiş veya farklı bir Outlook hesabında olabilir.", "Hata", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Logger.Error("Email açma hatası", ex);
             }

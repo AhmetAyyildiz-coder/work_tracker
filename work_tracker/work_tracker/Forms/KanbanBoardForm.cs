@@ -195,13 +195,15 @@ namespace work_tracker.Forms
             panel.Controls.Add(scroll);
 
             int yPos = 5;
+            int orderNumber = 1; // Sıra numarası sayacı
             foreach (var workItem in workItems)
             {
-                var card = CreateWorkItemCard(workItem);
+                var card = CreateWorkItemCard(workItem, orderNumber);
                 card.Location = new Point(5, yPos);
                 card.Width = Math.Max(220, panel.Width - 15);
                 scroll.Controls.Add(card);
                 yPos += card.Height + 5;
+                orderNumber++;
             }
 
             // Boyut değişince kart genişliklerini güncelle
@@ -221,10 +223,12 @@ namespace work_tracker.Forms
             scroll.DragEnter += Panel_DragEnter;
             scroll.DragOver += Panel_DragOver;
             scroll.DragDrop += Panel_DragDrop;
+            scroll.DragLeave += Panel_DragLeave;
             
             panel.DragEnter += Panel_DragEnter;
             panel.DragOver += Panel_DragOver;
             panel.DragDrop += Panel_DragDrop;
+            panel.DragLeave += Panel_DragLeave;
 
             return panel;
         }
@@ -248,7 +252,7 @@ namespace work_tracker.Forms
             }
         }
 
-        private PanelControl CreateWorkItemCard(WorkItem workItem)
+        private PanelControl CreateWorkItemCard(WorkItem workItem, int orderNumber = 0)
         {
             // DevExpress PanelControl - Scrum teması ile aynı tasarım
             var card = new PanelControl();
@@ -270,10 +274,24 @@ namespace work_tracker.Forms
             };
             card.Controls.Add(urgencyIndicator);
 
-            // ID - LabelControl
+            // Sıra numarası (sol üst köşe, aciliyet çizgisinin yanında)
+            if (orderNumber > 0)
+            {
+                var lblOrder = new LabelControl();
+                lblOrder.Text = $"{orderNumber}.";
+                lblOrder.Location = new Point(10, 8);
+                lblOrder.AutoSizeMode = LabelAutoSizeMode.None;
+                lblOrder.Size = new Size(20, 14);
+                lblOrder.Appearance.Font = new Font("Tahoma", 8F, FontStyle.Bold);
+                lblOrder.Appearance.ForeColor = Color.FromArgb(0, 122, 204); // Mavi renk
+                lblOrder.ToolTip = "Yapılacaklar sırası - Sürükleyerek değiştirebilirsiniz";
+                card.Controls.Add(lblOrder);
+            }
+
+            // ID - LabelControl (sıra numarasından sonra)
             var lblId = new LabelControl();
             lblId.Text = $"#{workItem.Id}";
-            lblId.Location = new Point(10, 8);
+            lblId.Location = new Point(orderNumber > 0 ? 30 : 10, 8);
             lblId.AutoSizeMode = LabelAutoSizeMode.None;
             lblId.Appearance.Font = new Font("Tahoma", 8F, FontStyle.Bold);
             lblId.Appearance.ForeColor = Color.Gray;
@@ -506,6 +524,7 @@ namespace work_tracker.Forms
         private bool isDragging = false;
         private bool isMouseDown = false;
         private Point mouseDownPoint;
+        private Panel dropIndicator = null; // Bırakılacak yeri gösteren çizgi
 
         private void Card_MouseDown(object sender, MouseEventArgs e)
         {
@@ -560,16 +579,80 @@ namespace work_tracker.Forms
             }
         }
 
+        private void Panel_DragLeave(object sender, EventArgs e)
+        {
+            HideDropIndicator();
+        }
+
         private void Panel_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(PanelControl)))
             {
                 e.Effect = DragDropEffects.Move;
+                
+                // Bırakılacak yeri gösteren çizgiyi güncelle
+                var targetPanel = sender as PanelControl;
+                if (targetPanel != null)
+                {
+                    ShowDropIndicator(targetPanel, e.X, e.Y);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Bırakılacak yeri gösteren çizgiyi göster
+        /// </summary>
+        private void ShowDropIndicator(PanelControl targetPanel, int screenX, int screenY)
+        {
+            // Önce eski göstergeyi temizle
+            HideDropIndicator();
+
+            // Ekran koordinatlarını panel koordinatlarına çevir
+            var clientPoint = targetPanel.PointToClient(new Point(screenX, screenY));
+            
+            // Bırakılacak pozisyonu hesapla
+            int dropY = 5;
+            foreach (Control ctrl in targetPanel.Controls)
+            {
+                if (ctrl is PanelControl card && card != draggedCard)
+                {
+                    int cardMiddle = card.Top + card.Height / 2;
+                    if (clientPoint.Y < cardMiddle)
+                    {
+                        dropY = card.Top - 2;
+                        break;
+                    }
+                    dropY = card.Bottom + 2;
+                }
+            }
+
+            // Drop indicator oluştur
+            dropIndicator = new Panel();
+            dropIndicator.BackColor = Color.FromArgb(0, 122, 204); // Mavi çizgi
+            dropIndicator.Height = 3;
+            dropIndicator.Width = targetPanel.ClientSize.Width - 10;
+            dropIndicator.Location = new Point(5, dropY);
+            targetPanel.Controls.Add(dropIndicator);
+            dropIndicator.BringToFront();
+        }
+
+        /// <summary>
+        /// Drop göstergesini gizle
+        /// </summary>
+        private void HideDropIndicator()
+        {
+            if (dropIndicator != null)
+            {
+                dropIndicator.Parent?.Controls.Remove(dropIndicator);
+                dropIndicator.Dispose();
+                dropIndicator = null;
             }
         }
 
         private void Panel_DragDrop(object sender, DragEventArgs e)
         {
+            HideDropIndicator(); // Göstergeyi gizle
+            
             var targetPanel = sender as PanelControl;
             if (targetPanel == null || draggedCard == null) return;
 
@@ -600,6 +683,10 @@ namespace work_tracker.Forms
                 }
             }
 
+            // Bırakılacak pozisyonu hesapla (fare konumuna göre)
+            var clientPoint = targetPanel.PointToClient(new Point(e.X, e.Y));
+            int targetIndex = CalculateDropIndex(targetPanel, clientPoint.Y, workItem.Id);
+
             // İş talebini güncelle
             try
             {
@@ -607,24 +694,36 @@ namespace work_tracker.Forms
                 if (dbWorkItem != null)
                 {
                     var oldStatus = dbWorkItem.Status;
+                    bool isSameColumn = (sourceColumn == targetColumn);
 
-                    // Aynı sütuna bırakıldıysa, sona taşı (sıralama)
-                    if (sourceColumn == targetColumn)
-                    {
-                        var maxOrder = _context.WorkItems
-                            .Where(w => w.Board == "Kanban" && w.Status == targetColumn)
-                            .Select(w => (int?)w.OrderIndex)
-                            .Max() ?? 0;
-                        dbWorkItem.OrderIndex = maxOrder + 1;
-                    }
-                    else
+                    if (!isSameColumn)
                     {
                         dbWorkItem.Status = targetColumn;
-                        var maxOrder = _context.WorkItems
-                            .Where(w => w.Board == "Kanban" && w.Status == targetColumn)
-                            .Select(w => (int?)w.OrderIndex)
-                            .Max() ?? 0;
-                        dbWorkItem.OrderIndex = maxOrder + 1;
+                    }
+
+                    // Sütun içindeki tüm işleri al ve sırala
+                    var columnWorkItems = _context.WorkItems
+                        .Where(w => w.Board == "Kanban" && w.Status == targetColumn && w.Id != workItem.Id)
+                        .OrderBy(w => w.OrderIndex)
+                        .ToList();
+
+                    // Yeni sıra index'ini uygula
+                    int newOrder = 0;
+                    for (int i = 0; i < columnWorkItems.Count; i++)
+                    {
+                        if (i == targetIndex)
+                        {
+                            dbWorkItem.OrderIndex = newOrder;
+                            newOrder++;
+                        }
+                        columnWorkItems[i].OrderIndex = newOrder;
+                        newOrder++;
+                    }
+
+                    // Eğer en sona eklenmişse
+                    if (targetIndex >= columnWorkItems.Count)
+                    {
+                        dbWorkItem.OrderIndex = newOrder;
                     }
                     
                     // Müdahele Ediliyor durumuna geçildiğinde başlangıç zamanını kaydet
@@ -634,11 +733,6 @@ namespace work_tracker.Forms
                         {
                             dbWorkItem.StartedAt = DateTime.Now;
                         }
-                    }
-                    else if (oldStatus == "MudahaleEdiliyor" && targetColumn != "MudahaleEdiliyor")
-                    {
-                        // Müdahele Ediliyor durumundan çıkıldığında StartedAt'i sıfırlama (geçmiş verileri koru)
-                        // Eğer geri dönülürse tekrar set edilmesin diye kontrol ediyoruz
                     }
 
                     // Çözüldü durumuna geçildiğinde tamamlanma zamanını kaydet
@@ -653,7 +747,7 @@ namespace work_tracker.Forms
 
                     _context.SaveChanges();
 
-                    // Aktivite kaydı oluştur
+                    // Aktivite kaydı oluştur (sadece sütun değiştiğinde)
                     if (oldStatus != targetColumn)
                     {
                         var activity = new WorkItemActivity
@@ -683,6 +777,30 @@ namespace work_tracker.Forms
                 isDragging = false;
                 isMouseDown = false;
             }
+        }
+
+        /// <summary>
+        /// Fare konumuna göre bırakılacak index'i hesapla
+        /// </summary>
+        private int CalculateDropIndex(PanelControl targetPanel, int mouseY, int draggedWorkItemId)
+        {
+            int index = 0;
+            var cards = targetPanel.Controls.OfType<PanelControl>()
+                .Where(c => c.Tag is WorkItem && ((WorkItem)c.Tag).Id != draggedWorkItemId)
+                .OrderBy(c => c.Top)
+                .ToList();
+
+            foreach (var card in cards)
+            {
+                int cardMiddle = card.Top + card.Height / 2;
+                if (mouseY < cardMiddle)
+                {
+                    return index;
+                }
+                index++;
+            }
+
+            return index; // En sona ekle
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)

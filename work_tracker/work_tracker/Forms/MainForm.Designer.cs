@@ -33,6 +33,8 @@ namespace work_tracker
         private BarButtonItem btnWorkSummary;
         private BarButtonItem btnHierarchy;
         private BarButtonItem btnDashboard;
+        private BarButtonItem btnCommentSearch;
+        private BarButtonItem btnEmailToWorkItem;
 
         protected override void Dispose(bool disposing)
         {
@@ -70,6 +72,8 @@ namespace work_tracker
             this.btnWorkSummary = new DevExpress.XtraBars.BarButtonItem();
             this.btnHierarchy = new DevExpress.XtraBars.BarButtonItem();
             this.btnDashboard = new DevExpress.XtraBars.BarButtonItem();
+            this.btnCommentSearch = new DevExpress.XtraBars.BarButtonItem();
+            this.btnEmailToWorkItem = new DevExpress.XtraBars.BarButtonItem();
             this.ribbonPageHome = new DevExpress.XtraBars.Ribbon.RibbonPage();
             this.ribbonPageGroupWorkflow = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupSettings = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
@@ -97,7 +101,9 @@ namespace work_tracker
             this.btnTimeEntry,
             this.btnReminder,
             this.btnWorkSummary,
-            this.btnHierarchy});
+            this.btnHierarchy,
+            this.btnCommentSearch,
+            this.btnEmailToWorkItem});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
             this.ribbonControl1.MaxItemId = 14;
             this.ribbonControl1.Name = "ribbonControl1";
@@ -216,6 +222,20 @@ namespace work_tracker
             this.btnDashboard.Id = 17;
             this.btnDashboard.Name = "btnDashboard";
             this.btnDashboard.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnDashboard_ItemClick);
+            //
+            // btnCommentSearch
+            //
+            this.btnCommentSearch.Caption = "🔍 Yorum Ara";
+            this.btnCommentSearch.Id = 18;
+            this.btnCommentSearch.Name = "btnCommentSearch";
+            this.btnCommentSearch.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnCommentSearch_ItemClick);
+            //
+            // btnEmailToWorkItem
+            //
+            this.btnEmailToWorkItem.Caption = "📧 Mail'den İş Oluştur";
+            this.btnEmailToWorkItem.Id = 19;
+            this.btnEmailToWorkItem.Name = "btnEmailToWorkItem";
+            this.btnEmailToWorkItem.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnEmailToWorkItem_ItemClick);
             // 
             // ribbonPageHome
             // 
@@ -237,6 +257,8 @@ namespace work_tracker
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnTimeEntry);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnWorkSummary);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnHierarchy);
+            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnCommentSearch);
+            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnEmailToWorkItem);
             this.ribbonPageGroupWorkflow.Name = "ribbonPageGroupWorkflow";
             this.ribbonPageGroupWorkflow.Text = "İş Akışı";
             // 

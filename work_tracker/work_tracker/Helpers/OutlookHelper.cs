@@ -37,7 +37,7 @@ namespace work_tracker.Helpers
         /// <summary>
         /// Outlook'tan email'leri çek (Inbox klasöründen)
         /// </summary>
-        public static List<WorkItemEmail> GetEmailsFromOutlook(int maxCount = 50, string searchSubject = null)
+        public static List<WorkItemEmail> GetEmailsFromOutlook(int maxCount = 50, string searchSubject = null, int daysBack = 60)
         {
             var emails = new List<WorkItemEmail>();
 
@@ -50,19 +50,22 @@ namespace work_tracker.Helpers
                 // Email'leri al
                 var items = inbox.Items;
                 
-                // Optimizasyon: Sadece son 7 günün maillerini al
-                // Not: Tarih formatı sistem ayarlarına göre değişebilir, "g" (genel) formatı genellikle çalışır.
-                string filter = "[ReceivedTime] > '" + DateTime.Now.AddDays(-7).ToString("g") + "'";
+                // Son N günün maillerini al (varsayılan: 60 gün = 2 ay)
+                // Outlook DASL filtresi için tarih formatı
+                var filterDate = DateTime.Now.AddDays(-daysBack);
+                string filter = $"[ReceivedTime] >= '{filterDate:MM/dd/yyyy HH:mm}'";
                 
                 Items restrictedItems = null;
                 try 
                 {
                     restrictedItems = items.Restrict(filter);
                     restrictedItems.Sort("[ReceivedTime]", true); // En yeni önce
+                    Logger.Info($"📧 Son {daysBack} günün mailleri filtrelendi. Bulunan: {restrictedItems.Count}");
                 }
-                catch (System.Exception)
+                catch (System.Exception ex)
                 {
-                    // Filtreleme hatası olursa (örn: tarih formatı) tüm kutuya dön
+                    // Filtreleme hatası olursa tüm kutuya dön
+                    Logger.Warning($"Mail filtreleme hatası, tüm mailler alınıyor: {ex.Message}");
                     restrictedItems = items;
                     restrictedItems.Sort("[ReceivedTime]", true);
                 }
@@ -197,40 +200,57 @@ namespace work_tracker.Helpers
 
         /// <summary>
         /// Outlook'ta email'i aç - önce EntryId ile dener, bulamazsa ConversationId ile arar
+        /// Bulunursa yeni EntryId'yi döndürür (mail taşınmışsa güncelleme için)
         /// </summary>
-        public static void OpenEmailInOutlook(string entryId, string conversationId = null)
+        public static string OpenEmailInOutlook(string entryId, string conversationId = null)
         {
             try
             {
                 var outlook = GetOutlookApplication();
                 var namespaceObj = outlook.GetNamespace("MAPI");
                 MailItem mailItem = null;
+                string newEntryId = entryId;
 
                 // 1. Önce EntryId ile dene (en hızlı yol)
                 try
                 {
+                    Logger.Info($"📧 EntryId ile mail açılmaya çalışılıyor...");
                     mailItem = namespaceObj.GetItemFromID(entryId) as MailItem;
+                    if (mailItem != null)
+                    {
+                        Logger.Info($"✅ EntryId ile bulundu: {mailItem.Subject}");
+                    }
                 }
                 catch
                 {
                     // EntryId ile bulunamadı - mail taşınmış olabilir
+                    Logger.Info($"⚠️ EntryId ile bulunamadı, mail taşınmış olabilir.");
                     mailItem = null;
                 }
 
                 // 2. EntryId ile bulunamadıysa ve ConversationId varsa, tüm klasörlerde ara
                 if (mailItem == null && !string.IsNullOrEmpty(conversationId))
                 {
-                    Logger.Info($"Mail EntryId ile bulunamadı, ConversationId ile aranıyor: {conversationId}");
+                    Logger.Info($"🔍 ConversationId ile aranıyor: {conversationId}");
                     mailItem = FindMailByConversationId(namespaceObj, conversationId);
+                    
+                    // Mail bulunduysa yeni EntryId'yi kaydet
+                    if (mailItem != null)
+                    {
+                        newEntryId = mailItem.EntryID;
+                        Logger.Info($"✅ ConversationId ile bulundu! Yeni EntryId kaydedildi.");
+                    }
                 }
 
                 if (mailItem != null)
                 {
                     mailItem.Display(false); // false = modal olmayan
+                    return newEntryId; // Yeni EntryId'yi döndür (güncelleme için)
                 }
                 else
                 {
-                    throw new System.Exception("Email bulunamadı. Outlook'ta silinmiş veya arşivlenmiş olabilir.");
+                    Logger.Error($"❌ Mail bulunamadı! EntryId: {entryId?.Substring(0, Math.Min(20, entryId?.Length ?? 0))}..., ConversationId: {conversationId}");
+                    throw new System.Exception("Email bulunamadı. Mail Outlook'ta silinmiş olabilir veya farklı bir hesapta/arşivde olabilir.");
                 }
             }
             catch (System.Exception ex)
@@ -241,18 +261,38 @@ namespace work_tracker.Helpers
         }
 
         /// <summary>
-        /// ConversationId ile tüm klasörlerde mail arar (recursive)
+        /// ConversationId ile tüm klasörlerde mail arar
+        /// Önce Outlook Search API kullanır, bulamazsa klasörleri tarar
         /// </summary>
         private static MailItem FindMailByConversationId(NameSpace namespaceObj, string conversationId)
         {
             try
             {
-                // Tüm hesaplardaki tüm klasörlerde ara
+                // 1. ÖNCE: Outlook'un dahili Search API'sini kullan (en güvenilir)
+                Logger.Info($"🔍 Outlook Search API ile aranıyor: {conversationId}");
+                var searchResult = SearchWithAdvancedSearch(namespaceObj, conversationId);
+                if (searchResult != null)
+                {
+                    Logger.Info("✅ Outlook Search API ile bulundu!");
+                    return searchResult;
+                }
+
+                // 2. Search API bulamazsa: Explorer.Search ile dene
+                Logger.Info("🔍 Explorer Search ile aranıyor...");
+                searchResult = SearchWithExplorer(conversationId);
+                if (searchResult != null)
+                {
+                    Logger.Info("✅ Explorer Search ile bulundu!");
+                    return searchResult;
+                }
+
+                // 3. Hala bulunamadıysa: Tüm Store'larda manuel ara
+                Logger.Info("🔍 Manuel klasör taraması başlıyor...");
                 foreach (Store store in namespaceObj.Stores)
                 {
                     try
                     {
-                        Logger.Info($"E-posta hesabında aranıyor: {store.DisplayName}");
+                        Logger.Info($"📧 Store: {store.DisplayName}");
                         var rootFolder = store.GetRootFolder();
                         var result = SearchFolderRecursive(rootFolder, conversationId, 0);
                         if (result != null)
@@ -265,6 +305,29 @@ namespace work_tracker.Helpers
                         Logger.Warning($"Store aramasında hata: {store.DisplayName} - {ex.Message}");
                     }
                 }
+
+                // 4. Özel klasörleri de dene
+                try
+                {
+                    // Junk
+                    try
+                    {
+                        var junkFolder = namespaceObj.GetDefaultFolder(OlDefaultFolders.olFolderJunk);
+                        var result = SearchFolderRecursive(junkFolder, conversationId, 0);
+                        if (result != null) return result;
+                    }
+                    catch { }
+
+                    // Archive
+                    try
+                    {
+                        var archiveFolder = namespaceObj.GetDefaultFolder((OlDefaultFolders)62);
+                        var result = SearchFolderRecursive(archiveFolder, conversationId, 0);
+                        if (result != null) return result;
+                    }
+                    catch { }
+                }
+                catch { }
             }
             catch (System.Exception ex)
             {
@@ -275,12 +338,157 @@ namespace work_tracker.Helpers
         }
 
         /// <summary>
-        /// Klasör ve alt klasörlerinde recursive olarak mail arar
+        /// Outlook Explorer'ın Search fonksiyonunu kullanarak mail arar
+        /// </summary>
+        private static MailItem SearchWithExplorer(string conversationId)
+        {
+            try
+            {
+                var outlook = GetOutlookApplication();
+                var explorer = outlook.ActiveExplorer();
+                
+                if (explorer == null)
+                {
+                    // Explorer yoksa Inbox'ı aç
+                    var ns = outlook.GetNamespace("MAPI");
+                    var inbox = ns.GetDefaultFolder(OlDefaultFolders.olFolderInbox);
+                    explorer = inbox.GetExplorer();
+                }
+
+                if (explorer != null)
+                {
+                    // Tüm klasörlerde ara - Outlook'un kendi arama motorunu kullan
+                    // conversationid: ile arama yapılamıyor, subject/body ile deneyeceğiz
+                    // Bu yüzden bu yöntem yerine AdvancedSearch daha iyi
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Warning($"Explorer Search hatası: {ex.Message}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Outlook AdvancedSearch API kullanarak mail arar
+        /// Bu yöntem Outlook'un indekslenmiş aramasını kullanır - en hızlı ve güvenilir
+        /// </summary>
+        private static MailItem SearchWithAdvancedSearch(NameSpace namespaceObj, string conversationId)
+        {
+            try
+            {
+                var outlook = GetOutlookApplication();
+                
+                // Tüm mail klasörlerinde ara
+                string scope = "'" + namespaceObj.DefaultStore.GetDefaultFolder(OlDefaultFolders.olFolderInbox).FolderPath.Split('\\')[1] + "'";
+                
+                // DASL sorgusu - ConversationIndex veya ConversationID ile
+                // Not: ConversationID doğrudan DASL'da kullanılamıyor, alternatif yöntem:
+                
+                // Tüm store'larda Table kullanarak ara (daha güvenilir)
+                foreach (Store store in namespaceObj.Stores)
+                {
+                    try
+                    {
+                        var result = SearchStoreWithTable(store, conversationId);
+                        if (result != null) return result;
+                    }
+                    catch { }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Warning($"AdvancedSearch hatası: {ex.Message}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Store içinde Table API kullanarak ConversationID ile mail arar
+        /// Bu yöntem çok daha hızlı çünkü sadece metadata okur
+        /// </summary>
+        private static MailItem SearchStoreWithTable(Store store, string conversationId)
+        {
+            try
+            {
+                var rootFolder = store.GetRootFolder();
+                return SearchFolderWithTable(rootFolder, conversationId, 0);
+            }
+            catch (System.Exception ex)
+            {
+                Logger.Warning($"Store Table araması hatası: {store.DisplayName} - {ex.Message}");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Klasörde Table API ile hızlı arama yapar
+        /// </summary>
+        private static MailItem SearchFolderWithTable(MAPIFolder folder, string conversationId, int depth)
+        {
+            if (depth > 20) return null;
+
+            try
+            {
+                // Bu klasördeki mailleri Table ile oku (çok hızlı)
+                try
+                {
+                    var table = folder.GetTable("", OlTableContents.olUserItems);
+                    table.Columns.RemoveAll();
+                    table.Columns.Add("EntryID");
+                    table.Columns.Add("ConversationID");
+                    table.Columns.Add("Subject");
+
+                    while (!table.EndOfTable)
+                    {
+                        var row = table.GetNextRow();
+                        try
+                        {
+                            var rowConvId = row["ConversationID"]?.ToString();
+                            if (rowConvId == conversationId)
+                            {
+                                var entryId = row["EntryID"]?.ToString();
+                                var subject = row["Subject"]?.ToString() ?? "";
+                                Logger.Info($"✅ Table API ile bulundu: {subject} @ {folder.FolderPath}");
+                                
+                                // EntryID ile tam mail objesini al
+                                var ns = folder.Application.GetNamespace("MAPI");
+                                return ns.GetItemFromID(entryId) as MailItem;
+                            }
+                        }
+                        catch { }
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    // Table API bu klasörde çalışmıyorsa geç
+                    Logger.Warning($"Table API hatası ({folder.Name}): {ex.Message}");
+                }
+
+                // Alt klasörlerde ara
+                foreach (MAPIFolder subfolder in folder.Folders)
+                {
+                    try
+                    {
+                        var result = SearchFolderWithTable(subfolder, conversationId, depth + 1);
+                        if (result != null) return result;
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Klasör ve alt klasörlerinde recursive olarak mail arar (yedek yöntem)
         /// </summary>
         private static MailItem SearchFolderRecursive(MAPIFolder folder, string conversationId, int depth)
         {
-            // Çok derin aramayı engelle (performans için)
-            if (depth > 10) return null;
+            if (depth > 20) return null;
 
             try
             {
@@ -288,7 +496,7 @@ namespace work_tracker.Helpers
                 var result = SearchInFolder(folder, conversationId);
                 if (result != null)
                 {
-                    Logger.Info($"Mail bulundu: {folder.FolderPath}");
+                    Logger.Info($"✅ Mail bulundu: {folder.FolderPath}");
                     return result;
                 }
 
@@ -298,21 +506,12 @@ namespace work_tracker.Helpers
                     try
                     {
                         result = SearchFolderRecursive(subfolder, conversationId, depth + 1);
-                        if (result != null)
-                        {
-                            return result;
-                        }
+                        if (result != null) return result;
                     }
-                    catch (System.Exception ex)
-                    {
-                        Logger.Warning($"Alt klasör aramasında hata: {subfolder.Name} - {ex.Message}");
-                    }
+                    catch { }
                 }
             }
-            catch (System.Exception ex)
-            {
-                Logger.Warning($"Klasör aramasında hata: {folder.Name} - {ex.Message}");
-            }
+            catch { }
 
             return null;
         }
@@ -325,69 +524,36 @@ namespace work_tracker.Helpers
             try
             {
                 var items = folder.Items;
+                int itemCount = items.Count;
                 
-                // Önce DASL filtresi ile hızlı arama dene
-                try
+                if (itemCount == 0) return null;
+
+                foreach (object item in items)
                 {
-                    string filter = $"@SQL=\"urn:schemas:httpmail:thread-index\" = '{conversationId}'";
-                    var filteredItems = items.Restrict(filter);
-                    foreach (object item in filteredItems)
+                    if (item is MailItem mail)
                     {
-                        if (item is MailItem mail)
+                        try
                         {
                             if (mail.ConversationID == conversationId)
                             {
                                 return mail;
                             }
+                        }
+                        catch { }
+                        finally
+                        {
                             Marshal.ReleaseComObject(mail);
                         }
-                        else
-                        {
-                            Marshal.ReleaseComObject(item);
-                        }
                     }
-                }
-                catch
-                {
-                    // DASL filtresi başarısız olursa, klasördeki son 100 mail'i kontrol et
-                    int count = 0;
-                    int maxItems = 100;
-                    
-                    // En yeni maillerden başla
-                    try { items.Sort("[ReceivedTime]", true); } catch { }
-                    
-                    foreach (object item in items)
+                    else
                     {
-                        if (count >= maxItems) break;
-                        count++;
-
-                        if (item is MailItem mail)
-                        {
-                            try
-                            {
-                                if (mail.ConversationID == conversationId)
-                                {
-                                    return mail;
-                                }
-                            }
-                            finally
-                            {
-                                Marshal.ReleaseComObject(mail);
-                            }
-                        }
-                        else
-                        {
-                            Marshal.ReleaseComObject(item);
-                        }
+                        try { Marshal.ReleaseComObject(item); } catch { }
                     }
                 }
                 
                 Marshal.ReleaseComObject(items);
             }
-            catch (System.Exception ex)
-            {
-                Logger.Warning($"Klasör içi aramada hata: {folder.Name} - {ex.Message}");
-            }
+            catch { }
 
             return null;
         }

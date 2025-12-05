@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.22</MinimumRequiredVersion>
-    <ApplicationRevision>33</ApplicationRevision>
+    <ApplicationRevision>35</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -129,6 +129,18 @@
     <Compile Include="Forms\DashboardForm.Designer.cs">
       <DependentUpon>DashboardForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\CommentSearchForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CommentSearchForm.Designer.cs">
+      <DependentUpon>CommentSearchForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\EmailToWorkItemForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\EmailToWorkItemForm.Designer.cs">
+      <DependentUpon>EmailToWorkItemForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ReminderPopupForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -169,6 +181,7 @@
       <DependentUpon>WorkItemHierarchyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\DevelopmentTimeHelper.cs" />
+    <Compile Include="Helpers\EmailToWorkItemConverter.cs" />
     <Compile Include="Helpers\FileStorageHelper.cs" />
     <Compile Include="Helpers\HyperlinkHelper.cs" />
     <Compile Include="Helpers\Logger.cs" />
@@ -381,6 +394,12 @@
     <Compile Include="Services\WorkReminderService.cs" />
     <EmbeddedResource Include="Forms\DailyActivityReportForm.resx">
       <DependentUpon>DailyActivityReportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CommentSearchForm.resx">
+      <DependentUpon>CommentSearchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\EmailToWorkItemForm.resx">
+      <DependentUpon>EmailToWorkItemForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
