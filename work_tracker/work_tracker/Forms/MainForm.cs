@@ -27,7 +27,6 @@ namespace work_tracker
         private WikiForm wikiForm;
         private TimeEntryForm timeEntryForm;
         private WorkSummaryForm workSummaryForm;
-        private WorkItemHierarchyForm hierarchyForm;
         private DashboardForm dashboardForm;
         private CommentSearchForm commentSearchForm;
         private EmailToWorkItemForm emailToWorkItemForm;
@@ -178,11 +177,6 @@ namespace work_tracker
         private void btnWorkSummary_ItemClick(object sender, ItemClickEventArgs e)
         {
             workSummaryForm = OpenOrActivateForm(workSummaryForm, () => new WorkSummaryForm(), f => workSummaryForm = f);
-        }
-
-        private void btnHierarchy_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            hierarchyForm = OpenOrActivateForm(hierarchyForm, () => new WorkItemHierarchyForm(), f => hierarchyForm = f);
         }
 
         private void btnDashboard_ItemClick(object sender, ItemClickEventArgs e)

@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.22</MinimumRequiredVersion>
-    <ApplicationRevision>38</ApplicationRevision>
+    <ApplicationRevision>39</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -176,12 +176,6 @@
     </Compile>
     <Compile Include="Forms\WorkSummaryForm.Designer.cs">
       <DependentUpon>WorkSummaryForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\WorkItemHierarchyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\WorkItemHierarchyForm.Designer.cs">
-      <DependentUpon>WorkItemHierarchyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers\DevelopmentTimeHelper.cs" />
     <Compile Include="Helpers\EmailToWorkItemConverter.cs" />

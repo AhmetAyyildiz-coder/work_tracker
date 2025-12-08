@@ -9,7 +9,10 @@ namespace work_tracker
         private RibbonControl ribbonControl1;
         private RibbonStatusBar ribbonStatusBar1;
         private RibbonPage ribbonPageHome;
-        private RibbonPageGroup ribbonPageGroupWorkflow;
+        private RibbonPageGroup ribbonPageGroupBoards;
+        private RibbonPageGroup ribbonPageGroupTasks;
+        private RibbonPageGroup ribbonPageGroupTracking;
+        private RibbonPageGroup ribbonPageGroupTools;
         private RibbonPageGroup ribbonPageGroupSettings;
         private RibbonPageGroup ribbonPageGroupHelp;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
@@ -32,7 +35,6 @@ namespace work_tracker
         private BarButtonItem btnTimeEntry;
         private BarButtonItem btnReminder;
         private BarButtonItem btnWorkSummary;
-        private BarButtonItem btnHierarchy;
         private BarButtonItem btnDashboard;
         private BarButtonItem btnCommentSearch;
         private BarButtonItem btnEmailToWorkItem;
@@ -78,7 +80,6 @@ namespace work_tracker
             this.btnTimeEntry = new DevExpress.XtraBars.BarButtonItem();
             this.btnReminder = new DevExpress.XtraBars.BarButtonItem();
             this.btnWorkSummary = new DevExpress.XtraBars.BarButtonItem();
-            this.btnHierarchy = new DevExpress.XtraBars.BarButtonItem();
             this.btnDashboard = new DevExpress.XtraBars.BarButtonItem();
             this.btnCommentSearch = new DevExpress.XtraBars.BarButtonItem();
             this.btnEmailToWorkItem = new DevExpress.XtraBars.BarButtonItem();
@@ -89,7 +90,10 @@ namespace work_tracker
             this.barStaticDate = new DevExpress.XtraBars.BarStaticItem();
             this.barStaticDbStatus = new DevExpress.XtraBars.BarStaticItem();
             this.ribbonPageHome = new DevExpress.XtraBars.Ribbon.RibbonPage();
-            this.ribbonPageGroupWorkflow = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPageGroupBoards = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPageGroupTasks = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPageGroupTracking = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.ribbonPageGroupTools = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupSettings = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonPageGroupHelp = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
@@ -115,7 +119,6 @@ namespace work_tracker
             this.btnTimeEntry,
             this.btnReminder,
             this.btnWorkSummary,
-            this.btnHierarchy,
             this.btnCommentSearch,
             this.btnEmailToWorkItem,
             this.btnAbout,
@@ -241,13 +244,6 @@ namespace work_tracker
             this.btnWorkSummary.Name = "btnWorkSummary";
             this.btnWorkSummary.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnWorkSummary_ItemClick);
             //
-            // btnHierarchy
-            //
-            this.btnHierarchy.Caption = "🔗 İş Hiyerarşisi";
-            this.btnHierarchy.Id = 16;
-            this.btnHierarchy.Name = "btnHierarchy";
-            this.btnHierarchy.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnHierarchy_ItemClick);
-            //
             // btnDashboard
             //
             this.btnDashboard.Caption = "📊 Dashboard";
@@ -314,28 +310,45 @@ namespace work_tracker
             // ribbonPageHome
             // 
             this.ribbonPageHome.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
-            this.ribbonPageGroupWorkflow,
+            this.ribbonPageGroupBoards,
+            this.ribbonPageGroupTasks,
+            this.ribbonPageGroupTracking,
+            this.ribbonPageGroupTools,
             this.ribbonPageGroupSettings,
             this.ribbonPageGroupHelp});
             this.ribbonPageHome.Name = "ribbonPageHome";
             this.ribbonPageHome.Text = "Ana Sayfa";
             // 
-            // ribbonPageGroupWorkflow
+            // ribbonPageGroupBoards
             // 
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnDashboard);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnInbox);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnKanban);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnScrum);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnOtopark);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnMeetings);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnAllWorkItems);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnTimeEntry);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnWorkSummary);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnHierarchy);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnCommentSearch);
-            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnEmailToWorkItem);
-            this.ribbonPageGroupWorkflow.Name = "ribbonPageGroupWorkflow";
-            this.ribbonPageGroupWorkflow.Text = "İş Akışı";
+            this.ribbonPageGroupBoards.ItemLinks.Add(this.btnDashboard);
+            this.ribbonPageGroupBoards.ItemLinks.Add(this.btnKanban);
+            this.ribbonPageGroupBoards.ItemLinks.Add(this.btnScrum);
+            this.ribbonPageGroupBoards.Name = "ribbonPageGroupBoards";
+            this.ribbonPageGroupBoards.Text = "Panolar";
+            // 
+            // ribbonPageGroupTasks
+            // 
+            this.ribbonPageGroupTasks.ItemLinks.Add(this.btnInbox);
+            this.ribbonPageGroupTasks.ItemLinks.Add(this.btnOtopark);
+            this.ribbonPageGroupTasks.ItemLinks.Add(this.btnAllWorkItems);
+            this.ribbonPageGroupTasks.Name = "ribbonPageGroupTasks";
+            this.ribbonPageGroupTasks.Text = "İşler";
+            // 
+            // ribbonPageGroupTracking
+            // 
+            this.ribbonPageGroupTracking.ItemLinks.Add(this.btnTimeEntry);
+            this.ribbonPageGroupTracking.ItemLinks.Add(this.btnMeetings);
+            this.ribbonPageGroupTracking.ItemLinks.Add(this.btnWorkSummary);
+            this.ribbonPageGroupTracking.Name = "ribbonPageGroupTracking";
+            this.ribbonPageGroupTracking.Text = "Takip";
+            // 
+            // ribbonPageGroupTools
+            // 
+            this.ribbonPageGroupTools.ItemLinks.Add(this.btnCommentSearch);
+            this.ribbonPageGroupTools.ItemLinks.Add(this.btnEmailToWorkItem);
+            this.ribbonPageGroupTools.Name = "ribbonPageGroupTools";
+            this.ribbonPageGroupTools.Text = "Araçlar";
             // 
             // ribbonPageGroupSettings
             // 

@@ -71,14 +71,11 @@ namespace work_tracker.Forms
             toolbar.LinksPersistInfo.Add(new LinkPersistInfo(btnMoveToKanban));
             barManager.Items.Add(btnMoveToKanban);
 
-            // Ayırıcı
-            toolbar.LinksPersistInfo.Add(new LinkPersistInfo(new BarItemLink(), true));
-
-            // Arşivle butonu
+            // Arşivle butonu (ayırıcı ile)
             var btnArchive = new BarButtonItem();
             btnArchive.Caption = "📦 Arşivle";
             btnArchive.ItemClick += (s, e) => ArchiveSelected();
-            toolbar.LinksPersistInfo.Add(new LinkPersistInfo(btnArchive));
+            toolbar.LinksPersistInfo.Add(new LinkPersistInfo(btnArchive, true));
             barManager.Items.Add(btnArchive);
 
             // Sil butonu
@@ -88,10 +85,7 @@ namespace work_tracker.Forms
             toolbar.LinksPersistInfo.Add(new LinkPersistInfo(btnDelete));
             barManager.Items.Add(btnDelete);
 
-            // Ayırıcı
-            toolbar.LinksPersistInfo.Add(new LinkPersistInfo(new BarItemLink(), true));
-
-            // Arama kutusu
+            // Arama kutusu (ayırıcı ile)
             var searchRepo = new DevExpress.XtraEditors.Repository.RepositoryItemTextEdit();
             searchRepo.NullValuePrompt = "🔍 Ara...";
             searchRepo.NullValuePromptShowForEmptyValue = true;
@@ -100,7 +94,7 @@ namespace work_tracker.Forms
             searchEdit.Width = 200;
             searchEdit.Edit = searchRepo;
             searchEdit.EditValueChanged += (s, e) => FilterData();
-            toolbar.LinksPersistInfo.Add(new LinkPersistInfo(searchEdit));
+            toolbar.LinksPersistInfo.Add(new LinkPersistInfo(searchEdit, true));
             barManager.Items.Add(searchEdit);
             barManager.RepositoryItems.Add(searchRepo);
 
@@ -129,11 +123,9 @@ namespace work_tracker.Forms
             menuMoveToKanban.ItemClick += (s, e) => MoveToBoard("Kanban");
             contextMenu.LinksPersistInfo.Add(new LinkPersistInfo(menuMoveToKanban));
             
-            contextMenu.LinksPersistInfo.Add(new LinkPersistInfo(new BarItemLink(), true));
-            
             var menuArchive = new BarButtonItem(barManager, "📦 Arşivle");
             menuArchive.ItemClick += (s, e) => ArchiveSelected();
-            contextMenu.LinksPersistInfo.Add(new LinkPersistInfo(menuArchive));
+            contextMenu.LinksPersistInfo.Add(new LinkPersistInfo(menuArchive, true));
             
             var menuDelete = new BarButtonItem(barManager, "🗑️ Sil");
             menuDelete.ItemClick += (s, e) => DeleteSelected();
