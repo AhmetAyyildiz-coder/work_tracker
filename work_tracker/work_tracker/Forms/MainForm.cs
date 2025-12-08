@@ -31,6 +31,7 @@ namespace work_tracker
         private DashboardForm dashboardForm;
         private CommentSearchForm commentSearchForm;
         private EmailToWorkItemForm emailToWorkItemForm;
+        private OtoparkForm otoparkForm;
 
         // Günlük hatırlatıcı servisi
         private WorkReminderService _reminderService;
@@ -122,6 +123,11 @@ namespace work_tracker
         private void btnScrum_ItemClick(object sender, ItemClickEventArgs e)
         {
             scrumForm = OpenOrActivateForm(scrumForm, () => new ScrumBoardForm(), f => scrumForm = f);
+        }
+
+        private void btnOtopark_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            otoparkForm = OpenOrActivateForm(otoparkForm, () => new OtoparkForm(), f => otoparkForm = f);
         }
 
         private void btnMeetings_ItemClick(object sender, ItemClickEventArgs e)
@@ -317,6 +323,10 @@ namespace work_tracker
 
                     // Status bar'ı güncelle
                     UpdateDbStatus(true, workItemCount);
+
+                    // Varsayılan Kanban sütunlarını kontrol et (Beklemede dahil)
+                    db.EnsureDefaultKanbanColumns();
+                    Logger.Info("Varsayılan Kanban sütunları kontrol edildi");
 
                     // Mevcut email kayıtlarını migrate et (ConversationId eksik olanlar için)
                     MigrateExistingEmailsIfNeeded(db);

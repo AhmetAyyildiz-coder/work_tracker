@@ -124,6 +124,31 @@ namespace work_tracker.Data.Entities
         public const string PhoneCall = "PhoneCall";    // Telefon görüşmesi
         public const string Work = "Work";             // İş
         public const string Meeting = "Meeting";       // Toplantı
+        public const string Break = "Break";           // Mola (yemek, kahve, vb.)
         public const string Other = "Other";           // Diğer
+
+        /// <summary>
+        /// Aktivite tipinin Türkçe karşılığını döndürür
+        /// </summary>
+        public static string GetDisplayName(string activityType)
+        {
+            switch (activityType)
+            {
+                case PhoneCall: return "Telefon Görüşmesi";
+                case Work: return "İş";
+                case Meeting: return "Toplantı";
+                case Break: return "Mola";
+                case Other: return "Diğer";
+                default: return activityType;
+            }
+        }
+
+        /// <summary>
+        /// Mola olup olmadığını kontrol eder (raporlardan düşülecek)
+        /// </summary>
+        public static bool IsBreak(string activityType)
+        {
+            return activityType == Break;
+        }
     }
 }

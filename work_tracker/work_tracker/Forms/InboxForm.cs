@@ -164,6 +164,54 @@ namespace work_tracker.Forms
                 XtraMessageBox.Show("Lütfen sınıflandırmak için bir iş talebi seçin!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+        private void btnSendToOtopark_Click(object sender, EventArgs e)
+        {
+            var view = gridControl1.MainView as GridView;
+            if (view != null && view.FocusedRowHandle >= 0)
+            {
+                var workItemId = (int)view.GetRowCellValue(view.FocusedRowHandle, "Id");
+                var title = view.GetRowCellValue(view.FocusedRowHandle, "Title")?.ToString();
+
+                var result = XtraMessageBox.Show(
+                    $"'{title}' iş talebini Otopark'a göndermek istediğinize emin misiniz?\n\nOtopark: Düşük öncelikli, 'bir gün yapılabilir' işler için.",
+                    "Otopark'a Gönder",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    var workItem = _context.WorkItems.Find(workItemId);
+                    if (workItem != null)
+                    {
+                        workItem.Board = "Otopark";
+                        workItem.Status = "Bekliyor";
+
+                        // Aktivite kaydı
+                        _context.WorkItemActivities.Add(new WorkItemActivity
+                        {
+                            WorkItemId = workItem.Id,
+                            ActivityType = "BoardChange",
+                            OldValue = "Inbox",
+                            NewValue = "Otopark",
+                            Description = "İş Inbox'tan Otopark'a taşındı",
+                            CreatedBy = Environment.UserName,
+                            CreatedAt = DateTime.Now
+                        });
+
+                        _context.SaveChanges();
+                        LoadInboxItems();
+                        
+                        XtraMessageBox.Show("İş başarıyla Otopark'a taşındı.", "Başarılı", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            else
+            {
+                XtraMessageBox.Show("Lütfen Otopark'a göndermek için bir iş talebi seçin!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
     }
 }
 

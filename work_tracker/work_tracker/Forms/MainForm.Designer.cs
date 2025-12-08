@@ -37,6 +37,7 @@ namespace work_tracker
         private BarButtonItem btnCommentSearch;
         private BarButtonItem btnEmailToWorkItem;
         private BarButtonItem btnAbout;
+        private BarButtonItem btnOtopark;
         private BarStaticItem barStaticVersion;
         private BarStaticItem barStaticUser;
         private BarStaticItem barStaticDate;
@@ -82,6 +83,7 @@ namespace work_tracker
             this.btnCommentSearch = new DevExpress.XtraBars.BarButtonItem();
             this.btnEmailToWorkItem = new DevExpress.XtraBars.BarButtonItem();
             this.btnAbout = new DevExpress.XtraBars.BarButtonItem();
+            this.btnOtopark = new DevExpress.XtraBars.BarButtonItem();
             this.barStaticVersion = new DevExpress.XtraBars.BarStaticItem();
             this.barStaticUser = new DevExpress.XtraBars.BarStaticItem();
             this.barStaticDate = new DevExpress.XtraBars.BarStaticItem();
@@ -117,6 +119,7 @@ namespace work_tracker
             this.btnCommentSearch,
             this.btnEmailToWorkItem,
             this.btnAbout,
+            this.btnOtopark,
             this.barStaticVersion,
             this.barStaticUser,
             this.barStaticDate,
@@ -273,6 +276,13 @@ namespace work_tracker
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnAbout_ItemClick);
             //
+            // btnOtopark
+            //
+            this.btnOtopark.Caption = "🚗 Otopark";
+            this.btnOtopark.Id = 25;
+            this.btnOtopark.Name = "btnOtopark";
+            this.btnOtopark.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnOtopark_ItemClick);
+            //
             // barStaticVersion
             //
             this.barStaticVersion.Caption = "v1.2.0";
@@ -316,6 +326,7 @@ namespace work_tracker
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnInbox);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnKanban);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnScrum);
+            this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnOtopark);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnMeetings);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnAllWorkItems);
             this.ribbonPageGroupWorkflow.ItemLinks.Add(this.btnTimeEntry);

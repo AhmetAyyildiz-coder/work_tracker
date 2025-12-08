@@ -1,5 +1,6 @@
 using System;
 using System.Data.Entity;
+using System.Linq;
 using work_tracker.Data.Entities;
 
 namespace work_tracker.Data
@@ -175,6 +176,39 @@ namespace work_tracker.Data
                 .HasIndex(r => new { r.WorkItemId1, r.WorkItemId2, r.RelationType })
                 .IsUnique()
                 .HasName("IX_WorkItemRelations_Unique");
+        }
+
+        /// <summary>
+        /// Varsayılan Kanban sütunlarını kontrol eder ve eksik olanları ekler
+        /// </summary>
+        public void EnsureDefaultKanbanColumns()
+        {
+            var defaultColumns = new[]
+            {
+                new { Board = "Kanban", ColumnName = "GelenAcilIsler", DisplayOrder = 1, WipLimit = (int?)null },
+                new { Board = "Kanban", ColumnName = "Sirada", DisplayOrder = 2, WipLimit = (int?)10 },
+                new { Board = "Kanban", ColumnName = "MudahaleEdiliyor", DisplayOrder = 3, WipLimit = (int?)3 },
+                new { Board = "Kanban", ColumnName = "Beklemede", DisplayOrder = 4, WipLimit = (int?)5 },
+                new { Board = "Kanban", ColumnName = "DogrulamaBekliyor", DisplayOrder = 5, WipLimit = (int?)null },
+                new { Board = "Kanban", ColumnName = "Cozuldu", DisplayOrder = 6, WipLimit = (int?)null }
+            };
+
+            foreach (var col in defaultColumns)
+            {
+                var exists = KanbanColumnSettings.Any(c => c.Board == col.Board && c.ColumnName == col.ColumnName);
+                if (!exists)
+                {
+                    KanbanColumnSettings.Add(new KanbanColumnSetting
+                    {
+                        Board = col.Board,
+                        ColumnName = col.ColumnName,
+                        DisplayOrder = col.DisplayOrder,
+                        WipLimit = col.WipLimit
+                    });
+                }
+            }
+
+            SaveChanges();
         }
     }
 }

@@ -141,6 +141,9 @@
     <Compile Include="Forms\EmailToWorkItemForm.Designer.cs">
       <DependentUpon>EmailToWorkItemForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\OtoparkForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\ReminderPopupForm.cs">
       <SubType>Form</SubType>
     </Compile>

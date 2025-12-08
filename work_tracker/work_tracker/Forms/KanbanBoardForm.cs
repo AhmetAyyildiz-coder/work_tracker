@@ -126,7 +126,16 @@ namespace work_tracker.Forms
             panel.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             panel.AllowDrop = true;
             panel.Tag = columnSetting.ColumnName;
-            panel.BackColor = SystemColors.Control;
+            
+            // Beklemede sütununa özel arka plan rengi
+            if (columnSetting.ColumnName == "Beklemede")
+            {
+                panel.BackColor = Color.FromArgb(255, 248, 225); // Açık sarı - dikkat çekici
+            }
+            else
+            {
+                panel.BackColor = SystemColors.Control;
+            }
 
             // Başlık paneli - minimal (Scrum teması)
             var headerPanel = new PanelControl();
@@ -190,7 +199,10 @@ namespace work_tracker.Forms
             scroll.AutoScroll = true;
             scroll.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             scroll.Tag = columnSetting.ColumnName;
-            scroll.BackColor = SystemColors.Control;
+            // Beklemede sütununa özel arka plan rengi
+            scroll.BackColor = columnSetting.ColumnName == "Beklemede" 
+                ? Color.FromArgb(255, 248, 225) // Açık sarı
+                : SystemColors.Control;
             scroll.AllowDrop = true;
             panel.Controls.Add(scroll);
 
@@ -245,6 +257,8 @@ namespace work_tracker.Forms
                     return "Müdahale Ediliyor";
                 case "DogrulamaBekliyor":
                     return "Doğrulama Bekliyor";
+                case "Beklemede":
+                    return "⏸️ Beklemede";
                 case "Cozuldu":
                     return "Çözüldü";
                 default:

@@ -14,6 +14,7 @@ namespace work_tracker.Forms
         private SimpleButton btnDeleteWorkItem;
         private SimpleButton btnRefresh;
         private SimpleButton btnSendToTriage;
+        private SimpleButton btnSendToOtopark;
         private PanelControl panelControl1;
 
         protected override void Dispose(bool disposing)
@@ -38,6 +39,7 @@ namespace work_tracker.Forms
             this.btnDeleteWorkItem = new DevExpress.XtraEditors.SimpleButton();
             this.btnRefresh = new DevExpress.XtraEditors.SimpleButton();
             this.btnSendToTriage = new DevExpress.XtraEditors.SimpleButton();
+            this.btnSendToOtopark = new DevExpress.XtraEditors.SimpleButton();
             this.panelControl1 = new DevExpress.XtraEditors.PanelControl();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).BeginInit();
@@ -109,6 +111,15 @@ namespace work_tracker.Forms
             this.btnSendToTriage.Text = "Sınıflandır >";
             this.btnSendToTriage.Click += new System.EventHandler(this.btnSendToTriage_Click);
             // 
+            // btnSendToOtopark
+            // 
+            this.btnSendToOtopark.Location = new System.Drawing.Point(640, 10);
+            this.btnSendToOtopark.Name = "btnSendToOtopark";
+            this.btnSendToOtopark.Size = new System.Drawing.Size(130, 30);
+            this.btnSendToOtopark.TabIndex = 6;
+            this.btnSendToOtopark.Text = "🚗 Otopark'a";
+            this.btnSendToOtopark.Click += new System.EventHandler(this.btnSendToOtopark_Click);
+            // 
             // panelControl1
             // 
             this.panelControl1.Controls.Add(this.btnNewWorkItem);
@@ -116,6 +127,7 @@ namespace work_tracker.Forms
             this.panelControl1.Controls.Add(this.btnDeleteWorkItem);
             this.panelControl1.Controls.Add(this.btnRefresh);
             this.panelControl1.Controls.Add(this.btnSendToTriage);
+            this.panelControl1.Controls.Add(this.btnSendToOtopark);
             this.panelControl1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelControl1.Location = new System.Drawing.Point(0, 0);
             this.panelControl1.Name = "panelControl1";

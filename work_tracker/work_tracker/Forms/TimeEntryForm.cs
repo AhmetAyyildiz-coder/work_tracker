@@ -42,6 +42,7 @@ namespace work_tracker.Forms
             cmbActivityType.Properties.Items.Add(TimeEntryActivityTypes.PhoneCall);
             cmbActivityType.Properties.Items.Add(TimeEntryActivityTypes.Work);
             cmbActivityType.Properties.Items.Add(TimeEntryActivityTypes.Meeting);
+            cmbActivityType.Properties.Items.Add(TimeEntryActivityTypes.Break);
             cmbActivityType.Properties.Items.Add(TimeEntryActivityTypes.Other);
             cmbActivityType.SelectedIndex = 0;
         }
