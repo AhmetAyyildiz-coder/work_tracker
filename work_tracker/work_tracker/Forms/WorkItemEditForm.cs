@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
 using DevExpress.XtraEditors.Controls;
@@ -167,6 +169,26 @@ namespace work_tracker.Forms
                 XtraMessageBox.Show("Talep eden kişi seçilmelidir!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cmbRequestedBy.Focus();
                 return;
+            }
+
+            // Yeni iş ekliyorsak benzer iş kontrolü yap
+            if (!_workItemId.HasValue)
+            {
+                var similarItems = FindSimilarWorkItems(txtTitle.Text, txtDescription.Text);
+                if (similarItems.Any())
+                {
+                    var warningMessage = BuildSimilarItemsWarning(similarItems);
+                    var result = XtraMessageBox.Show(
+                        warningMessage,
+                        "⚠️ Benzer İş Uyarısı",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+
+                    if (result == DialogResult.No)
+                    {
+                        return; // Kullanıcı vazgeçti
+                    }
+                }
             }
 
             try
@@ -642,6 +664,191 @@ namespace work_tracker.Forms
                 }
             }
         }
+
+        #region Benzer İş Kontrolü
+
+        /// <summary>
+        /// Yeni eklenen işe benzer mevcut işleri bulur
+        /// </summary>
+        private List<SimilarWorkItemResult> FindSimilarWorkItems(string title, string description)
+        {
+            var results = new List<SimilarWorkItemResult>();
+            
+            // Başlık ve açıklamadan anahtar kelimeleri çıkar
+            var inputKeywords = ExtractKeywords(title + " " + description);
+            
+            if (!inputKeywords.Any())
+                return results;
+
+            // Tüm işleri getir (son 6 ay veya aktif olanlar)
+            var cutoffDate = DateTime.Now.AddMonths(-6);
+            var existingItems = _context.WorkItems
+                .Where(w => w.CreatedAt >= cutoffDate || 
+                           (w.Status != "Cozuldu" && w.Status != "Arşivlendi"))
+                .Select(w => new 
+                {
+                    w.Id,
+                    w.Title,
+                    w.Description,
+                    w.Status,
+                    w.Board,
+                    w.CreatedAt
+                })
+                .ToList();
+
+            foreach (var item in existingItems)
+            {
+                var itemKeywords = ExtractKeywords(item.Title + " " + (item.Description ?? ""));
+                var similarity = CalculateSimilarity(inputKeywords, itemKeywords);
+                
+                // %40'tan fazla benzerlik varsa listeye ekle
+                if (similarity >= 0.40)
+                {
+                    results.Add(new SimilarWorkItemResult
+                    {
+                        Id = item.Id,
+                        Title = item.Title,
+                        Status = item.Status,
+                        Board = item.Board,
+                        CreatedAt = item.CreatedAt,
+                        SimilarityScore = similarity
+                    });
+                }
+            }
+
+            // En benzer olanları üstte göster, max 5 tane
+            return results
+                .OrderByDescending(r => r.SimilarityScore)
+                .Take(5)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Metinden anahtar kelimeleri çıkarır (stop words hariç)
+        /// </summary>
+        private HashSet<string> ExtractKeywords(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return new HashSet<string>();
+
+            // Türkçe ve İngilizce stop words
+            var stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                // Türkçe
+                "bir", "ve", "ile", "için", "bu", "da", "de", "mi", "mu", "mı", "mü",
+                "ne", "olan", "olarak", "gibi", "daha", "çok", "en", "ama", "veya",
+                "ya", "yani", "ki", "her", "hem", "kadar", "sonra", "önce", "ayrıca",
+                "şu", "o", "ben", "sen", "biz", "siz", "onlar", "bunu", "şunu", "onu",
+                "var", "yok", "ise", "iyi", "kötü", "büyük", "küçük", "yeni", "eski",
+                "tüm", "bütün", "bazı", "hangi", "nasıl", "neden", "nerede", "zaman",
+                // İngilizce
+                "the", "a", "an", "is", "are", "was", "were", "be", "been", "being",
+                "have", "has", "had", "do", "does", "did", "will", "would", "could",
+                "should", "may", "might", "must", "shall", "can", "need", "dare",
+                "to", "of", "in", "for", "on", "with", "at", "by", "from", "as",
+                "into", "through", "during", "before", "after", "above", "below",
+                "this", "that", "these", "those", "it", "its", "and", "but", "or",
+                "not", "no", "yes", "all", "each", "every", "both", "few", "more",
+                "most", "other", "some", "such", "only", "own", "same", "so", "than"
+            };
+
+            // Metni küçük harfe çevir ve kelimelere ayır
+            var words = Regex.Split(text.ToLower(), @"[\s\p{P}]+")
+                .Where(w => w.Length >= 3) // En az 3 karakter
+                .Where(w => !stopWords.Contains(w))
+                .Where(w => !Regex.IsMatch(w, @"^\d+$")) // Sadece rakamları çıkar
+                .ToHashSet();
+
+            return words;
+        }
+
+        /// <summary>
+        /// İki kelime seti arasındaki benzerliği hesaplar (Jaccard similarity)
+        /// </summary>
+        private double CalculateSimilarity(HashSet<string> set1, HashSet<string> set2)
+        {
+            if (!set1.Any() || !set2.Any())
+                return 0;
+
+            var intersection = set1.Intersect(set2, StringComparer.OrdinalIgnoreCase).Count();
+            var union = set1.Union(set2, StringComparer.OrdinalIgnoreCase).Count();
+
+            return (double)intersection / union;
+        }
+
+        /// <summary>
+        /// Benzer işler için uyarı mesajı oluşturur
+        /// </summary>
+        private string BuildSimilarItemsWarning(List<SimilarWorkItemResult> similarItems)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("⚠️ DİKKAT: Benzer iş kayıtları bulundu!\n");
+            sb.AppendLine("Aşağıdaki işler girdiğiniz iş ile benzerlik gösteriyor:\n");
+            sb.AppendLine("─────────────────────────────────────────");
+
+            foreach (var item in similarItems)
+            {
+                var statusDisplay = GetStatusDisplay(item.Status);
+                var boardDisplay = GetBoardDisplay(item.Board);
+                var similarityPercent = (int)(item.SimilarityScore * 100);
+                
+                sb.AppendLine($"\n📌 #{item.Id}: {TruncateText(item.Title, 50)}");
+                sb.AppendLine($"   📍 {boardDisplay} | {statusDisplay}");
+                sb.AppendLine($"   📅 {item.CreatedAt:dd.MM.yyyy} | 🎯 %{similarityPercent} benzerlik");
+            }
+
+            sb.AppendLine("\n─────────────────────────────────────────");
+            sb.AppendLine("\nYine de bu işi eklemek istiyor musunuz?");
+
+            return sb.ToString();
+        }
+
+        private string GetStatusDisplay(string status)
+        {
+            return status switch
+            {
+                "Bekliyor" => "⏳ Bekliyor",
+                "Beklemede" => "⏸️ Beklemede",
+                "MudahaleEdiliyor" => "🔧 Müdahale Ediliyor",
+                "Cozuldu" => "✅ Çözüldü",
+                "Arşivlendi" => "📦 Arşivlendi",
+                _ => status
+            };
+        }
+
+        private string GetBoardDisplay(string board)
+        {
+            return board switch
+            {
+                "Inbox" => "📥 Gelen Kutusu",
+                "Kanban" => "📋 Kanban",
+                "Scrum" => "🏃 Scrum",
+                "Otopark" => "🚗 Otopark",
+                _ => board
+            };
+        }
+
+        private string TruncateText(string text, int maxLength)
+        {
+            if (string.IsNullOrEmpty(text) || text.Length <= maxLength)
+                return text;
+            return text.Substring(0, maxLength - 3) + "...";
+        }
+
+        /// <summary>
+        /// Benzer iş sonucu için yardımcı sınıf
+        /// </summary>
+        private class SimilarWorkItemResult
+        {
+            public int Id { get; set; }
+            public string Title { get; set; }
+            public string Status { get; set; }
+            public string Board { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public double SimilarityScore { get; set; }
+        }
+
+        #endregion
     }
 }
 

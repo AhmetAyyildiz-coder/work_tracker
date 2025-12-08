@@ -61,9 +61,14 @@ namespace work_tracker
         /// </summary>
         private void InitializeStatusBar()
         {
-            // Versiyon bilgisini ayarla
+            // Versiyon bilgisini dinamik olarak ayarla
             var version = Assembly.GetExecutingAssembly().GetName().Version;
-            barStaticVersion.Caption = $"📦 v{version.Major}.{version.Minor}.{version.Build}";
+            var versionString = $"{version.Major}.{version.Minor}.{version.Build}";
+            
+            barStaticVersion.Caption = $"📦 v{versionString}";
+            
+            // Form başlığını da dinamik olarak ayarla
+            this.Text = $"Work Tracker v{versionString} - İş Akışı Yönetim Aracı";
 
             // Kullanıcı adını ayarla
             barStaticUser.Caption = $"👤 {Environment.UserName}";
