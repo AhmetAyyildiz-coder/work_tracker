@@ -805,27 +805,38 @@ namespace work_tracker.Forms
 
         private string GetStatusDisplay(string status)
         {
-            return status switch
+            switch (status)
             {
-                "Bekliyor" => "⏳ Bekliyor",
-                "Beklemede" => "⏸️ Beklemede",
-                "MudahaleEdiliyor" => "🔧 Müdahale Ediliyor",
-                "Cozuldu" => "✅ Çözüldü",
-                "Arşivlendi" => "📦 Arşivlendi",
-                _ => status
-            };
+                case "Bekliyor":
+                    return "⏳ Bekliyor";
+                case "Beklemede":
+                    return "⏸️ Beklemede";
+                case "MudahaleEdiliyor":
+                    return "🔧 Müdahale Ediliyor";
+                case "Cozuldu":
+                    return "✅ Çözüldü";
+                case "Arşivlendi":
+                    return "📦 Arşivlendi";
+                default:
+                    return status;
+            }
         }
 
         private string GetBoardDisplay(string board)
         {
-            return board switch
+            switch (board)
             {
-                "Inbox" => "📥 Gelen Kutusu",
-                "Kanban" => "📋 Kanban",
-                "Scrum" => "🏃 Scrum",
-                "Otopark" => "🚗 Otopark",
-                _ => board
-            };
+                case "Inbox":
+                    return "📥 Gelen Kutusu";
+                case "Kanban":
+                    return "📋 Kanban";
+                case "Scrum":
+                    return "🏃 Scrum";
+                case "Otopark":
+                    return "🚗 Otopark";
+                default:
+                    return board;
+            }
         }
 
         private string TruncateText(string text, int maxLength)

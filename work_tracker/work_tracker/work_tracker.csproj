@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.22</MinimumRequiredVersion>
-    <ApplicationRevision>40</ApplicationRevision>
+    <ApplicationRevision>46</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -394,6 +394,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CommentSearchForm.resx">
       <DependentUpon>CommentSearchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\DashboardForm.resx">
+      <DependentUpon>DashboardForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\EmailToWorkItemForm.resx">
       <DependentUpon>EmailToWorkItemForm.cs</DependentUpon>

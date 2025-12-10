@@ -17,6 +17,7 @@ namespace work_tracker.Forms
         private LayoutControl layoutControl1;
         private LayoutControlGroup layoutControlGroup1;
         private LookUpEdit cmbSprint;
+        private ComboBoxEdit cmbSprintFilter;
         private SimpleButton btnRefresh;
         private SimpleButton btnManageSprints;
         private readonly string[] scrumColumns = new[] { "SprintBacklog", "Gelistirmede", "Testte", "Tamamlandi" };
@@ -35,17 +36,61 @@ namespace work_tracker.Forms
 
         private void ScrumBoardForm_Load(object sender, EventArgs e)
         {
+            // Filtre combobox'ını doldur
+            cmbSprintFilter.Properties.Items.AddRange(new string[] 
+            { 
+                "Aktif & Planlanan", 
+                "Tamamlanan", 
+                "İptal Edilen", 
+                "Tümü" 
+            });
+            cmbSprintFilter.SelectedIndex = 0; // Varsayılan: Aktif & Planlanan
+            
+            LoadSprints();
+            LoadScrumBoard();
+        }
+        
+        private void cmbSprintFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
             LoadSprints();
             LoadScrumBoard();
         }
 
         private void LoadSprints()
         {
-            var sprints = _context.Sprints
-                .Where(s => s.Status == "Active" || s.Status == "Planned")
-                .OrderByDescending(s => s.Status == "Active")
-                .ThenByDescending(s => s.StartDate)
-                .ToList();
+            try
+            {
+                // Context'i yenile - eski veriler kalmasın
+                _context = new WorkTrackerDbContext();
+                
+                // Filtre seçimine göre sprint'leri getir
+                string filterValue = cmbSprintFilter?.EditValue?.ToString() ?? "Aktif & Planlanan";
+                
+                IQueryable<Sprint> query = _context.Sprints;
+                
+                switch (filterValue)
+                {
+                    case "Aktif & Planlanan":
+                        query = query.Where(s => s.Status == "Active" || s.Status == "Planned");
+                        break;
+                    case "Tamamlanan":
+                        query = query.Where(s => s.Status == "Completed");
+                        break;
+                    case "İptal Edilen":
+                        query = query.Where(s => s.Status == "Cancelled");
+                        break;
+                    case "Tümü":
+                        // Tüm sprint'leri göster, filtre yok
+                        break;
+                    default:
+                        query = query.Where(s => s.Status == "Active" || s.Status == "Planned");
+                        break;
+                }
+                
+                var sprints = query
+                    .OrderByDescending(s => s.Status == "Active")
+                    .ThenByDescending(s => s.StartDate)
+                    .ToList();
 
                 cmbSprint.Properties.DataSource = sprints;
                 cmbSprint.Properties.DisplayMember = "Name";
@@ -67,16 +112,27 @@ namespace work_tracker.Forms
                     FormatString = "dd.MM.yyyy"
                 });
 
-                // Gerekirse popup genişliğini de ayarla
+                // Popup genişliğini ayarla
                 cmbSprint.Properties.BestFitMode = BestFitMode.BestFitResizePopup;
 
-            if (sprints.Any())
-            {
-                var activeSprint = sprints.FirstOrDefault(s => s.Status == "Active");
-                if (activeSprint != null)
+                if (sprints.Any())
                 {
-                    cmbSprint.EditValue = activeSprint.Id;
+                    var activeSprint = sprints.FirstOrDefault(s => s.Status == "Active");
+                    if (activeSprint != null)
+                    {
+                        cmbSprint.EditValue = activeSprint.Id;
+                    }
+                    else
+                    {
+                        // Aktif yoksa ilk planlanmış sprint'i seç
+                        cmbSprint.EditValue = sprints.First().Id;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Sprint'ler yüklenirken hata oluştu:\n{ex.Message}", 
+                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -616,11 +672,11 @@ namespace work_tracker.Forms
         private void btnManageSprints_Click(object sender, EventArgs e)
         {
             var form = new SprintManagementForm();
-            if (form.ShowDialog() == DialogResult.OK)
-            {
-                LoadSprints();
-                LoadScrumBoard();
-            }
+            form.ShowDialog();
+            
+            // Form kapandıktan sonra her zaman yenile (değişiklik olmuş olabilir)
+            LoadSprints();
+            LoadScrumBoard();
         }
 
         /// <summary>

@@ -37,6 +37,12 @@ namespace work_tracker.Forms
             dtStart.EditValueChanged += DtDate_EditValueChanged;
             dtEnd.EditValueChanged += DtDate_EditValueChanged;
             
+            // Grid çift tıklama event handler'larını ekle
+            gridViewTimeDistribution.DoubleClick += GridView_DoubleClick;
+            gridViewActivities.DoubleClick += GridView_DoubleClick;
+            gridViewTimeEntries.DoubleClick += GridView_DoubleClick;
+            gridViewCompleted.DoubleClick += GridView_DoubleClick;
+            
             // Varsayılan olarak bugünü göster
             SetPeriod("Bugün");
         }
@@ -352,6 +358,7 @@ namespace work_tracker.Forms
                 .Select(t => new
                 {
                     t.Id,
+                    WorkItemId = t.WorkItemId,
                     Tarih = t.EntryDate.ToString("dd.MM.yyyy HH:mm"),
                     t.Subject,
                     t.ActivityType,
@@ -371,6 +378,7 @@ namespace work_tracker.Forms
             view.BestFitColumns();
 
             if (view.Columns["Id"] != null) view.Columns["Id"].Visible = false;
+            if (view.Columns["WorkItemId"] != null) view.Columns["WorkItemId"].Visible = false;
             if (view.Columns["Tarih"] != null) view.Columns["Tarih"].Caption = "Tarih/Saat";
             if (view.Columns["Subject"] != null) view.Columns["Subject"].Caption = "Konu";
             if (view.Columns["ActivityType"] != null) view.Columns["ActivityType"].Caption = "Tip";
@@ -607,6 +615,62 @@ namespace work_tracker.Forms
         }
 
         #endregion
+
+        /// <summary>
+        /// Grid'de çift tıklandığında iş detayını aç
+        /// </summary>
+        private void GridView_DoubleClick(object sender, EventArgs e)
+        {
+            try
+            {
+                var view = sender as GridView;
+                if (view == null) return;
+
+                // Tıklanan satırın iş ID'sini al
+                int? workItemId = null;
+
+                if (view.FocusedRowHandle >= 0)
+                {
+                    // WorkItemId kolonunu bul
+                    if (view.Columns["WorkItemId"] != null)
+                    {
+                        workItemId = view.GetRowCellValue(view.FocusedRowHandle, "WorkItemId") as int?;
+                    }
+                    // TimeEntry grid'inde WorkItem_Id olabilir
+                    else if (view.Columns["WorkItem_Id"] != null)
+                    {
+                        workItemId = view.GetRowCellValue(view.FocusedRowHandle, "WorkItem_Id") as int?;
+                    }
+                    // Id kolonu da olabilir (tamamlanan işler için)
+                    else if (view.Columns["Id"] != null)
+                    {
+                        workItemId = view.GetRowCellValue(view.FocusedRowHandle, "Id") as int?;
+                    }
+                }
+
+                if (workItemId.HasValue && workItemId.Value > 0)
+                {
+                    OpenWorkItemDetail(workItemId.Value);
+                }
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"İş detayı açılırken hata: {ex.Message}", "Hata",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// İş detay formunu aç
+        /// </summary>
+        private void OpenWorkItemDetail(int workItemId)
+        {
+            var detailForm = new WorkItemDetailForm(workItemId);
+            detailForm.ShowDialog();
+            
+            // Form kapandığında verileri yenile (değişiklik olmuş olabilir)
+            LoadSummaryData();
+        }
 
         protected override void Dispose(bool disposing)
         {

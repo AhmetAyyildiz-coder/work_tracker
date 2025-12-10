@@ -13,7 +13,9 @@ namespace work_tracker.Forms
         {
             this.panelControl1 = new DevExpress.XtraEditors.PanelControl();
             this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
+            this.lblSprintFilter = new DevExpress.XtraEditors.LabelControl();
             this.cmbSprint = new DevExpress.XtraEditors.LookUpEdit();
+            this.cmbSprintFilter = new DevExpress.XtraEditors.ComboBoxEdit();
             this.btnRefresh = new DevExpress.XtraEditors.SimpleButton();
             this.btnManageSprints = new DevExpress.XtraEditors.SimpleButton();
             this.layoutControl1 = new DevExpress.XtraLayout.LayoutControl();
@@ -21,6 +23,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.panelControl1)).BeginInit();
             this.panelControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cmbSprint.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbSprintFilter.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup1)).BeginInit();
             this.SuspendLayout();
@@ -31,6 +34,8 @@ namespace work_tracker.Forms
             this.panelControl1.Controls.Add(this.cmbSprint);
             this.panelControl1.Controls.Add(this.btnManageSprints);
             this.panelControl1.Controls.Add(this.btnRefresh);
+            this.panelControl1.Controls.Add(this.lblSprintFilter);
+            this.panelControl1.Controls.Add(this.cmbSprintFilter);
             this.panelControl1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelControl1.Location = new System.Drawing.Point(0, 0);
             this.panelControl1.Name = "panelControl1";
@@ -74,6 +79,25 @@ namespace work_tracker.Forms
             this.btnRefresh.Text = "Yenile";
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
+            // lblSprintFilter
+            // 
+            this.lblSprintFilter.Location = new System.Drawing.Point(640, 18);
+            this.lblSprintFilter.Name = "lblSprintFilter";
+            this.lblSprintFilter.Size = new System.Drawing.Size(28, 13);
+            this.lblSprintFilter.TabIndex = 4;
+            this.lblSprintFilter.Text = "Filtre:";
+            // 
+            // cmbSprintFilter
+            // 
+            this.cmbSprintFilter.Location = new System.Drawing.Point(680, 15);
+            this.cmbSprintFilter.Name = "cmbSprintFilter";
+            this.cmbSprintFilter.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbSprintFilter.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            this.cmbSprintFilter.Size = new System.Drawing.Size(140, 20);
+            this.cmbSprintFilter.TabIndex = 5;
+            this.cmbSprintFilter.SelectedIndexChanged += new System.EventHandler(this.cmbSprintFilter_SelectedIndexChanged);
+            // 
             // layoutControl1
             // 
             this.layoutControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -108,10 +132,13 @@ namespace work_tracker.Forms
             this.panelControl1.ResumeLayout(false);
             this.panelControl1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cmbSprint.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbSprintFilter.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroup1)).EndInit();
             this.ResumeLayout(false);
         }
+        
+        private LabelControl lblSprintFilter;
     }
 }
 

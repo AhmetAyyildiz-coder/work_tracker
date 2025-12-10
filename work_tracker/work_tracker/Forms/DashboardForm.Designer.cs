@@ -77,6 +77,10 @@ namespace work_tracker.Forms
             this.btnToday = new DevExpress.XtraEditors.SimpleButton();
             this.lblTitle = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel1)).BeginInit();
+            this.splitContainerMain.Panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel2)).BeginInit();
+            this.splitContainerMain.Panel2.SuspendLayout();
             this.splitContainerMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelLeft)).BeginInit();
             this.panelLeft.SuspendLayout();
@@ -104,6 +108,10 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.panelRight)).BeginInit();
             this.panelRight.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerRight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerRight.Panel1)).BeginInit();
+            this.splitContainerRight.Panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerRight.Panel2)).BeginInit();
+            this.splitContainerRight.Panel2.SuspendLayout();
             this.splitContainerRight.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelWorkItems)).BeginInit();
             this.panelWorkItems.SuspendLayout();
@@ -124,7 +132,13 @@ namespace work_tracker.Forms
             this.splitContainerMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainerMain.Location = new System.Drawing.Point(0, 50);
             this.splitContainerMain.Name = "splitContainerMain";
+            // 
+            // splitContainerMain.Panel1
+            // 
             this.splitContainerMain.Panel1.Controls.Add(this.panelLeft);
+            // 
+            // splitContainerMain.Panel2
+            // 
             this.splitContainerMain.Panel2.Controls.Add(this.panelRight);
             this.splitContainerMain.Size = new System.Drawing.Size(1400, 700);
             this.splitContainerMain.SplitterPosition = 620;
@@ -264,7 +278,7 @@ namespace work_tracker.Forms
             this.lblTodayItemsTitle.Appearance.Options.UseFont = true;
             this.lblTodayItemsTitle.Location = new System.Drawing.Point(10, 5);
             this.lblTodayItemsTitle.Name = "lblTodayItemsTitle";
-            this.lblTodayItemsTitle.Size = new System.Drawing.Size(87, 15);
+            this.lblTodayItemsTitle.Size = new System.Drawing.Size(83, 15);
             this.lblTodayItemsTitle.TabIndex = 0;
             this.lblTodayItemsTitle.Text = "📥 Bugün Gelen";
             // 
@@ -297,7 +311,7 @@ namespace work_tracker.Forms
             this.lblTodayCompletedTitle.Appearance.Options.UseFont = true;
             this.lblTodayCompletedTitle.Location = new System.Drawing.Point(10, 5);
             this.lblTodayCompletedTitle.Name = "lblTodayCompletedTitle";
-            this.lblTodayCompletedTitle.Size = new System.Drawing.Size(106, 15);
+            this.lblTodayCompletedTitle.Size = new System.Drawing.Size(77, 15);
             this.lblTodayCompletedTitle.TabIndex = 0;
             this.lblTodayCompletedTitle.Text = "✅ Bugün Biten";
             // 
@@ -330,7 +344,7 @@ namespace work_tracker.Forms
             this.lblWeekItemsTitle.Appearance.Options.UseFont = true;
             this.lblWeekItemsTitle.Location = new System.Drawing.Point(10, 5);
             this.lblWeekItemsTitle.Name = "lblWeekItemsTitle";
-            this.lblWeekItemsTitle.Size = new System.Drawing.Size(96, 15);
+            this.lblWeekItemsTitle.Size = new System.Drawing.Size(89, 15);
             this.lblWeekItemsTitle.TabIndex = 0;
             this.lblWeekItemsTitle.Text = "📊 Haftalık Gelen";
             // 
@@ -363,7 +377,7 @@ namespace work_tracker.Forms
             this.lblWeekCompletedTitle.Appearance.Options.UseFont = true;
             this.lblWeekCompletedTitle.Location = new System.Drawing.Point(10, 5);
             this.lblWeekCompletedTitle.Name = "lblWeekCompletedTitle";
-            this.lblWeekCompletedTitle.Size = new System.Drawing.Size(90, 15);
+            this.lblWeekCompletedTitle.Size = new System.Drawing.Size(86, 15);
             this.lblWeekCompletedTitle.TabIndex = 0;
             this.lblWeekCompletedTitle.Text = "🎯 Haftalık Biten";
             // 
@@ -396,7 +410,7 @@ namespace work_tracker.Forms
             this.lblActiveItemsTitle.Appearance.Options.UseFont = true;
             this.lblActiveItemsTitle.Location = new System.Drawing.Point(10, 5);
             this.lblActiveItemsTitle.Name = "lblActiveItemsTitle";
-            this.lblActiveItemsTitle.Size = new System.Drawing.Size(52, 15);
+            this.lblActiveItemsTitle.Size = new System.Drawing.Size(40, 15);
             this.lblActiveItemsTitle.TabIndex = 0;
             this.lblActiveItemsTitle.Text = "🔥 Aktif";
             // 
@@ -429,7 +443,7 @@ namespace work_tracker.Forms
             this.lblPendingItemsTitle.Appearance.Options.UseFont = true;
             this.lblPendingItemsTitle.Location = new System.Drawing.Point(10, 5);
             this.lblPendingItemsTitle.Name = "lblPendingItemsTitle";
-            this.lblPendingItemsTitle.Size = new System.Drawing.Size(73, 15);
+            this.lblPendingItemsTitle.Size = new System.Drawing.Size(55, 15);
             this.lblPendingItemsTitle.TabIndex = 0;
             this.lblPendingItemsTitle.Text = "⏳ Bekleyen";
             // 
@@ -462,7 +476,7 @@ namespace work_tracker.Forms
             this.lblTodayMeetingsTitle.Appearance.Options.UseFont = true;
             this.lblTodayMeetingsTitle.Location = new System.Drawing.Point(10, 5);
             this.lblTodayMeetingsTitle.Name = "lblTodayMeetingsTitle";
-            this.lblTodayMeetingsTitle.Size = new System.Drawing.Size(102, 15);
+            this.lblTodayMeetingsTitle.Size = new System.Drawing.Size(96, 15);
             this.lblTodayMeetingsTitle.TabIndex = 0;
             this.lblTodayMeetingsTitle.Text = "📅 Bugün Toplantı";
             // 
@@ -473,7 +487,7 @@ namespace work_tracker.Forms
             this.panelRight.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelRight.Location = new System.Drawing.Point(0, 0);
             this.panelRight.Name = "panelRight";
-            this.panelRight.Size = new System.Drawing.Size(775, 700);
+            this.panelRight.Size = new System.Drawing.Size(770, 700);
             this.panelRight.TabIndex = 0;
             // 
             // splitContainerRight
@@ -482,9 +496,15 @@ namespace work_tracker.Forms
             this.splitContainerRight.Horizontal = false;
             this.splitContainerRight.Location = new System.Drawing.Point(2, 52);
             this.splitContainerRight.Name = "splitContainerRight";
+            // 
+            // splitContainerRight.Panel1
+            // 
             this.splitContainerRight.Panel1.Controls.Add(this.panelWorkItems);
+            // 
+            // splitContainerRight.Panel2
+            // 
             this.splitContainerRight.Panel2.Controls.Add(this.panelMeetings);
-            this.splitContainerRight.Size = new System.Drawing.Size(771, 646);
+            this.splitContainerRight.Size = new System.Drawing.Size(766, 646);
             this.splitContainerRight.SplitterPosition = 400;
             this.splitContainerRight.TabIndex = 1;
             // 
@@ -495,16 +515,16 @@ namespace work_tracker.Forms
             this.panelWorkItems.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelWorkItems.Location = new System.Drawing.Point(0, 0);
             this.panelWorkItems.Name = "panelWorkItems";
-            this.panelWorkItems.Size = new System.Drawing.Size(771, 400);
+            this.panelWorkItems.Size = new System.Drawing.Size(766, 400);
             this.panelWorkItems.TabIndex = 0;
             // 
             // gridWorkItems
             // 
             this.gridWorkItems.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridWorkItems.Location = new System.Drawing.Point(2, 27);
+            this.gridWorkItems.Location = new System.Drawing.Point(2, 32);
             this.gridWorkItems.MainView = this.gridViewWorkItems;
             this.gridWorkItems.Name = "gridWorkItems";
-            this.gridWorkItems.Size = new System.Drawing.Size(767, 371);
+            this.gridWorkItems.Size = new System.Drawing.Size(762, 366);
             this.gridWorkItems.TabIndex = 1;
             this.gridWorkItems.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewWorkItems});
@@ -586,7 +606,7 @@ namespace work_tracker.Forms
             this.lblWorkItemsHeader.Location = new System.Drawing.Point(2, 2);
             this.lblWorkItemsHeader.Name = "lblWorkItemsHeader";
             this.lblWorkItemsHeader.Padding = new System.Windows.Forms.Padding(5);
-            this.lblWorkItemsHeader.Size = new System.Drawing.Size(130, 25);
+            this.lblWorkItemsHeader.Size = new System.Drawing.Size(118, 30);
             this.lblWorkItemsHeader.TabIndex = 0;
             this.lblWorkItemsHeader.Text = "📋 İş Kalemleri";
             // 
@@ -597,16 +617,16 @@ namespace work_tracker.Forms
             this.panelMeetings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMeetings.Location = new System.Drawing.Point(0, 0);
             this.panelMeetings.Name = "panelMeetings";
-            this.panelMeetings.Size = new System.Drawing.Size(771, 241);
+            this.panelMeetings.Size = new System.Drawing.Size(766, 236);
             this.panelMeetings.TabIndex = 0;
             // 
             // gridMeetings
             // 
             this.gridMeetings.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridMeetings.Location = new System.Drawing.Point(2, 27);
+            this.gridMeetings.Location = new System.Drawing.Point(2, 32);
             this.gridMeetings.MainView = this.gridViewMeetings;
             this.gridMeetings.Name = "gridMeetings";
-            this.gridMeetings.Size = new System.Drawing.Size(767, 212);
+            this.gridMeetings.Size = new System.Drawing.Size(762, 202);
             this.gridMeetings.TabIndex = 1;
             this.gridMeetings.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewMeetings});
@@ -670,7 +690,7 @@ namespace work_tracker.Forms
             this.lblMeetingsHeader.Location = new System.Drawing.Point(2, 2);
             this.lblMeetingsHeader.Name = "lblMeetingsHeader";
             this.lblMeetingsHeader.Padding = new System.Windows.Forms.Padding(5);
-            this.lblMeetingsHeader.Size = new System.Drawing.Size(99, 25);
+            this.lblMeetingsHeader.Size = new System.Drawing.Size(111, 30);
             this.lblMeetingsHeader.TabIndex = 0;
             this.lblMeetingsHeader.Text = "📅 Toplantılar";
             // 
@@ -681,13 +701,13 @@ namespace work_tracker.Forms
             this.panelDayHeader.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelDayHeader.Location = new System.Drawing.Point(2, 2);
             this.panelDayHeader.Name = "panelDayHeader";
-            this.panelDayHeader.Size = new System.Drawing.Size(771, 50);
+            this.panelDayHeader.Size = new System.Drawing.Size(766, 50);
             this.panelDayHeader.TabIndex = 0;
             // 
             // btnSyncOutlook
             // 
             this.btnSyncOutlook.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSyncOutlook.Location = new System.Drawing.Point(620, 12);
+            this.btnSyncOutlook.Location = new System.Drawing.Point(615, 12);
             this.btnSyncOutlook.Name = "btnSyncOutlook";
             this.btnSyncOutlook.Size = new System.Drawing.Size(140, 28);
             this.btnSyncOutlook.TabIndex = 1;
@@ -702,7 +722,7 @@ namespace work_tracker.Forms
             this.lblSelectedDate.Appearance.Options.UseForeColor = true;
             this.lblSelectedDate.Location = new System.Drawing.Point(10, 12);
             this.lblSelectedDate.Name = "lblSelectedDate";
-            this.lblSelectedDate.Size = new System.Drawing.Size(227, 25);
+            this.lblSelectedDate.Size = new System.Drawing.Size(217, 25);
             this.lblSelectedDate.TabIndex = 0;
             this.lblSelectedDate.Text = "01 Aralık 2024, Pazartesi";
             // 
@@ -745,7 +765,7 @@ namespace work_tracker.Forms
             this.lblTitle.Appearance.Options.UseForeColor = true;
             this.lblTitle.Location = new System.Drawing.Point(15, 12);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(136, 30);
+            this.lblTitle.Size = new System.Drawing.Size(150, 30);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "📊 Dashboard";
             // 
@@ -759,6 +779,10 @@ namespace work_tracker.Forms
             this.Name = "DashboardForm";
             this.Text = "📊 Dashboard";
             this.Load += new System.EventHandler(this.DashboardForm_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel1)).EndInit();
+            this.splitContainerMain.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel2)).EndInit();
+            this.splitContainerMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
             this.splitContainerMain.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.panelLeft)).EndInit();
@@ -793,6 +817,10 @@ namespace work_tracker.Forms
             this.panelStatCard7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelRight)).EndInit();
             this.panelRight.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerRight.Panel1)).EndInit();
+            this.splitContainerRight.Panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainerRight.Panel2)).EndInit();
+            this.splitContainerRight.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerRight)).EndInit();
             this.splitContainerRight.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.panelWorkItems)).EndInit();
@@ -812,6 +840,7 @@ namespace work_tracker.Forms
             this.panelToolbar.ResumeLayout(false);
             this.panelToolbar.PerformLayout();
             this.ResumeLayout(false);
+
         }
 
         #endregion
