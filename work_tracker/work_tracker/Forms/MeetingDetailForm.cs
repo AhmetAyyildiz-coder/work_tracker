@@ -122,6 +122,7 @@ namespace work_tracker.Forms
 				dtMeetingDate.Enabled = editing;
 				txtParticipants.Enabled = editing;
 				richEditControl1.ReadOnly = !editing;
+				panelNotesToolbar.Visible = editing;
 	
 				btnEdit.Enabled = !editing;
 				btnSave.Enabled = editing;
@@ -166,6 +167,65 @@ namespace work_tracker.Forms
 	
 				SetEditMode(false);
 			}
+
+        #region Zengin Metin Toolbar Event Handlers
+        
+        private void btnNoteBold_Click(object sender, EventArgs e)
+        {
+            richEditControl1.Document.BeginUpdate();
+            var cp = richEditControl1.Document.BeginUpdateCharacters(richEditControl1.Document.Selection);
+            cp.Bold = !cp.Bold.HasValue || !cp.Bold.Value;
+            richEditControl1.Document.EndUpdateCharacters(cp);
+            richEditControl1.Document.EndUpdate();
+        }
+
+        private void btnNoteItalic_Click(object sender, EventArgs e)
+        {
+            richEditControl1.Document.BeginUpdate();
+            var cp = richEditControl1.Document.BeginUpdateCharacters(richEditControl1.Document.Selection);
+            cp.Italic = !cp.Italic.HasValue || !cp.Italic.Value;
+            richEditControl1.Document.EndUpdateCharacters(cp);
+            richEditControl1.Document.EndUpdate();
+        }
+
+        private void btnNoteBulletList_Click(object sender, EventArgs e)
+        {
+            // Toggle bullet list using RichEditControl command
+            richEditControl1.CreateCommand(DevExpress.XtraRichEdit.Commands.RichEditCommandId.ToggleBulletedListItem).Execute();
+        }
+
+        private void btnNoteNumberedList_Click(object sender, EventArgs e)
+        {
+            // Toggle numbered list using RichEditControl command
+            richEditControl1.CreateCommand(DevExpress.XtraRichEdit.Commands.RichEditCommandId.ToggleNumberingListItem).Execute();
+        }
+
+        private void btnH1_Click(object sender, EventArgs e)
+        {
+            ApplyHeadingStyle(24, true);
+        }
+
+        private void btnH2_Click(object sender, EventArgs e)
+        {
+            ApplyHeadingStyle(18, true);
+        }
+
+        private void btnH3_Click(object sender, EventArgs e)
+        {
+            ApplyHeadingStyle(14, true);
+        }
+
+        private void ApplyHeadingStyle(float fontSize, bool bold)
+        {
+            richEditControl1.Document.BeginUpdate();
+            var cp = richEditControl1.Document.BeginUpdateCharacters(richEditControl1.Document.Selection);
+            cp.FontSize = fontSize;
+            cp.Bold = bold;
+            richEditControl1.Document.EndUpdateCharacters(cp);
+            richEditControl1.Document.EndUpdate();
+        }
+
+        #endregion
     }
 }
 

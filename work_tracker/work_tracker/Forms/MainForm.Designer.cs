@@ -32,6 +32,7 @@ namespace work_tracker
         private BarButtonItem btnHelp;
         private BarButtonItem btnAllWorkItems;
         private BarButtonItem btnWiki;
+        private BarButtonItem btnDocumentLibrary;
         private BarButtonItem btnTimeEntry;
         private BarButtonItem btnReminder;
         private BarButtonItem btnWorkSummary;
@@ -77,6 +78,7 @@ namespace work_tracker
             this.btnHelp = new DevExpress.XtraBars.BarButtonItem();
             this.btnAllWorkItems = new DevExpress.XtraBars.BarButtonItem();
             this.btnWiki = new DevExpress.XtraBars.BarButtonItem();
+            this.btnDocumentLibrary = new DevExpress.XtraBars.BarButtonItem();
             this.btnTimeEntry = new DevExpress.XtraBars.BarButtonItem();
             this.btnReminder = new DevExpress.XtraBars.BarButtonItem();
             this.btnWorkSummary = new DevExpress.XtraBars.BarButtonItem();
@@ -116,6 +118,7 @@ namespace work_tracker
             this.btnHelp,
             this.btnAllWorkItems,
             this.btnWiki,
+            this.btnDocumentLibrary,
             this.btnTimeEntry,
             this.btnReminder,
             this.btnWorkSummary,
@@ -222,6 +225,13 @@ namespace work_tracker
             this.btnWiki.Id = 12;
             this.btnWiki.Name = "btnWiki";
             this.btnWiki.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnWiki_ItemClick);
+            //
+            // btnDocumentLibrary
+            //
+            this.btnDocumentLibrary.Caption = "📂 Döküman Kütüphanesi";
+            this.btnDocumentLibrary.Id = 25;
+            this.btnDocumentLibrary.Name = "btnDocumentLibrary";
+            this.btnDocumentLibrary.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnDocumentLibrary_ItemClick);
             //
             // btnTimeEntry
             //
@@ -356,6 +366,7 @@ namespace work_tracker
             this.ribbonPageGroupSettings.ItemLinks.Add(this.btnModules);
             this.ribbonPageGroupSettings.ItemLinks.Add(this.btnSprints);
             this.ribbonPageGroupSettings.ItemLinks.Add(this.btnWiki);
+            this.ribbonPageGroupSettings.ItemLinks.Add(this.btnDocumentLibrary);
             this.ribbonPageGroupSettings.ItemLinks.Add(this.btnReports);
             this.ribbonPageGroupSettings.Name = "ribbonPageGroupSettings";
             this.ribbonPageGroupSettings.Text = "Ayarlar";

@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.22</MinimumRequiredVersion>
-    <ApplicationRevision>46</ApplicationRevision>
+    <ApplicationRevision>48</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -91,6 +91,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -110,6 +112,8 @@
     <Compile Include="Data\Entities\Tag.cs" />
     <Compile Include="Data\Entities\TimeEntry.cs" />
     <Compile Include="Data\Entities\WikiPage.cs" />
+    <Compile Include="Data\Entities\DocumentReference.cs" />
+    <Compile Include="Data\Entities\DocumentTag.cs" />
     <Compile Include="Data\Entities\WorkItem.cs" />
     <Compile Include="Data\Entities\WorkItemActivity.cs" />
     <Compile Include="Data\Entities\WorkItemAttachment.cs" />
@@ -164,6 +168,24 @@
     </Compile>
     <Compile Include="Forms\WikiForm.Designer.cs">
       <DependentUpon>WikiForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DocumentLibraryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DocumentLibraryForm.Designer.cs">
+      <DependentUpon>DocumentLibraryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DocumentReferenceEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DocumentReferenceEditForm.Designer.cs">
+      <DependentUpon>DocumentReferenceEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\DocumentTagManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\DocumentTagManagementForm.Designer.cs">
+      <DependentUpon>DocumentTagManagementForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\WorkItemRelationTestForm.cs">
       <SubType>Form</SubType>
@@ -262,6 +284,10 @@
     <Compile Include="Migrations\202512021451104_AddWorkItemReminders.cs" />
     <Compile Include="Migrations\202512021451104_AddWorkItemReminders.Designer.cs">
       <DependentUpon>202512021451104_AddWorkItemReminders.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202512100628574_added_new_wiki_system.cs" />
+    <Compile Include="Migrations\202512100628574_added_new_wiki_system.Designer.cs">
+      <DependentUpon>202512100628574_added_new_wiki_system.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
@@ -511,6 +537,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512021451104_AddWorkItemReminders.resx">
       <DependentUpon>202512021451104_AddWorkItemReminders.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512100628574_added_new_wiki_system.resx">
+      <DependentUpon>202512100628574_added_new_wiki_system.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

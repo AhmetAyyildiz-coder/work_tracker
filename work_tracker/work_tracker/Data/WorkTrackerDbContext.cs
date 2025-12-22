@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using work_tracker.Data.Entities;
@@ -26,6 +27,8 @@ namespace work_tracker.Data
         public virtual DbSet<Person> Persons { get; set; }
         public virtual DbSet<WorkItemRelation> WorkItemRelations { get; set; }
         public virtual DbSet<WorkItemReminder> WorkItemReminders { get; set; }
+        public virtual DbSet<DocumentReference> DocumentReferences { get; set; }
+        public virtual DbSet<DocumentTag> DocumentTags { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -176,6 +179,38 @@ namespace work_tracker.Data
                 .HasIndex(r => new { r.WorkItemId1, r.WorkItemId2, r.RelationType })
                 .IsUnique()
                 .HasName("IX_WorkItemRelations_Unique");
+
+            // DocumentReference - DocumentTag (Many-to-Many)
+            modelBuilder.Entity<DocumentReference>()
+                .HasMany(d => d.Tags)
+                .WithMany(t => t.Documents)
+                .Map(m =>
+                {
+                    m.ToTable("DocumentReferenceTags");
+                    m.MapLeftKey("DocumentReferenceId");
+                    m.MapRightKey("DocumentTagId");
+                });
+
+            // DocumentReference - Project ilişkisi
+            modelBuilder.Entity<DocumentReference>()
+                .HasOptional(d => d.Project)
+                .WithMany()
+                .HasForeignKey(d => d.ProjectId)
+                .WillCascadeOnDelete(false);
+
+            // DocumentReference - Module ilişkisi
+            modelBuilder.Entity<DocumentReference>()
+                .HasOptional(d => d.Module)
+                .WithMany()
+                .HasForeignKey(d => d.ModuleId)
+                .WillCascadeOnDelete(false);
+
+            // DocumentReference - WorkItem ilişkisi
+            modelBuilder.Entity<DocumentReference>()
+                .HasOptional(d => d.WorkItem)
+                .WithMany()
+                .HasForeignKey(d => d.WorkItemId)
+                .WillCascadeOnDelete(false);
         }
 
         /// <summary>
@@ -209,6 +244,38 @@ namespace work_tracker.Data
             }
 
             SaveChanges();
+            
+            // Türkçe karakterli status değerlerini düzelt
+            FixTurkishStatusValues();
+        }
+
+        /// <summary>
+        /// Türkçe karakterli status değerlerini Kanban sütun adlarıyla eşleşecek şekilde düzeltir
+        /// </summary>
+        private void FixTurkishStatusValues()
+        {
+            var statusMappings = new Dictionary<string, string>
+            {
+                { "Sırada", "Sirada" },
+                { "Gelen Acil İşler", "GelenAcilIsler" },
+                { "Müdahale Ediliyor", "MudahaleEdiliyor" },
+                { "Doğrulama Bekliyor", "DogrulamaBekliyor" },
+                { "Çözüldü", "Cozuldu" }
+            };
+
+            foreach (var mapping in statusMappings)
+            {
+                var itemsToFix = WorkItems.Where(w => w.Status == mapping.Key).ToList();
+                foreach (var item in itemsToFix)
+                {
+                    item.Status = mapping.Value;
+                }
+            }
+
+            if (ChangeTracker.HasChanges())
+            {
+                SaveChanges();
+            }
         }
     }
 }

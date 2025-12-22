@@ -509,11 +509,12 @@ namespace work_tracker.Forms
             "Gelistirmede",
             "Testte",
             "Tamamlandi",
-            "Gelen Acil İşler",
-            "Sırada",
-            "Müdahale Ediliyor",
-            "Doğrulama Bekliyor",
-            "Çözüldü"});
+            "GelenAcilIsler",
+            "Sirada",
+            "MudahaleEdiliyor",
+            "Beklemede",
+            "DogrulamaBekliyor",
+            "Cozuldu"});
             this.cmbStatus.Size = new System.Drawing.Size(450, 20);
             this.cmbStatus.TabIndex = 13;
             // 

@@ -31,6 +31,7 @@ namespace work_tracker
         private CommentSearchForm commentSearchForm;
         private EmailToWorkItemForm emailToWorkItemForm;
         private OtoparkForm otoparkForm;
+        private DocumentLibraryForm documentLibraryForm;
 
         // Günlük hatırlatıcı servisi
         private WorkReminderService _reminderService;
@@ -172,6 +173,11 @@ namespace work_tracker
         private void btnWiki_ItemClick(object sender, ItemClickEventArgs e)
         {
             wikiForm = OpenOrActivateForm(wikiForm, () => new WikiForm(), f => wikiForm = f);
+        }
+
+        private void btnDocumentLibrary_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            documentLibraryForm = OpenOrActivateForm(documentLibraryForm, () => new DocumentLibraryForm(), f => documentLibraryForm = f);
         }
 
         private void btnTimeEntry_ItemClick(object sender, ItemClickEventArgs e)

@@ -28,6 +28,15 @@ namespace work_tracker.Forms
         private SimpleButton btnEdit;
         private SimpleButton btnSave;
         private SimpleButton btnCancel;
+        // Zengin metin toolbar butonları
+        private PanelControl panelNotesToolbar;
+        private SimpleButton btnNoteBold;
+        private SimpleButton btnNoteItalic;
+        private SimpleButton btnNoteBulletList;
+        private SimpleButton btnNoteNumberedList;
+        private SimpleButton btnH1;
+        private SimpleButton btnH2;
+        private SimpleButton btnH3;
 
         protected override void Dispose(bool disposing)
         {
@@ -54,6 +63,14 @@ namespace work_tracker.Forms
             this.groupNotes = new DevExpress.XtraEditors.GroupControl();
             this.btnCreateWorkItem = new DevExpress.XtraEditors.SimpleButton();
             this.richEditControl1 = new DevExpress.XtraRichEdit.RichEditControl();
+            this.panelNotesToolbar = new DevExpress.XtraEditors.PanelControl();
+            this.btnNoteBold = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteItalic = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteBulletList = new DevExpress.XtraEditors.SimpleButton();
+            this.btnNoteNumberedList = new DevExpress.XtraEditors.SimpleButton();
+            this.btnH1 = new DevExpress.XtraEditors.SimpleButton();
+            this.btnH2 = new DevExpress.XtraEditors.SimpleButton();
+            this.btnH3 = new DevExpress.XtraEditors.SimpleButton();
             this.groupWorkItems = new DevExpress.XtraEditors.GroupControl();
             this.gridControl1 = new DevExpress.XtraGrid.GridControl();
             this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
@@ -72,6 +89,8 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupNotes)).BeginInit();
             this.groupNotes.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.panelNotesToolbar)).BeginInit();
+            this.panelNotesToolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.groupWorkItems)).BeginInit();
             this.groupWorkItems.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).BeginInit();
@@ -158,12 +177,110 @@ namespace work_tracker.Forms
             // 
             this.groupNotes.Controls.Add(this.btnCreateWorkItem);
             this.groupNotes.Controls.Add(this.richEditControl1);
+            this.groupNotes.Controls.Add(this.panelNotesToolbar);
             this.groupNotes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupNotes.Location = new System.Drawing.Point(0, 0);
             this.groupNotes.Name = "groupNotes";
             this.groupNotes.Size = new System.Drawing.Size(840, 720);
             this.groupNotes.TabIndex = 1;
             this.groupNotes.Text = "Toplantı Notları";
+            // 
+            // panelNotesToolbar
+            // 
+            this.panelNotesToolbar.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            this.panelNotesToolbar.Controls.Add(this.btnH3);
+            this.panelNotesToolbar.Controls.Add(this.btnH2);
+            this.panelNotesToolbar.Controls.Add(this.btnH1);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteNumberedList);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteBulletList);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteItalic);
+            this.panelNotesToolbar.Controls.Add(this.btnNoteBold);
+            this.panelNotesToolbar.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelNotesToolbar.Location = new System.Drawing.Point(2, 23);
+            this.panelNotesToolbar.Name = "panelNotesToolbar";
+            this.panelNotesToolbar.Size = new System.Drawing.Size(836, 35);
+            this.panelNotesToolbar.TabIndex = 2;
+            this.panelNotesToolbar.Visible = false;
+            // 
+            // btnNoteBold
+            // 
+            this.btnNoteBold.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnNoteBold.Appearance.Options.UseFont = true;
+            this.btnNoteBold.Location = new System.Drawing.Point(8, 5);
+            this.btnNoteBold.Name = "btnNoteBold";
+            this.btnNoteBold.Size = new System.Drawing.Size(40, 24);
+            this.btnNoteBold.TabIndex = 0;
+            this.btnNoteBold.Text = "B";
+            this.btnNoteBold.ToolTip = "Kalın";
+            this.btnNoteBold.Click += new System.EventHandler(this.btnNoteBold_Click);
+            // 
+            // btnNoteItalic
+            // 
+            this.btnNoteItalic.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Italic);
+            this.btnNoteItalic.Appearance.Options.UseFont = true;
+            this.btnNoteItalic.Location = new System.Drawing.Point(54, 5);
+            this.btnNoteItalic.Name = "btnNoteItalic";
+            this.btnNoteItalic.Size = new System.Drawing.Size(40, 24);
+            this.btnNoteItalic.TabIndex = 1;
+            this.btnNoteItalic.Text = "I";
+            this.btnNoteItalic.ToolTip = "İtalik";
+            this.btnNoteItalic.Click += new System.EventHandler(this.btnNoteItalic_Click);
+            // 
+            // btnNoteBulletList
+            // 
+            this.btnNoteBulletList.Location = new System.Drawing.Point(100, 5);
+            this.btnNoteBulletList.Name = "btnNoteBulletList";
+            this.btnNoteBulletList.Size = new System.Drawing.Size(44, 24);
+            this.btnNoteBulletList.TabIndex = 2;
+            this.btnNoteBulletList.Text = "• List";
+            this.btnNoteBulletList.ToolTip = "Madde İşaretli Liste";
+            this.btnNoteBulletList.Click += new System.EventHandler(this.btnNoteBulletList_Click);
+            // 
+            // btnNoteNumberedList
+            // 
+            this.btnNoteNumberedList.Location = new System.Drawing.Point(150, 5);
+            this.btnNoteNumberedList.Name = "btnNoteNumberedList";
+            this.btnNoteNumberedList.Size = new System.Drawing.Size(50, 24);
+            this.btnNoteNumberedList.TabIndex = 3;
+            this.btnNoteNumberedList.Text = "1. List";
+            this.btnNoteNumberedList.ToolTip = "Numaralı Liste";
+            this.btnNoteNumberedList.Click += new System.EventHandler(this.btnNoteNumberedList_Click);
+            // 
+            // btnH1
+            // 
+            this.btnH1.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnH1.Appearance.Options.UseFont = true;
+            this.btnH1.Location = new System.Drawing.Point(220, 5);
+            this.btnH1.Name = "btnH1";
+            this.btnH1.Size = new System.Drawing.Size(36, 24);
+            this.btnH1.TabIndex = 4;
+            this.btnH1.Text = "H1";
+            this.btnH1.ToolTip = "Büyük Başlık";
+            this.btnH1.Click += new System.EventHandler(this.btnH1_Click);
+            // 
+            // btnH2
+            // 
+            this.btnH2.Appearance.Font = new System.Drawing.Font("Tahoma", 8.5F, System.Drawing.FontStyle.Bold);
+            this.btnH2.Appearance.Options.UseFont = true;
+            this.btnH2.Location = new System.Drawing.Point(262, 5);
+            this.btnH2.Name = "btnH2";
+            this.btnH2.Size = new System.Drawing.Size(36, 24);
+            this.btnH2.TabIndex = 5;
+            this.btnH2.Text = "H2";
+            this.btnH2.ToolTip = "Orta Başlık";
+            this.btnH2.Click += new System.EventHandler(this.btnH2_Click);
+            // 
+            // btnH3
+            // 
+            this.btnH3.Appearance.Font = new System.Drawing.Font("Tahoma", 8F, System.Drawing.FontStyle.Bold);
+            this.btnH3.Appearance.Options.UseFont = true;
+            this.btnH3.Location = new System.Drawing.Point(304, 5);
+            this.btnH3.Name = "btnH3";
+            this.btnH3.Size = new System.Drawing.Size(36, 24);
+            this.btnH3.TabIndex = 6;
+            this.btnH3.Text = "H3";
+            this.btnH3.ToolTip = "Küçük Başlık";
+            this.btnH3.Click += new System.EventHandler(this.btnH3_Click);
             // 
             // btnCreateWorkItem
             // 
@@ -177,8 +294,10 @@ namespace work_tracker.Forms
             // 
             // richEditControl1
             // 
-            this.richEditControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richEditControl1.Location = new System.Drawing.Point(2, 23);
+            this.richEditControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richEditControl1.Location = new System.Drawing.Point(2, 58);
             this.richEditControl1.Name = "richEditControl1";
             this.richEditControl1.Options.DocumentCapabilities.CharacterFormatting = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
             this.richEditControl1.Options.DocumentCapabilities.CharacterStyle = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
@@ -187,8 +306,10 @@ namespace work_tracker.Forms
             this.richEditControl1.Options.DocumentCapabilities.ParagraphFormatting = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
             this.richEditControl1.Options.DocumentCapabilities.Paragraphs = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
             this.richEditControl1.Options.DocumentCapabilities.Tables = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.Numbering.Bulleted = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
+            this.richEditControl1.Options.DocumentCapabilities.Numbering.Simple = DevExpress.XtraRichEdit.DocumentCapability.Enabled;
             this.richEditControl1.ReadOnly = true;
-            this.richEditControl1.Size = new System.Drawing.Size(836, 695);
+            this.richEditControl1.Size = new System.Drawing.Size(836, 610);
             this.richEditControl1.TabIndex = 0;
             // 
             // groupWorkItems
@@ -322,6 +443,8 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.txtSubject.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupNotes)).EndInit();
             this.groupNotes.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.panelNotesToolbar)).EndInit();
+            this.panelNotesToolbar.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.groupWorkItems)).EndInit();
             this.groupWorkItems.ResumeLayout(false);
             this.groupWorkItems.PerformLayout();
