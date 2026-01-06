@@ -122,7 +122,8 @@ namespace work_tracker.Forms
                     m.Subject,
                     m.MeetingDate,
                     m.Participants,
-                    m.CreatedAt
+                    m.CreatedAt,
+                    DocumentCount = m.Documents.Count
                 })
                 .ToList();
 
@@ -165,6 +166,11 @@ namespace work_tracker.Forms
                     view.Columns["CreatedAt"].Caption = "Kayıt Tarihi";
                     view.Columns["CreatedAt"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
                     view.Columns["CreatedAt"].DisplayFormat.FormatString = "dd.MM.yyyy HH:mm";
+                }
+                if (view.Columns["DocumentCount"] != null) 
+                {
+                    view.Columns["DocumentCount"].Caption = "📄 Döküman";
+                    view.Columns["DocumentCount"].Width = 80;
                 }
 
                 // İlk satırı seç ve detayları yükle

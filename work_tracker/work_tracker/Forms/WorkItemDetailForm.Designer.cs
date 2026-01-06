@@ -56,6 +56,19 @@ namespace work_tracker.Forms
         private DevExpress.XtraGrid.Views.Grid.GridView gridViewTimeEntries;
         private LabelControl lblTimeEntryCount;
         
+        // Hızlı Zaman Kaydı Paneli
+        private GroupControl groupQuickTimeEntry;
+        private LabelControl lblQuickEntryDate;
+        private DateEdit dtQuickEntryDate;
+        private LabelControl lblQuickDurationMinutes;
+        private SpinEdit spinQuickDurationMinutes;
+        private LabelControl lblQuickActivityType;
+        private ComboBoxEdit cmbQuickActivityType;
+        private LabelControl lblQuickSubject;
+        private TextEdit txtQuickSubject;
+        private SimpleButton btnQuickSave;
+        private SimpleButton btnDetailedEntry;
+        
         // Aktivite Timeline
         private GroupControl groupActivities;
         private ListView lstActivities;
@@ -126,6 +139,7 @@ namespace work_tracker.Forms
         private SimpleButton btnDailyReport;
         private SimpleButton btnWiki;
         private SimpleButton btnReminder;
+        private SimpleButton btnMoveToParking;
 
         protected override void Dispose(bool disposing)
         {
@@ -223,6 +237,17 @@ namespace work_tracker.Forms
             this.gridTimeEntries = new DevExpress.XtraGrid.GridControl();
             this.gridViewTimeEntries = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.lblTimeEntryCount = new DevExpress.XtraEditors.LabelControl();
+            this.groupQuickTimeEntry = new DevExpress.XtraEditors.GroupControl();
+            this.lblQuickEntryDate = new DevExpress.XtraEditors.LabelControl();
+            this.dtQuickEntryDate = new DevExpress.XtraEditors.DateEdit();
+            this.lblQuickDurationMinutes = new DevExpress.XtraEditors.LabelControl();
+            this.spinQuickDurationMinutes = new DevExpress.XtraEditors.SpinEdit();
+            this.lblQuickActivityType = new DevExpress.XtraEditors.LabelControl();
+            this.cmbQuickActivityType = new DevExpress.XtraEditors.ComboBoxEdit();
+            this.lblQuickSubject = new DevExpress.XtraEditors.LabelControl();
+            this.txtQuickSubject = new DevExpress.XtraEditors.TextEdit();
+            this.btnQuickSave = new DevExpress.XtraEditors.SimpleButton();
+            this.btnDetailedEntry = new DevExpress.XtraEditors.SimpleButton();
             this.groupAddComment = new DevExpress.XtraEditors.GroupControl();
             this.btnChangeStatus = new DevExpress.XtraEditors.SimpleButton();
             this.btnAddComment = new DevExpress.XtraEditors.SimpleButton();
@@ -272,6 +297,13 @@ namespace work_tracker.Forms
             this.groupTimeEntries.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridTimeEntries)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTimeEntries)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupQuickTimeEntry)).BeginInit();
+            this.groupQuickTimeEntry.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dtQuickEntryDate.Properties.CalendarTimeProperties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtQuickEntryDate.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.spinQuickDurationMinutes.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbQuickActivityType.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtQuickSubject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtSearchEmail.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.groupAddComment)).BeginInit();
             this.groupAddComment.SuspendLayout();
@@ -1090,7 +1122,8 @@ namespace work_tracker.Forms
             this.tabPageTimeEntries.Text = "⏱️ Zaman Kayıtları";
             // 
             // groupTimeEntries
-            // 
+            //
+            this.groupTimeEntries.Controls.Add(this.groupQuickTimeEntry);
             this.groupTimeEntries.Controls.Add(this.gridTimeEntries);
             this.groupTimeEntries.Controls.Add(this.lblTimeEntryCount);
             this.groupTimeEntries.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1099,29 +1132,162 @@ namespace work_tracker.Forms
             this.groupTimeEntries.Size = new System.Drawing.Size(1198, 320);
             this.groupTimeEntries.TabIndex = 0;
             this.groupTimeEntries.Text = "Zaman Kayıtları";
-            // 
+            //
+            // groupQuickTimeEntry
+            //
+            this.groupQuickTimeEntry.Controls.Add(this.btnDetailedEntry);
+            this.groupQuickTimeEntry.Controls.Add(this.btnQuickSave);
+            this.groupQuickTimeEntry.Controls.Add(this.txtQuickSubject);
+            this.groupQuickTimeEntry.Controls.Add(this.lblQuickSubject);
+            this.groupQuickTimeEntry.Controls.Add(this.cmbQuickActivityType);
+            this.groupQuickTimeEntry.Controls.Add(this.lblQuickActivityType);
+            this.groupQuickTimeEntry.Controls.Add(this.spinQuickDurationMinutes);
+            this.groupQuickTimeEntry.Controls.Add(this.lblQuickDurationMinutes);
+            this.groupQuickTimeEntry.Controls.Add(this.dtQuickEntryDate);
+            this.groupQuickTimeEntry.Controls.Add(this.lblQuickEntryDate);
+            this.groupQuickTimeEntry.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupQuickTimeEntry.Location = new System.Drawing.Point(2, 22);
+            this.groupQuickTimeEntry.Name = "groupQuickTimeEntry";
+            this.groupQuickTimeEntry.Size = new System.Drawing.Size(1194, 110);
+            this.groupQuickTimeEntry.TabIndex = 2;
+            this.groupQuickTimeEntry.Text = "⚡ Hızlı Zaman Kaydı Ekle";
+            //
+            // lblQuickEntryDate
+            //
+            this.lblQuickEntryDate.Location = new System.Drawing.Point(15, 25);
+            this.lblQuickEntryDate.Name = "lblQuickEntryDate";
+            this.lblQuickEntryDate.Size = new System.Drawing.Size(35, 13);
+            this.lblQuickEntryDate.TabIndex = 0;
+            this.lblQuickEntryDate.Text = "Tarih:";
+            //
+            // dtQuickEntryDate
+            //
+            this.dtQuickEntryDate.EditValue = null;
+            this.dtQuickEntryDate.Location = new System.Drawing.Point(15, 43);
+            this.dtQuickEntryDate.Name = "dtQuickEntryDate";
+            this.dtQuickEntryDate.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.dtQuickEntryDate.Properties.CalendarTimeProperties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.dtQuickEntryDate.Properties.DisplayFormat.FormatString = "dd.MM.yyyy HH:mm";
+            this.dtQuickEntryDate.Properties.DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            this.dtQuickEntryDate.Properties.EditFormat.FormatString = "dd.MM.yyyy HH:mm";
+            this.dtQuickEntryDate.Properties.EditFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            this.dtQuickEntryDate.Properties.Mask.EditMask = "dd.MM.yyyy HH:mm";
+            this.dtQuickEntryDate.Size = new System.Drawing.Size(160, 20);
+            this.dtQuickEntryDate.TabIndex = 1;
+            //
+            // lblQuickDurationMinutes
+            //
+            this.lblQuickDurationMinutes.Location = new System.Drawing.Point(185, 25);
+            this.lblQuickDurationMinutes.Name = "lblQuickDurationMinutes";
+            this.lblQuickDurationMinutes.Size = new System.Drawing.Size(80, 13);
+            this.lblQuickDurationMinutes.TabIndex = 2;
+            this.lblQuickDurationMinutes.Text = "Süre (Dakika):";
+            //
+            // spinQuickDurationMinutes
+            //
+            this.spinQuickDurationMinutes.EditValue = new decimal(new int[] { 30, 0, 0, 0 });
+            this.spinQuickDurationMinutes.Location = new System.Drawing.Point(185, 43);
+            this.spinQuickDurationMinutes.Name = "spinQuickDurationMinutes";
+            this.spinQuickDurationMinutes.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.spinQuickDurationMinutes.Properties.MaxValue = new decimal(new int[] { 1440, 0, 0, 0 });
+            this.spinQuickDurationMinutes.Properties.MinValue = new decimal(new int[] { 1, 0, 0, 0 });
+            this.spinQuickDurationMinutes.Size = new System.Drawing.Size(90, 20);
+            this.spinQuickDurationMinutes.TabIndex = 3;
+            //
+            // lblQuickActivityType
+            //
+            this.lblQuickActivityType.Location = new System.Drawing.Point(285, 25);
+            this.lblQuickActivityType.Name = "lblQuickActivityType";
+            this.lblQuickActivityType.Size = new System.Drawing.Size(70, 13);
+            this.lblQuickActivityType.TabIndex = 4;
+            this.lblQuickActivityType.Text = "Aktivite:";
+            //
+            // cmbQuickActivityType
+            //
+            this.cmbQuickActivityType.Location = new System.Drawing.Point(285, 43);
+            this.cmbQuickActivityType.Name = "cmbQuickActivityType";
+            this.cmbQuickActivityType.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbQuickActivityType.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            this.cmbQuickActivityType.Size = new System.Drawing.Size(140, 20);
+            this.cmbQuickActivityType.TabIndex = 5;
+            //
+            // lblQuickSubject
+            //
+            this.lblQuickSubject.Appearance.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblQuickSubject.Appearance.ForeColor = System.Drawing.Color.DarkBlue;
+            this.lblQuickSubject.Appearance.Options.UseFont = true;
+            this.lblQuickSubject.Appearance.Options.UseForeColor = true;
+            this.lblQuickSubject.Location = new System.Drawing.Point(435, 25);
+            this.lblQuickSubject.Name = "lblQuickSubject";
+            this.lblQuickSubject.Size = new System.Drawing.Size(40, 13);
+            this.lblQuickSubject.TabIndex = 6;
+            this.lblQuickSubject.Text = "Konu:";
+            //
+            // txtQuickSubject
+            //
+            this.txtQuickSubject.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtQuickSubject.Location = new System.Drawing.Point(435, 43);
+            this.txtQuickSubject.Name = "txtQuickSubject";
+            this.txtQuickSubject.Properties.MaxLength = 200;
+            this.txtQuickSubject.Properties.NullValuePrompt = "Zaman kaydının konusunu girin...";
+            this.txtQuickSubject.Properties.NullValuePromptShowForEmptyValue = true;
+            this.txtQuickSubject.Size = new System.Drawing.Size(540, 20);
+            this.txtQuickSubject.TabIndex = 7;
+            //
+            // btnQuickSave
+            //
+            this.btnQuickSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnQuickSave.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(167)))), ((int)(((byte)(69))));
+            this.btnQuickSave.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnQuickSave.Appearance.Options.UseBackColor = true;
+            this.btnQuickSave.Appearance.Options.UseFont = true;
+            this.btnQuickSave.Location = new System.Drawing.Point(985, 72);
+            this.btnQuickSave.Name = "btnQuickSave";
+            this.btnQuickSave.Size = new System.Drawing.Size(100, 28);
+            this.btnQuickSave.TabIndex = 8;
+            this.btnQuickSave.Text = "💾 Kaydet";
+            this.btnQuickSave.Click += new System.EventHandler(this.btnQuickSave_Click);
+            //
+            // btnDetailedEntry
+            //
+            this.btnDetailedEntry.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDetailedEntry.Location = new System.Drawing.Point(1090, 72);
+            this.btnDetailedEntry.Name = "btnDetailedEntry";
+            this.btnDetailedEntry.Size = new System.Drawing.Size(100, 28);
+            this.btnDetailedEntry.TabIndex = 9;
+            this.btnDetailedEntry.Text = "📝 Detaylı";
+            this.btnDetailedEntry.Click += new System.EventHandler(this.btnDetailedEntry_Click);
+            //
             // gridTimeEntries
-            // 
+            //
             this.gridTimeEntries.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gridTimeEntries.Location = new System.Drawing.Point(2, 42);
+            this.gridTimeEntries.Location = new System.Drawing.Point(2, 135);
             this.gridTimeEntries.MainView = this.gridViewTimeEntries;
             this.gridTimeEntries.Name = "gridTimeEntries";
-            this.gridTimeEntries.Size = new System.Drawing.Size(1194, 276);
+            this.gridTimeEntries.Size = new System.Drawing.Size(1194, 183);
             this.gridTimeEntries.TabIndex = 1;
             this.gridTimeEntries.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
             this.gridViewTimeEntries});
-            // 
+            //
             // gridViewTimeEntries
-            // 
+            //
             this.gridViewTimeEntries.GridControl = this.gridTimeEntries;
             this.gridViewTimeEntries.Name = "gridViewTimeEntries";
             this.gridViewTimeEntries.OptionsBehavior.Editable = false;
             this.gridViewTimeEntries.OptionsView.ShowFooter = true;
             this.gridViewTimeEntries.OptionsView.ShowGroupPanel = false;
-            // 
+            //
             // lblTimeEntryCount
-            // 
-            this.lblTimeEntryCount.Location = new System.Drawing.Point(15, 25);
+            //
+            this.lblTimeEntryCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblTimeEntryCount.Appearance.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold);
+            this.lblTimeEntryCount.Appearance.Options.UseFont = true;
+            this.lblTimeEntryCount.Location = new System.Drawing.Point(15, 300);
             this.lblTimeEntryCount.Name = "lblTimeEntryCount";
             this.lblTimeEntryCount.Size = new System.Drawing.Size(97, 13);
             this.lblTimeEntryCount.TabIndex = 0;
@@ -1188,8 +1354,26 @@ namespace work_tracker.Forms
             this.btnWiki.Text = "📚 Wiki'ye Ekle";
             this.btnWiki.Click += new System.EventHandler(this.btnWiki_Click);
             // 
+            // btnMoveToParking
+            // 
+            this.btnMoveToParking = new DevExpress.XtraEditors.SimpleButton();
+            this.btnMoveToParking.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnMoveToParking.Appearance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(193)))), ((int)(((byte)(7)))));
+            this.btnMoveToParking.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.btnMoveToParking.Appearance.ForeColor = System.Drawing.Color.Black;
+            this.btnMoveToParking.Appearance.Options.UseBackColor = true;
+            this.btnMoveToParking.Appearance.Options.UseFont = true;
+            this.btnMoveToParking.Appearance.Options.UseForeColor = true;
+            this.btnMoveToParking.Location = new System.Drawing.Point(460, 10);
+            this.btnMoveToParking.Name = "btnMoveToParking";
+            this.btnMoveToParking.Size = new System.Drawing.Size(150, 30);
+            this.btnMoveToParking.TabIndex = 5;
+            this.btnMoveToParking.Text = "🚗 Otoparka Taşı";
+            this.btnMoveToParking.Click += new System.EventHandler(this.btnMoveToParking_Click);
+            // 
             // panelBottom
             // 
+            this.panelBottom.Controls.Add(this.btnMoveToParking);
             this.panelBottom.Controls.Add(this.btnReminder);
             this.panelBottom.Controls.Add(this.btnWiki);
             this.panelBottom.Controls.Add(this.btnDailyReport);
@@ -1305,6 +1489,14 @@ namespace work_tracker.Forms
             this.groupTimeEntries.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridTimeEntries)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTimeEntries)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupQuickTimeEntry)).EndInit();
+            this.groupQuickTimeEntry.ResumeLayout(false);
+            this.groupQuickTimeEntry.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dtQuickEntryDate.Properties.CalendarTimeProperties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dtQuickEntryDate.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.spinQuickDurationMinutes.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbQuickActivityType.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.txtQuickSubject.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtSearchEmail.Properties)).EndInit();
             this.tabPageRelations.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.groupRelations)).EndInit();

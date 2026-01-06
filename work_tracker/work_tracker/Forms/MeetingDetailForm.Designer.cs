@@ -37,6 +37,17 @@ namespace work_tracker.Forms
         private SimpleButton btnH1;
         private SimpleButton btnH2;
         private SimpleButton btnH3;
+        // Döküman yönetimi kontrolleri
+        private GroupControl groupDocuments;
+        private GridControl gridControlDocuments;
+        private GridView gridViewDocuments;
+        private LabelControl lblDocumentCount;
+        private SimpleButton btnCreateMeetingDoc;
+        private SimpleButton btnAddDocument;
+        private SimpleButton btnOpenDocument;
+        private SimpleButton btnDeleteDocument;
+        private PanelControl panelDocumentButtons;
+      
 
         protected override void Dispose(bool disposing)
         {
@@ -75,6 +86,24 @@ namespace work_tracker.Forms
             this.gridControl1 = new DevExpress.XtraGrid.GridControl();
             this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.lblWorkItemCount = new DevExpress.XtraEditors.LabelControl();
+            this.groupDocuments = new DevExpress.XtraEditors.GroupControl();
+            this.gridControlDocuments = new DevExpress.XtraGrid.GridControl();
+            this.gridViewDocuments = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.lblDocumentCount = new DevExpress.XtraEditors.LabelControl();
+            this.panelDocumentButtons = new DevExpress.XtraEditors.PanelControl();
+            this.btnCreateMeetingDoc = new DevExpress.XtraEditors.SimpleButton();
+            this.btnAddDocument = new DevExpress.XtraEditors.SimpleButton();
+            this.btnOpenDocument = new DevExpress.XtraEditors.SimpleButton();
+            this.btnDeleteDocument = new DevExpress.XtraEditors.SimpleButton();
+            this.groupDocuments = new DevExpress.XtraEditors.GroupControl();
+            this.gridControlDocuments = new DevExpress.XtraGrid.GridControl();
+            this.gridViewDocuments = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.lblDocumentCount = new DevExpress.XtraEditors.LabelControl();
+            this.panelDocumentButtons = new DevExpress.XtraEditors.PanelControl();
+            this.btnCreateMeetingDoc = new DevExpress.XtraEditors.SimpleButton();
+            this.btnAddDocument = new DevExpress.XtraEditors.SimpleButton();
+            this.btnOpenDocument = new DevExpress.XtraEditors.SimpleButton();
+            this.btnDeleteDocument = new DevExpress.XtraEditors.SimpleButton();
             this.panelBottom = new DevExpress.XtraEditors.PanelControl();
             this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
             this.btnSave = new DevExpress.XtraEditors.SimpleButton();
@@ -95,6 +124,18 @@ namespace work_tracker.Forms
             this.groupWorkItems.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupDocuments)).BeginInit();
+            this.groupDocuments.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridControlDocuments)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewDocuments)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.panelDocumentButtons)).BeginInit();
+            this.panelDocumentButtons.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.groupDocuments)).BeginInit();
+            this.groupDocuments.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridControlDocuments)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewDocuments)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.panelDocumentButtons)).BeginInit();
+            this.panelDocumentButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelBottom)).BeginInit();
             this.panelBottom.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
@@ -353,6 +394,97 @@ namespace work_tracker.Forms
             this.lblWorkItemCount.TabIndex = 0;
             this.lblWorkItemCount.Text = "Bu toplantıdan 0 iş talebi oluşturuldu";
             // 
+            // groupDocuments
+            // 
+            this.groupDocuments.Controls.Add(this.gridControlDocuments);
+            this.groupDocuments.Controls.Add(this.lblDocumentCount);
+            this.groupDocuments.Controls.Add(this.panelDocumentButtons);
+            this.groupDocuments.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.groupDocuments.Location = new System.Drawing.Point(0, 400);
+            this.groupDocuments.Name = "groupDocuments";
+            this.groupDocuments.Size = new System.Drawing.Size(550, 320);
+            this.groupDocuments.TabIndex = 2;
+            this.groupDocuments.Text = "📄 Dökümanlar";
+            // 
+            // gridControlDocuments
+            // 
+            this.gridControlDocuments.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridControlDocuments.Location = new System.Drawing.Point(2, 87);
+            this.gridControlDocuments.MainView = this.gridViewDocuments;
+            this.gridControlDocuments.Name = "gridControlDocuments";
+            this.gridControlDocuments.Size = new System.Drawing.Size(546, 231);
+            this.gridControlDocuments.TabIndex = 2;
+            this.gridControlDocuments.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gridViewDocuments});
+            this.gridControlDocuments.DoubleClick += new System.EventHandler(this.gridControlDocuments_DoubleClick);
+            // 
+            // gridViewDocuments
+            // 
+            this.gridViewDocuments.GridControl = this.gridControlDocuments;
+            this.gridViewDocuments.Name = "gridViewDocuments";
+            this.gridViewDocuments.OptionsBehavior.Editable = false;
+            this.gridViewDocuments.OptionsView.ShowAutoFilterRow = true;
+            // 
+            // lblDocumentCount
+            // 
+            this.lblDocumentCount.Appearance.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold);
+            this.lblDocumentCount.Appearance.Options.UseFont = true;
+            this.lblDocumentCount.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblDocumentCount.Location = new System.Drawing.Point(2, 63);
+            this.lblDocumentCount.Name = "lblDocumentCount";
+            this.lblDocumentCount.Padding = new System.Windows.Forms.Padding(10, 5, 0, 5);
+            this.lblDocumentCount.Size = new System.Drawing.Size(74, 24);
+            this.lblDocumentCount.TabIndex = 1;
+            this.lblDocumentCount.Text = "0 döküman";
+            // 
+            // panelDocumentButtons
+            // 
+            this.panelDocumentButtons.Controls.Add(this.btnDeleteDocument);
+            this.panelDocumentButtons.Controls.Add(this.btnOpenDocument);
+            this.panelDocumentButtons.Controls.Add(this.btnAddDocument);
+            this.panelDocumentButtons.Controls.Add(this.btnCreateMeetingDoc);
+            this.panelDocumentButtons.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelDocumentButtons.Location = new System.Drawing.Point(2, 23);
+            this.panelDocumentButtons.Name = "panelDocumentButtons";
+            this.panelDocumentButtons.Size = new System.Drawing.Size(546, 40);
+            this.panelDocumentButtons.TabIndex = 0;
+            // 
+            // btnCreateMeetingDoc
+            // 
+            this.btnCreateMeetingDoc.Location = new System.Drawing.Point(8, 6);
+            this.btnCreateMeetingDoc.Name = "btnCreateMeetingDoc";
+            this.btnCreateMeetingDoc.Size = new System.Drawing.Size(160, 28);
+            this.btnCreateMeetingDoc.TabIndex = 0;
+            this.btnCreateMeetingDoc.Text = "📄 Word Oluştur";
+            this.btnCreateMeetingDoc.Click += new System.EventHandler(this.btnCreateMeetingDoc_Click);
+            // 
+            // btnAddDocument
+            // 
+            this.btnAddDocument.Location = new System.Drawing.Point(174, 6);
+            this.btnAddDocument.Name = "btnAddDocument";
+            this.btnAddDocument.Size = new System.Drawing.Size(120, 28);
+            this.btnAddDocument.TabIndex = 1;
+            this.btnAddDocument.Text = "+ Döküman Ekle";
+            this.btnAddDocument.Click += new System.EventHandler(this.btnAddDocument_Click);
+            // 
+            // btnOpenDocument
+            // 
+            this.btnOpenDocument.Location = new System.Drawing.Point(300, 6);
+            this.btnOpenDocument.Name = "btnOpenDocument";
+            this.btnOpenDocument.Size = new System.Drawing.Size(100, 28);
+            this.btnOpenDocument.TabIndex = 2;
+            this.btnOpenDocument.Text = "📂 Aç";
+            this.btnOpenDocument.Click += new System.EventHandler(this.btnOpenDocument_Click);
+            // 
+            // btnDeleteDocument
+            // 
+            this.btnDeleteDocument.Location = new System.Drawing.Point(406, 6);
+            this.btnDeleteDocument.Name = "btnDeleteDocument";
+            this.btnDeleteDocument.Size = new System.Drawing.Size(100, 28);
+            this.btnDeleteDocument.TabIndex = 3;
+            this.btnDeleteDocument.Text = "🗑 Sil";
+            this.btnDeleteDocument.Click += new System.EventHandler(this.btnDeleteDocument_Click);
+            // 
             // panelBottom
             // 
             this.panelBottom.Controls.Add(this.btnCancel);
@@ -412,6 +544,7 @@ namespace work_tracker.Forms
             // 
             // splitContainerMain.Panel1
             // 
+            this.splitContainerMain.Panel1.Controls.Add(this.groupDocuments);
             this.splitContainerMain.Panel1.Controls.Add(this.groupWorkItems);
             this.splitContainerMain.Panel1.Controls.Add(this.groupMeetingInfo);
             this.splitContainerMain.Panel1.Text = "Panel1";
@@ -450,6 +583,13 @@ namespace work_tracker.Forms
             this.groupWorkItems.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridControl1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.groupDocuments)).EndInit();
+            this.groupDocuments.ResumeLayout(false);
+            this.groupDocuments.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridControlDocuments)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewDocuments)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.panelDocumentButtons)).EndInit();
+            this.panelDocumentButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.panelBottom)).EndInit();
             this.panelBottom.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain.Panel1)).EndInit();

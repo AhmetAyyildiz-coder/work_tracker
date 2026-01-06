@@ -1,5 +1,7 @@
 using System;
 using System.Data.Entity;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using DevExpress.XtraEditors;
@@ -27,6 +29,7 @@ namespace work_tracker.Forms
         private void MeetingDetailForm_Load(object sender, EventArgs e)
         {
             LoadMeetingDetails();
+            LoadDocuments();
 				SetEditMode(false);
         }
 
@@ -86,6 +89,64 @@ namespace work_tracker.Forms
             }
 
             lblWorkItemCount.Text = $"Bu toplantıdan {workItems.Count} iş talebi oluşturuldu";
+        }
+
+        private void LoadDocuments()
+        {
+            var documents = _context.DocumentReferences
+                .Where(d => d.MeetingId == _meetingId)
+                .OrderByDescending(d => d.CreatedAt)
+                .Select(d => new
+                {
+                    d.Id,
+                    d.Title,
+                    d.FileType,
+                    d.FilePath,
+                    d.Description,
+                    d.CreatedAt,
+                    d.LastAccessedAt
+                })
+                .ToList();
+
+            gridControlDocuments.DataSource = documents;
+
+            var viewDocs = gridControlDocuments.MainView as GridView;
+            if (viewDocs != null)
+            {
+                viewDocs.BestFitColumns();
+
+                if (viewDocs.Columns["Id"] != null) viewDocs.Columns["Id"].Visible = false;
+                if (viewDocs.Columns["Title"] != null)
+                {
+                    viewDocs.Columns["Title"].Caption = "Döküman";
+                    viewDocs.Columns["Title"].Width = 300;
+                }
+                if (viewDocs.Columns["FileType"] != null)
+                {
+                    viewDocs.Columns["FileType"].Caption = "Tür";
+                    viewDocs.Columns["FileType"].Width = 80;
+                }
+                if (viewDocs.Columns["FilePath"] != null) viewDocs.Columns["FilePath"].Visible = false;
+                if (viewDocs.Columns["Description"] != null)
+                {
+                    viewDocs.Columns["Description"].Caption = "Açıklama";
+                    viewDocs.Columns["Description"].Width = 250;
+                }
+                if (viewDocs.Columns["CreatedAt"] != null)
+                {
+                    viewDocs.Columns["CreatedAt"].Caption = "Oluşturma";
+                    viewDocs.Columns["CreatedAt"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+                    viewDocs.Columns["CreatedAt"].DisplayFormat.FormatString = "dd.MM.yyyy HH:mm";
+                }
+                if (viewDocs.Columns["LastAccessedAt"] != null)
+                {
+                    viewDocs.Columns["LastAccessedAt"].Caption = "Son Erişim";
+                    viewDocs.Columns["LastAccessedAt"].DisplayFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+                    viewDocs.Columns["LastAccessedAt"].DisplayFormat.FormatString = "dd.MM.yyyy HH:mm";
+                }
+            }
+
+            lblDocumentCount.Text = $"{documents.Count} döküman";
         }
 
         private void btnCreateWorkItem_Click(object sender, EventArgs e)
@@ -223,6 +284,218 @@ namespace work_tracker.Forms
             cp.Bold = bold;
             richEditControl1.Document.EndUpdateCharacters(cp);
             richEditControl1.Document.EndUpdate();
+        }
+
+        #endregion
+
+        #region Döküman Yönetimi
+
+        private void btnCreateMeetingDoc_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var meeting = _context.Meetings.Find(_meetingId);
+                if (meeting == null)
+                {
+                    XtraMessageBox.Show("Toplantı bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Dosya yolu belirleme
+                using (var sfd = new SaveFileDialog())
+                {
+                    sfd.Filter = "Word Belgesi (*.docx)|*.docx";
+                    sfd.DefaultExt = "docx";
+                    sfd.FileName = $"Toplanti_{meeting.Subject.Replace(' ', '_')}_{DateTime.Now:yyyyMMdd_HHmmss}.docx";
+
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        // Word dökümanı oluştur
+                        CreateMeetingWordDocument(meeting, sfd.FileName);
+
+                        // DocumentReference oluştur
+                        var docRef = new DocumentReference
+                        {
+                            Title = $"Toplantı Notu - {meeting.Subject}",
+                            FilePath = sfd.FileName,
+                            FileType = "Word",
+                            Description = $"{meeting.MeetingDate:dd.MM.yyyy} tarihli toplantı notları",
+                            MeetingId = _meetingId,
+                            CreatedAt = DateTime.Now,
+                            CreatedBy = Environment.UserName
+                        };
+
+                        _context.DocumentReferences.Add(docRef);
+                        _context.SaveChanges();
+
+                        LoadDocuments();
+
+                        if (XtraMessageBox.Show("Word dökümanı oluşturuldu ve kaydedildi. Açmak ister misiniz?",
+                            "Başarılı", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                        {
+                            Process.Start(sfd.FileName);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Döküman oluşturulurken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void CreateMeetingWordDocument(Meeting meeting, string filePath)
+        {
+            // RichEditControl kullanarak Word dosyası oluştur
+            using (var richEdit = new RichEditControl())
+            {
+                var doc = richEdit.Document;
+                doc.BeginUpdate();
+
+                // Başlık
+                var titleRange = doc.AppendText($"TOPLANTI NOTU\n");
+                var titleFormat = doc.BeginUpdateCharacters(titleRange);
+                titleFormat.FontSize = 20;
+                titleFormat.Bold = true;
+                titleFormat.ForeColor = System.Drawing.Color.DarkBlue;
+                doc.EndUpdateCharacters(titleFormat);
+
+                doc.AppendText("\n");
+
+                // Toplantı Bilgileri
+                doc.AppendText($"Konu: {meeting.Subject}\n");
+                doc.AppendText($"Tarih: {meeting.MeetingDate:dd.MM.yyyy HH:mm}\n");
+                if (!string.IsNullOrWhiteSpace(meeting.Participants))
+                {
+                    doc.AppendText($"Katılımcılar: {meeting.Participants}\n");
+                }
+                doc.AppendText($"Oluşturulma: {meeting.CreatedAt:dd.MM.yyyy HH:mm}\n");
+                doc.AppendText("\n");
+
+                // Notlar başlığı
+                var notesHeaderRange = doc.AppendText("NOTLAR\n");
+                var notesHeaderFormat = doc.BeginUpdateCharacters(notesHeaderRange);
+                notesHeaderFormat.FontSize = 14;
+                notesHeaderFormat.Bold = true;
+                doc.EndUpdateCharacters(notesHeaderFormat);
+
+                doc.AppendText("\n");
+
+                // HTML notları ekle
+                if (!string.IsNullOrWhiteSpace(meeting.NotesHtml))
+                {
+                    try
+                    {
+                        doc.AppendHtmlText(meeting.NotesHtml);
+                    }
+                    catch
+                    {
+                        // HTML parse hatası varsa düz metin olarak ekle
+                        doc.AppendText(System.Text.RegularExpressions.Regex.Replace(meeting.NotesHtml, "<.*?>", string.Empty));
+                    }
+                }
+
+                // İş talepleri
+                var workItems = _context.WorkItems
+                    .Where(w => w.SourceMeetingId == _meetingId)
+                    .OrderBy(w => w.CreatedAt)
+                    .ToList();
+
+                if (workItems.Any())
+                {
+                    doc.AppendText("\n\n");
+                    var workItemsHeaderRange = doc.AppendText("İLİŞKİLİ İŞ TALEPLERİ\n");
+                    var workItemsHeaderFormat = doc.BeginUpdateCharacters(workItemsHeaderRange);
+                    workItemsHeaderFormat.FontSize = 14;
+                    workItemsHeaderFormat.Bold = true;
+                    doc.EndUpdateCharacters(workItemsHeaderFormat);
+
+                    doc.AppendText("\n");
+
+                    foreach (var workItem in workItems)
+                    {
+                        doc.AppendText($"• #{workItem.Id} - {workItem.Title} ({workItem.Status})\n");
+                    }
+                }
+
+                doc.EndUpdate();
+
+                // Dosyayı kaydet
+                richEdit.SaveDocument(filePath, DevExpress.XtraRichEdit.DocumentFormat.OpenXml);
+            }
+        }
+
+        private void btnAddDocument_Click(object sender, EventArgs e)
+        {
+            var form = new DocumentReferenceEditForm()
+            {
+                PresetMeetingId = _meetingId
+            };
+
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                LoadDocuments();
+                XtraMessageBox.Show("Döküman eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void btnOpenDocument_Click(object sender, EventArgs e)
+        {
+            var viewDocs = gridControlDocuments.MainView as GridView;
+            if (viewDocs == null || viewDocs.FocusedRowHandle < 0) return;
+
+            var docId = (int)viewDocs.GetFocusedRowCellValue("Id");
+            var doc = _context.DocumentReferences.Find(docId);
+
+            if (doc != null)
+            {
+                if (File.Exists(doc.FilePath))
+                {
+                    doc.LastAccessedAt = DateTime.Now;
+                    _context.SaveChanges();
+
+                    try
+                    {
+                        Process.Start(doc.FilePath);
+                        LoadDocuments();
+                    }
+                    catch (Exception ex)
+                    {
+                        XtraMessageBox.Show($"Dosya açılırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    XtraMessageBox.Show("Dosya bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        private void btnDeleteDocument_Click(object sender, EventArgs e)
+        {
+            var viewDocs = gridControlDocuments.MainView as GridView;
+            if (viewDocs == null || viewDocs.FocusedRowHandle < 0) return;
+
+            if (XtraMessageBox.Show("Döküman referansını silmek istediğinizden emin misiniz?\n(Dosyanın kendisi silinmeyecek)",
+                "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                var docId = (int)viewDocs.GetFocusedRowCellValue("Id");
+                var doc = _context.DocumentReferences.Find(docId);
+
+                if (doc != null)
+                {
+                    _context.DocumentReferences.Remove(doc);
+                    _context.SaveChanges();
+
+                    LoadDocuments();
+                    XtraMessageBox.Show("Döküman referansı silindi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+        }
+
+        private void gridControlDocuments_DoubleClick(object sender, EventArgs e)
+        {
+            btnOpenDocument_Click(sender, e);
         }
 
         #endregion

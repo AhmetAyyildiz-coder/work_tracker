@@ -22,6 +22,8 @@ namespace work_tracker.Forms
         private LookUpEdit cmbModule;
         private LabelControl lblWorkItem;
         private LookUpEdit cmbWorkItem;
+        private LabelControl lblMeeting;
+        private LookUpEdit cmbMeeting;
         private LabelControl lblTags;
         private CheckedComboBoxEdit chkTags;
         private CheckEdit chkFavorite;
@@ -48,6 +50,8 @@ namespace work_tracker.Forms
             this.cmbModule = new DevExpress.XtraEditors.LookUpEdit();
             this.lblWorkItem = new DevExpress.XtraEditors.LabelControl();
             this.cmbWorkItem = new DevExpress.XtraEditors.LookUpEdit();
+            this.lblMeeting = new DevExpress.XtraEditors.LabelControl();
+            this.cmbMeeting = new DevExpress.XtraEditors.LookUpEdit();
             this.lblTags = new DevExpress.XtraEditors.LabelControl();
             this.chkTags = new DevExpress.XtraEditors.CheckedComboBoxEdit();
             this.chkFavorite = new DevExpress.XtraEditors.CheckEdit();
@@ -59,6 +63,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbModule.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbWorkItem.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkTags.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkFavorite.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grpCreateNew)).BeginInit();
@@ -221,31 +226,49 @@ namespace work_tracker.Forms
             this.cmbWorkItem.Size = new System.Drawing.Size(400, 20);
             this.cmbWorkItem.TabIndex = 12;
             // 
+            // lblMeeting
+            // 
+            this.lblMeeting.Location = new System.Drawing.Point(15, 240);
+            this.lblMeeting.Name = "lblMeeting";
+            this.lblMeeting.Size = new System.Drawing.Size(42, 13);
+            this.lblMeeting.TabIndex = 13;
+            this.lblMeeting.Text = "Toplantı:";
+            // 
+            // cmbMeeting
+            // 
+            this.cmbMeeting.Location = new System.Drawing.Point(120, 237);
+            this.cmbMeeting.Name = "cmbMeeting";
+            this.cmbMeeting.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.cmbMeeting.Properties.NullText = "(Toplantı Seçin - Opsiyonel)";
+            this.cmbMeeting.Size = new System.Drawing.Size(400, 20);
+            this.cmbMeeting.TabIndex = 14;
+            // 
             // lblTags
             // 
-            this.lblTags.Location = new System.Drawing.Point(15, 240);
+            this.lblTags.Location = new System.Drawing.Point(15, 270);
             this.lblTags.Name = "lblTags";
             this.lblTags.Size = new System.Drawing.Size(41, 13);
-            this.lblTags.TabIndex = 13;
+            this.lblTags.TabIndex = 15;
             this.lblTags.Text = "Etiketler:";
             // 
             // chkTags
             // 
-            this.chkTags.Location = new System.Drawing.Point(120, 237);
+            this.chkTags.Location = new System.Drawing.Point(120, 267);
             this.chkTags.Name = "chkTags";
             this.chkTags.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.chkTags.Properties.NullText = "(Etiket Seçin)";
             this.chkTags.Size = new System.Drawing.Size(400, 20);
-            this.chkTags.TabIndex = 14;
+            this.chkTags.TabIndex = 16;
             // 
             // chkFavorite
             // 
-            this.chkFavorite.Location = new System.Drawing.Point(120, 270);
+            this.chkFavorite.Location = new System.Drawing.Point(120, 300);
             this.chkFavorite.Name = "chkFavorite";
             this.chkFavorite.Properties.Caption = "⭐ Favorilere Ekle";
             this.chkFavorite.Size = new System.Drawing.Size(150, 19);
-            this.chkFavorite.TabIndex = 15;
+            this.chkFavorite.TabIndex = 17;
             // 
             // btnSave
             // 
@@ -274,7 +297,7 @@ namespace work_tracker.Forms
             this.AcceptButton = this.btnSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(685, 360);
+            this.ClientSize = new System.Drawing.Size(685, 390);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.txtTitle);
             this.Controls.Add(this.lblFilePath);
@@ -289,6 +312,8 @@ namespace work_tracker.Forms
             this.Controls.Add(this.cmbModule);
             this.Controls.Add(this.lblWorkItem);
             this.Controls.Add(this.cmbWorkItem);
+            this.Controls.Add(this.lblMeeting);
+            this.Controls.Add(this.cmbMeeting);
             this.Controls.Add(this.lblTags);
             this.Controls.Add(this.chkTags);
             this.Controls.Add(this.chkFavorite);
@@ -307,6 +332,7 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.cmbProject.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbModule.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbWorkItem.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cmbMeeting.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkTags.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chkFavorite.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.grpCreateNew)).EndInit();

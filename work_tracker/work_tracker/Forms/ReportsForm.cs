@@ -40,6 +40,7 @@ namespace work_tracker.Forms
             LoadDetailedReport();
             LoadDailyEffortReport();
             LoadActivityTimeline();
+            LoadFragmentationReport();
         }
 
         private Tuple<DateTime?, DateTime?> GetDateRange()
@@ -1159,6 +1160,196 @@ namespace work_tracker.Forms
             public string Category { get; set; }
             public int? WorkItemId { get; set; }
             public int DurationMinutes { get; set; }
+        }
+
+        #endregion
+
+
+        #region Fragmentation Report
+
+        /// <summary>
+        /// Bölünme raporu - İşlerin kaç kez beklemede kaldığını ve ne kadar süre beklemede geçirdiğini gösterir
+        /// </summary>
+        private void LoadFragmentationReport()
+        {
+            try
+            {
+                var range = GetDateRange();
+                DateTime? from = range.Item1;
+                DateTime? to = range.Item2;
+
+                // Tarih aralığında olan work item'ları çek
+                var query = _context.WorkItems
+                    .Include(w => w.Activities)
+                    .Where(w => !w.IsArchived);
+
+                if (from.HasValue)
+                {
+                    query = query.Where(w => w.CreatedAt >= from.Value);
+                }
+                if (to.HasValue)
+                {
+                    var end = to.Value.AddDays(1);
+                    query = query.Where(w => w.CreatedAt < end);
+                }
+
+                var workItems = query.ToList();
+
+                var fragmentationData = workItems.Select(w =>
+                {
+                    var statusActivities = w.Activities?
+                        .Where(a => a.ActivityType == WorkItemActivityTypes.StatusChange)
+                        .OrderBy(a => a.CreatedAt)
+                        .ToList() ?? new List<WorkItemActivity>();
+
+                    // "Beklemede" durumuna kaç kez geçti?
+                    var waitingCount = statusActivities.Count(a => a.NewValue == "Beklemede");
+
+                    // Toplam beklemede kalma süresi
+                    var waitingMinutes = CalculateWaitingTime(w, statusActivities);
+
+                    // Aktif çalışma süresi
+                    var activeMinutes = CalculateActualWorkTime(w.Id, w.StartedAt, w.CreatedAt, w.CompletedAt);
+
+                    // Toplam süre
+                    var totalMinutes = waitingMinutes + activeMinutes;
+
+                    // Bölünme oranı
+                    var fragmentationRatio = totalMinutes > 0 ? (waitingMinutes / totalMinutes * 100) : 0;
+
+                    return new
+                    {
+                        w.Id,
+                        w.Title,
+                        w.Status,
+                        BolunmeSayisi = waitingCount,
+                        BeklemedeDk = (int)waitingMinutes,
+                        BeklemedeSure = FormatDuration((int)waitingMinutes),
+                        AktifCalismaDk = (int)activeMinutes,
+                        AktifCalismaSure = FormatDuration((int)activeMinutes),
+                        ToplamDk = (int)totalMinutes,
+                        ToplamSure = FormatDuration((int)totalMinutes),
+                        BolunmeOrani = Math.Round(fragmentationRatio, 1)
+                    };
+                })
+                .Where(x => x.BolunmeSayisi > 0) // Sadece en az bir kez beklemede olanları göster
+                .OrderByDescending(x => x.BolunmeSayisi)
+                .ToList();
+
+                gridFragmentation.DataSource = fragmentationData;
+
+                var view = gridViewFragmentation;
+                view.BestFitColumns();
+
+                // Kolon başlıkları
+                if (view.Columns["Id"] != null) view.Columns["Id"].Caption = "İş ID";
+                if (view.Columns["Title"] != null) view.Columns["Title"].Caption = "Başlık";
+                if (view.Columns["Status"] != null) view.Columns["Status"].Caption = "Durum";
+                if (view.Columns["BolunmeSayisi"] != null) view.Columns["BolunmeSayisi"].Caption = "Bölünme Sayısı";
+                if (view.Columns["BeklemedeDk"] != null) view.Columns["BeklemedeDk"].Visible = false;
+                if (view.Columns["BeklemedeSure"] != null) view.Columns["BeklemedeSure"].Caption = "Beklemede Süre";
+                if (view.Columns["AktifCalismaDk"] != null) view.Columns["AktifCalismaDk"].Visible = false;
+                if (view.Columns["AktifCalismaSure"] != null) view.Columns["AktifCalismaSure"].Caption = "Aktif Çalışma";
+                if (view.Columns["ToplamDk"] != null) view.Columns["ToplamDk"].Visible = false;
+                if (view.Columns["ToplamSure"] != null) view.Columns["ToplamSure"].Caption = "Toplam Süre";
+                if (view.Columns["BolunmeOrani"] != null) view.Columns["BolunmeOrani"].Caption = "Bölünme Oranı (%)";
+
+                // Özetler
+                view.Columns["BolunmeSayisi"].Summary.Clear();
+                view.Columns["BolunmeSayisi"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "BolunmeSayisi", "Toplam: {0}");
+
+                view.Columns["BeklemedeDk"].Summary.Clear();
+                view.Columns["BeklemedeDk"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "BeklemedeDk", "Toplam: {0} dk");
+
+                view.Columns["AktifCalismaDk"].Summary.Clear();
+                view.Columns["AktifCalismaDk"].Summary.Add(DevExpress.Data.SummaryItemType.Sum, "AktifCalismaDk", "Toplam: {0} dk");
+
+                view.OptionsBehavior.Editable = false;
+                view.OptionsView.ShowGroupPanel = false;
+                view.OptionsView.ShowFooter = true;
+
+                // Özet kartları güncelle
+                var totalWorkItems = fragmentationData.Count;
+                var avgFragmentation = totalWorkItems > 0 ? fragmentationData.Average(x => (double)x.BolunmeSayisi) : 0;
+                var topItem = fragmentationData.FirstOrDefault();
+
+                lblFragTotalWorkItemsValue.Text = totalWorkItems.ToString();
+                lblFragAvgCountValue.Text = avgFragmentation.ToString("0.0");
+                lblFragTopItemValue.Text = topItem != null 
+                    ? $"#{topItem.Id} ({topItem.BolunmeSayisi} kez)" 
+                    : "-";
+            }
+            catch (Exception ex)
+            {
+                XtraMessageBox.Show($"Bölünme raporu yüklenirken hata oluştu:\n\n{ex.Message}", "Rapor Hatası",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// Bir iş öğesi için "Beklemede" durumunda geçen toplam süreyi hesaplar
+        /// </summary>
+        private double CalculateWaitingTime(WorkItem workItem, List<WorkItemActivity> statusActivities)
+        {
+            try
+            {
+                TimeSpan totalWaitingTime = TimeSpan.Zero;
+                DateTime? waitingStartTime = null;
+                DateTime? lastExitTime = null;
+
+                // Eğer şu an "Beklemede" ise
+                if (workItem.Status == "Beklemede")
+                {
+                    // Son "Beklemede" durumuna geçiş zamanını bul
+                    var lastWaitingEntry = statusActivities.LastOrDefault(a => a.NewValue == "Beklemede");
+                    if (lastWaitingEntry != null)
+                    {
+                        waitingStartTime = lastWaitingEntry.CreatedAt;
+                    }
+                }
+
+                foreach (var activity in statusActivities)
+                {
+                    var enteredWaiting = activity.NewValue == "Beklemede" && activity.OldValue != "Beklemede";
+                    var exitedWaiting = activity.OldValue == "Beklemede" && activity.NewValue != "Beklemede";
+
+                    // Beklemede durumuna giriş
+                    if (enteredWaiting && waitingStartTime == null)
+                    {
+                        waitingStartTime = activity.CreatedAt;
+                    }
+                    // Beklemede durumundan çıkış
+                    else if (exitedWaiting && waitingStartTime != null)
+                    {
+                        // Çakışan zamanları önlemek için son çıkış zamanını kontrol et
+                        if (lastExitTime.HasValue && activity.CreatedAt <= lastExitTime.Value)
+                        {
+                            continue; // Çakışan kayıtları atla
+                        }
+
+                        totalWaitingTime += activity.CreatedAt - waitingStartTime.Value;
+                        waitingStartTime = null;
+                        lastExitTime = activity.CreatedAt;
+                    }
+                }
+
+                // Şu an hala beklemedeyse
+                if (waitingStartTime != null && workItem.Status == "Beklemede")
+                {
+                    var currentTime = DateTime.Now;
+                    // Çakışan zamanları önlemek için son çıkış zamanını kontrol et
+                    if (!lastExitTime.HasValue || currentTime > lastExitTime.Value)
+                    {
+                        totalWaitingTime += currentTime - waitingStartTime.Value;
+                    }
+                }
+
+                return totalWaitingTime.TotalMinutes;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
 
         #endregion

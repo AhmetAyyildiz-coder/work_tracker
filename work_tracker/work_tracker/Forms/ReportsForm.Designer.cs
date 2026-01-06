@@ -43,6 +43,17 @@ namespace work_tracker.Forms
         private LabelControl lblTimelineSummary;
         private System.Windows.Forms.Panel panelTimelineContainer;
         private System.Windows.Forms.FlowLayoutPanel flowTimelinePanel;
+        // Fragmentation report controls
+        private XtraTabPage tabFragmentation;
+        private DevExpress.XtraGrid.GridControl gridFragmentation;
+        private DevExpress.XtraGrid.Views.Grid.GridView gridViewFragmentation;
+        private PanelControl panelFragmentationSummary;
+        private LabelControl lblFragAvgCountTitle;
+        private LabelControl lblFragAvgCountValue;
+        private LabelControl lblFragTotalWorkItemsTitle;
+        private LabelControl lblFragTotalWorkItemsValue;
+        private LabelControl lblFragTopItemTitle;
+        private LabelControl lblFragTopItemValue;
 
         private void InitializeComponent()
         {
@@ -81,6 +92,17 @@ namespace work_tracker.Forms
             this.lblTimelineSummary = new DevExpress.XtraEditors.LabelControl();
             this.panelTimelineContainer = new System.Windows.Forms.Panel();
             this.flowTimelinePanel = new System.Windows.Forms.FlowLayoutPanel();
+            // Fragmentation controls
+            this.tabFragmentation = new DevExpress.XtraTab.XtraTabPage();
+            this.gridFragmentation = new DevExpress.XtraGrid.GridControl();
+            this.gridViewFragmentation = new DevExpress.XtraGrid.Views.Grid.GridView();
+            this.panelFragmentationSummary = new DevExpress.XtraEditors.PanelControl();
+            this.lblFragAvgCountTitle = new DevExpress.XtraEditors.LabelControl();
+            this.lblFragAvgCountValue = new DevExpress.XtraEditors.LabelControl();
+            this.lblFragTotalWorkItemsTitle = new DevExpress.XtraEditors.LabelControl();
+            this.lblFragTotalWorkItemsValue = new DevExpress.XtraEditors.LabelControl();
+            this.lblFragTopItemTitle = new DevExpress.XtraEditors.LabelControl();
+            this.lblFragTopItemValue = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.tabControl1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabChart.SuspendLayout();
@@ -112,6 +134,12 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.dtTimelineDate.Properties.CalendarTimeProperties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dtTimelineDate.Properties)).BeginInit();
             this.panelTimelineContainer.SuspendLayout();
+            // Fragmentation BeginInit
+            this.tabFragmentation.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridFragmentation)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewFragmentation)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.panelFragmentationSummary)).BeginInit();
+            this.panelFragmentationSummary.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelControl1
@@ -196,7 +224,8 @@ namespace work_tracker.Forms
             this.tabChart,
             this.tabDetailed,
             this.tabDailyEffort,
-            this.tabActivityTimeline});
+            this.tabActivityTimeline,
+            this.tabFragmentation});
             // 
             // tabChart
             // 
@@ -475,6 +504,107 @@ namespace work_tracker.Forms
             this.flowTimelinePanel.TabIndex = 0;
             this.flowTimelinePanel.WrapContents = false;
             // 
+            // tabFragmentation
+            // 
+            this.tabFragmentation.Controls.Add(this.gridFragmentation);
+            this.tabFragmentation.Controls.Add(this.panelFragmentationSummary);
+            this.tabFragmentation.Name = "tabFragmentation";
+            this.tabFragmentation.Size = new System.Drawing.Size(1194, 622);
+            this.tabFragmentation.Text = "📈 Bölünme Raporu";
+            // 
+            // panelFragmentationSummary
+            // 
+            this.panelFragmentationSummary.Controls.Add(this.lblFragAvgCountTitle);
+            this.panelFragmentationSummary.Controls.Add(this.lblFragAvgCountValue);
+            this.panelFragmentationSummary.Controls.Add(this.lblFragTotalWorkItemsTitle);
+            this.panelFragmentationSummary.Controls.Add(this.lblFragTotalWorkItemsValue);
+            this.panelFragmentationSummary.Controls.Add(this.lblFragTopItemTitle);
+            this.panelFragmentationSummary.Controls.Add(this.lblFragTopItemValue);
+            this.panelFragmentationSummary.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelFragmentationSummary.Location = new System.Drawing.Point(0, 0);
+            this.panelFragmentationSummary.Name = "panelFragmentationSummary";
+            this.panelFragmentationSummary.Size = new System.Drawing.Size(1194, 80);
+            this.panelFragmentationSummary.TabIndex = 0;
+            // 
+            // lblFragTotalWorkItemsTitle
+            // 
+            this.lblFragTotalWorkItemsTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblFragTotalWorkItemsTitle.Appearance.ForeColor = System.Drawing.Color.Gray;
+            this.lblFragTotalWorkItemsTitle.Location = new System.Drawing.Point(20, 15);
+            this.lblFragTotalWorkItemsTitle.Name = "lblFragTotalWorkItemsTitle";
+            this.lblFragTotalWorkItemsTitle.Size = new System.Drawing.Size(60, 14);
+            this.lblFragTotalWorkItemsTitle.TabIndex = 0;
+            this.lblFragTotalWorkItemsTitle.Text = "Toplam İş";
+            // 
+            // lblFragTotalWorkItemsValue
+            // 
+            this.lblFragTotalWorkItemsValue.Appearance.Font = new System.Drawing.Font("Tahoma", 18F, System.Drawing.FontStyle.Bold);
+            this.lblFragTotalWorkItemsValue.Appearance.ForeColor = System.Drawing.Color.FromArgb(0, 122, 204);
+            this.lblFragTotalWorkItemsValue.Location = new System.Drawing.Point(20, 35);
+            this.lblFragTotalWorkItemsValue.Name = "lblFragTotalWorkItemsValue";
+            this.lblFragTotalWorkItemsValue.Size = new System.Drawing.Size(15, 29);
+            this.lblFragTotalWorkItemsValue.TabIndex = 1;
+            this.lblFragTotalWorkItemsValue.Text = "0";
+            // 
+            // lblFragAvgCountTitle
+            // 
+            this.lblFragAvgCountTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblFragAvgCountTitle.Appearance.ForeColor = System.Drawing.Color.Gray;
+            this.lblFragAvgCountTitle.Location = new System.Drawing.Point(250, 15);
+            this.lblFragAvgCountTitle.Name = "lblFragAvgCountTitle";
+            this.lblFragAvgCountTitle.Size = new System.Drawing.Size(100, 14);
+            this.lblFragAvgCountTitle.TabIndex = 2;
+            this.lblFragAvgCountTitle.Text = "Ort. Bölünme";
+            // 
+            // lblFragAvgCountValue
+            // 
+            this.lblFragAvgCountValue.Appearance.Font = new System.Drawing.Font("Tahoma", 18F, System.Drawing.FontStyle.Bold);
+            this.lblFragAvgCountValue.Appearance.ForeColor = System.Drawing.Color.FromArgb(230, 126, 34);
+            this.lblFragAvgCountValue.Location = new System.Drawing.Point(250, 35);
+            this.lblFragAvgCountValue.Name = "lblFragAvgCountValue";
+            this.lblFragAvgCountValue.Size = new System.Drawing.Size(30, 29);
+            this.lblFragAvgCountValue.TabIndex = 3;
+            this.lblFragAvgCountValue.Text = "0";
+            // 
+            // lblFragTopItemTitle
+            // 
+            this.lblFragTopItemTitle.Appearance.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.lblFragTopItemTitle.Appearance.ForeColor = System.Drawing.Color.Gray;
+            this.lblFragTopItemTitle.Location = new System.Drawing.Point(480, 15);
+            this.lblFragTopItemTitle.Name = "lblFragTopItemTitle";
+            this.lblFragTopItemTitle.Size = new System.Drawing.Size(100, 14);
+            this.lblFragTopItemTitle.TabIndex = 4;
+            this.lblFragTopItemTitle.Text = "En Çok Bölünen";
+            // 
+            // lblFragTopItemValue
+            // 
+            this.lblFragTopItemValue.Appearance.Font = new System.Drawing.Font("Tahoma", 10F);
+            this.lblFragTopItemValue.Appearance.ForeColor = System.Drawing.Color.FromArgb(192, 57, 43);
+            this.lblFragTopItemValue.Location = new System.Drawing.Point(480, 35);
+            this.lblFragTopItemValue.Name = "lblFragTopItemValue";
+            this.lblFragTopItemValue.Size = new System.Drawing.Size(8, 16);
+            this.lblFragTopItemValue.TabIndex = 5;
+            this.lblFragTopItemValue.Text = "-";
+            // 
+            // gridFragmentation
+            // 
+            this.gridFragmentation.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.gridFragmentation.Location = new System.Drawing.Point(0, 80);
+            this.gridFragmentation.MainView = this.gridViewFragmentation;
+            this.gridFragmentation.Name = "gridFragmentation";
+            this.gridFragmentation.Size = new System.Drawing.Size(1194, 542);
+            this.gridFragmentation.TabIndex = 1;
+            this.gridFragmentation.ViewCollection.AddRange(new DevExpress.XtraGrid.Views.Base.BaseView[] {
+            this.gridViewFragmentation});
+            // 
+            // gridViewFragmentation
+            // 
+            this.gridViewFragmentation.GridControl = this.gridFragmentation;
+            this.gridViewFragmentation.Name = "gridViewFragmentation";
+            this.gridViewFragmentation.OptionsBehavior.Editable = false;
+            this.gridViewFragmentation.OptionsView.ShowGroupPanel = false;
+            this.gridViewFragmentation.OptionsView.ShowFooter = true;
+            // 
             // ReportsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -520,6 +650,13 @@ namespace work_tracker.Forms
             ((System.ComponentModel.ISupportInitialize)(this.dtTimelineDate.Properties)).EndInit();
             this.panelTimelineContainer.ResumeLayout(false);
             this.panelTimelineContainer.PerformLayout();
+            // Fragmentation EndInit
+            this.tabFragmentation.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.gridFragmentation)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewFragmentation)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.panelFragmentationSummary)).EndInit();
+            this.panelFragmentationSummary.ResumeLayout(false);
+            this.panelFragmentationSummary.PerformLayout();
             this.ResumeLayout(false);
         }
     }

@@ -42,6 +42,7 @@ namespace work_tracker.Forms
         public int? PresetWorkItemId { get; set; }
         public int? PresetProjectId { get; set; }
         public int? PresetModuleId { get; set; }
+        public int? PresetMeetingId { get; set; }
 
         private void DocumentReferenceEditForm_Load(object sender, EventArgs e)
         {
@@ -66,6 +67,8 @@ namespace work_tracker.Forms
                     cmbProject.EditValue = PresetProjectId.Value;
                 if (PresetModuleId.HasValue)
                     cmbModule.EditValue = PresetModuleId.Value;
+                if (PresetMeetingId.HasValue)
+                    cmbMeeting.EditValue = PresetMeetingId.Value;
             }
         }
 
@@ -107,6 +110,23 @@ namespace work_tracker.Forms
             cmbWorkItem.Properties.Columns.Clear();
             cmbWorkItem.Properties.Columns.Add(new LookUpColumnInfo("DisplayText", "İş Kalemi"));
 
+            // Toplantılar
+            var meetings = _context.Meetings
+                .OrderByDescending(m => m.MeetingDate)
+                .Select(m => new
+                {
+                    m.Id,
+                    DisplayText = m.Subject + " - " + System.Data.Entity.DbFunctions.TruncateTime(m.MeetingDate)
+                })
+                .ToList();
+
+            cmbMeeting.Properties.DataSource = meetings;
+            cmbMeeting.Properties.DisplayMember = "DisplayText";
+            cmbMeeting.Properties.ValueMember = "Id";
+            cmbMeeting.Properties.NullText = "(Toplantı Seçin - Opsiyonel)";
+            cmbMeeting.Properties.Columns.Clear();
+            cmbMeeting.Properties.Columns.Add(new LookUpColumnInfo("DisplayText", "Toplantı"));
+
             // Etiketler (CheckedComboBox)
             var tags = _context.DocumentTags.OrderBy(t => t.Name).ToList();
             foreach (var tag in tags)
@@ -134,6 +154,7 @@ namespace work_tracker.Forms
             cmbProject.EditValue = _document.ProjectId;
             cmbModule.EditValue = _document.ModuleId;
             cmbWorkItem.EditValue = _document.WorkItemId;
+            cmbMeeting.EditValue = _document.MeetingId;
             chkFavorite.Checked = _document.IsFavorite;
 
             // Etiketleri seç
@@ -722,6 +743,7 @@ namespace work_tracker.Forms
                 _document.ProjectId = cmbProject.EditValue as int?;
                 _document.ModuleId = cmbModule.EditValue as int?;
                 _document.WorkItemId = cmbWorkItem.EditValue as int?;
+                _document.MeetingId = cmbMeeting.EditValue as int?;
                 _document.IsFavorite = chkFavorite.Checked;
 
                 // Etiketleri güncelle

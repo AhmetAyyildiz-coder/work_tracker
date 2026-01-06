@@ -23,7 +23,7 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <MinimumRequiredVersion>1.0.0.22</MinimumRequiredVersion>
-    <ApplicationRevision>48</ApplicationRevision>
+    <ApplicationRevision>53</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -289,6 +289,10 @@
     <Compile Include="Migrations\202512100628574_added_new_wiki_system.Designer.cs">
       <DependentUpon>202512100628574_added_new_wiki_system.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202512230621155_fixed_document_references_meeting.cs" />
+    <Compile Include="Migrations\202512230621155_fixed_document_references_meeting.Designer.cs">
+      <DependentUpon>202512230621155_fixed_document_references_meeting.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -540,6 +544,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202512100628574_added_new_wiki_system.resx">
       <DependentUpon>202512100628574_added_new_wiki_system.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202512230621155_fixed_document_references_meeting.resx">
+      <DependentUpon>202512230621155_fixed_document_references_meeting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -211,6 +211,13 @@ namespace work_tracker.Data
                 .WithMany()
                 .HasForeignKey(d => d.WorkItemId)
                 .WillCascadeOnDelete(false);
+
+            // DocumentReference - Meeting ilişkisi
+            modelBuilder.Entity<DocumentReference>()
+                .HasOptional(d => d.Meeting)
+                .WithMany(m => m.Documents)
+                .HasForeignKey(d => d.MeetingId)
+                .WillCascadeOnDelete(false);
         }
 
         /// <summary>
@@ -223,7 +230,7 @@ namespace work_tracker.Data
                 new { Board = "Kanban", ColumnName = "GelenAcilIsler", DisplayOrder = 1, WipLimit = (int?)null },
                 new { Board = "Kanban", ColumnName = "Sirada", DisplayOrder = 2, WipLimit = (int?)10 },
                 new { Board = "Kanban", ColumnName = "MudahaleEdiliyor", DisplayOrder = 3, WipLimit = (int?)3 },
-                new { Board = "Kanban", ColumnName = "Beklemede", DisplayOrder = 4, WipLimit = (int?)5 },
+                new { Board = "Kanban", ColumnName = "Beklemede", DisplayOrder = 4, WipLimit = (int?)20 },
                 new { Board = "Kanban", ColumnName = "DogrulamaBekliyor", DisplayOrder = 5, WipLimit = (int?)null },
                 new { Board = "Kanban", ColumnName = "Cozuldu", DisplayOrder = 6, WipLimit = (int?)null }
             };

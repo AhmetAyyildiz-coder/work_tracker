@@ -29,6 +29,7 @@ namespace work_tracker.Data.Entities
         // Navigation Properties
         public virtual ICollection<WorkItem> WorkItems { get; set; }
         public virtual ICollection<TimeEntry> TimeEntries { get; set; }
+        public virtual ICollection<DocumentReference> Documents { get; set; }
 
         public Meeting()
         {
@@ -36,6 +37,7 @@ namespace work_tracker.Data.Entities
             CreatedAt = DateTime.Now;
             WorkItems = new HashSet<WorkItem>();
             TimeEntries = new HashSet<TimeEntry>();
+            Documents = new HashSet<DocumentReference>();
         }
     }
 }

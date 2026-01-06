@@ -68,6 +68,14 @@ namespace work_tracker.Data.Entities
         public virtual WorkItem WorkItem { get; set; }
 
         /// <summary>
+        /// İlişkili toplantı (opsiyonel)
+        /// </summary>
+        public int? MeetingId { get; set; }
+
+        [ForeignKey("MeetingId")]
+        public virtual Meeting Meeting { get; set; }
+
+        /// <summary>
         /// Oluşturulma tarihi
         /// </summary>
         [Required]

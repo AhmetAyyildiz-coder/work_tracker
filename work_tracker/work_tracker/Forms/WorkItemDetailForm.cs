@@ -41,6 +41,9 @@ namespace work_tracker.Forms
             LoadTimeEntries();
             LoadRelations();
             
+            // Hızlı zaman kaydı panelini başlat
+            InitializeQuickTimeEntryPanel();
+            
             // Yorum listesi çift tıklama event'i
             lstComments.DoubleClick += LstComments_DoubleClick;
             
@@ -1986,6 +1989,236 @@ namespace work_tracker.Forms
 
                 listForm.ShowDialog(this);
             }
+        }
+
+        private void btnMoveToParking_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Onay al
+                var result = XtraMessageBox.Show(
+                    $"'{_workItem.Title}' işini otoparka taşımak istediğinize emin misiniz?\n\n" +
+                    "Otopark, yapmaktan vazgeçtiğiniz ancak silmek istemediğiniz düşük öncelikli işler içindir.",
+                    "Otoparka Taşı",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (result != DialogResult.Yes)
+                    return;
+
+                var oldBoard = _workItem.Board;
+                var oldStatus = _workItem.Status;
+
+                // İşi otoparka taşı
+                _workItem.Board = "Otopark";
+                _workItem.Status = "Bekliyor";
+
+                // Aktivite kaydı oluştur
+                _context.WorkItemActivities.Add(new WorkItemActivity
+                {
+                    WorkItemId = _workItem.Id,
+                    ActivityType = "BoardChange",
+                    OldValue = oldBoard,
+                    NewValue = "Otopark",
+                    Description = $"İş '{oldBoard}' panosundan Otoparka taşındı (Durum: {oldStatus} → Bekliyor)",
+                    CreatedBy = _currentUser,
+                    CreatedAt = DateTime.Now
+                });
+
+                _context.SaveChanges();
+
+                Logger.Info($"İş #{_workItem.Id} otoparka taşındı: {_workItem.Title}");
+
+                XtraMessageBox.Show(
+                    "İş başarıyla otoparka taşındı.",
+                    "Başarılı",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                // Formu kapat
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("İş otoparka taşınırken hata", ex);
+                XtraMessageBox.Show(
+                    $"İş otoparka taşınırken hata oluştu:\n{ex.Message}",
+                    "Hata",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        #endregion
+
+        #region Hızlı Zaman Kaydı
+
+        private void InitializeQuickTimeEntryPanel()
+        {
+            // Aktivite tiplerini yükle
+            cmbQuickActivityType.Properties.Items.Clear();
+            cmbQuickActivityType.Properties.Items.Add("İş");
+            cmbQuickActivityType.Properties.Items.Add("Telefon Görüşmesi");
+            cmbQuickActivityType.Properties.Items.Add("Toplantı");
+            cmbQuickActivityType.Properties.Items.Add("Mola");
+            cmbQuickActivityType.Properties.Items.Add("Diğer");
+            cmbQuickActivityType.SelectedIndex = 0; // Varsayılan: İş
+
+            // Varsayılan değerleri ayarla
+            dtQuickEntryDate.EditValue = DateTime.Now;
+            spinQuickDurationMinutes.EditValue = 30;
+            txtQuickSubject.Text = string.Empty;
+
+            // Enter tuşu ile kaydetme
+            txtQuickSubject.KeyDown += TxtQuickSubject_KeyDown;
+        }
+
+        private void TxtQuickSubject_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Enter tuşuna basıldığında hızlı kaydet
+            if (e.KeyCode == Keys.Enter && !e.Shift)
+            {
+                e.SuppressKeyPress = true;
+                e.Handled = true;
+                btnQuickSave_Click(sender, e);
+            }
+        }
+
+        private void btnQuickSave_Click(object sender, EventArgs e)
+        {
+            if (!ValidateQuickTimeEntry())
+                return;
+
+            try
+            {
+                QuickSaveTimeEntry();
+                XtraMessageBox.Show("Zaman kaydı başarıyla eklendi.", "Başarılı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Hızlı zaman kaydı eklenirken hata", ex);
+                XtraMessageBox.Show($"Zaman kaydı eklenirken hata oluştu:\n\n{ex.Message}", "Hata",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnDetailedEntry_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Detaylı zaman kaydı formunu aç
+                using (var editForm = new TimeEntryEditForm())
+                {
+                    // Mevcut iş öğesini önceden seçili yap
+                    // TimeEntryEditForm içinde LoadWorkItems çağrıldığında
+                    // bu iş öğesi otomatik olarak seçilecek
+                    editForm.ShowDialog(this);
+                }
+
+                // Form kapatıldığında zaman kayıtlarını yenile
+                LoadTimeEntries();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Detaylı zaman kaydı formu açılırken hata", ex);
+                XtraMessageBox.Show($"Form açılırken hata oluştu:\n\n{ex.Message}", "Hata",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private bool ValidateQuickTimeEntry()
+        {
+            if (dtQuickEntryDate.EditValue == null)
+            {
+                XtraMessageBox.Show("Lütfen tarih seçin.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                dtQuickEntryDate.Focus();
+                return false;
+            }
+
+            if (spinQuickDurationMinutes.Value <= 0)
+            {
+                XtraMessageBox.Show("Süre 0'dan büyük olmalıdır.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                spinQuickDurationMinutes.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(cmbQuickActivityType.Text))
+            {
+                XtraMessageBox.Show("Lütfen aktivite tipi seçin.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                cmbQuickActivityType.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtQuickSubject.Text))
+            {
+                XtraMessageBox.Show("Lütfen konu girin.", "Uyarı",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtQuickSubject.Focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        private void QuickSaveTimeEntry()
+        {
+            var activityType = cmbQuickActivityType.SelectedItem?.ToString();
+            
+            // Aktivite tipini TimeEntryActivityTypes formatına çevir
+            string activityTypeCode;
+            switch (activityType)
+            {
+                case "İş":
+                    activityTypeCode = TimeEntryActivityTypes.Work;
+                    break;
+                case "Telefon Görüşmesi":
+                    activityTypeCode = TimeEntryActivityTypes.PhoneCall;
+                    break;
+                case "Toplantı":
+                    activityTypeCode = TimeEntryActivityTypes.Meeting;
+                    break;
+                case "Mola":
+                    activityTypeCode = TimeEntryActivityTypes.Break;
+                    break;
+                case "Diğer":
+                    activityTypeCode = TimeEntryActivityTypes.Other;
+                    break;
+                default:
+                    activityTypeCode = TimeEntryActivityTypes.Work;
+                    break;
+            }
+
+            var newTimeEntry = new TimeEntry
+            {
+                EntryDate = dtQuickEntryDate.DateTime,
+                DurationMinutes = Convert.ToInt32(spinQuickDurationMinutes.Value),
+                ActivityType = activityTypeCode,
+                WorkItemId = _workItemId,
+                ProjectId = _workItem?.ProjectId,
+                Subject = txtQuickSubject.Text.Trim(),
+                Description = string.Empty, // Hızlı formda açıklama opsiyonel
+                CreatedBy = _currentUser,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.TimeEntries.Add(newTimeEntry);
+            _context.SaveChanges();
+
+            // Aktivite kaydı ekle
+            AddActivity(WorkItemActivityTypes.FieldUpdate,
+                $"Zaman kaydı eklendi: {newTimeEntry.DurationMinutes} dakika - {newTimeEntry.Subject}");
+
+            // Zaman kayıtlarını yenile
+            LoadTimeEntries();
+
+            // Konu alanını temizle (tarih ve süre korunsun)
+            txtQuickSubject.Text = string.Empty;
+            txtQuickSubject.Focus();
         }
 
         #endregion
